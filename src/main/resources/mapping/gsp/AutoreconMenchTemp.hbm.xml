@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.AutoreconMenchTemp" table="autorecon_menchtemp" schema="gsp">
+    
+       <id name="recordid" type="long">
+            <column name="recordid"  />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_newautorecen</param>
+			</generator>
+       </id>
+       
+       <property name="settleid"		column="settleid"	type="long" />
+       <property name="tradeno"		column="tradeno"	type="string" />
+       <property name="recencode"		column="recencode"	type="string" />
+       <property name="num"		column="num"	type="double" />
+       <property name="price"		column="price"	type="double" />
+       <property name="amount"		column="amount"	type="double" />
+				        
+    </class>
+</hibernate-mapping>

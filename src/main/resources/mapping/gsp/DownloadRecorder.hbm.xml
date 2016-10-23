@@ -1,0 +1,60 @@
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 31, 2013 2:18:24 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.DownloadRecorder" table="download_recorder" schema="gsp">
+    	<id name="recordId" type="long">
+            <column name="record_id" precision="65535" scale="65531" />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_status_tracker</param>
+			</generator>
+        </id>
+         <property name="settlementId" type="long">
+            <column name="settlement_id" />
+        </property>
+         <property name="downloadCount" type="integer">
+            <column name="download_count" />
+        </property>
+        
+        <property name="maxDownCount" type="integer">
+            <column name="max_down_count" />
+        </property>
+        
+         <property name="requestedCount" type="integer">
+            <column name="requested_count" />
+        </property>
+        <property name="addTime" type="timestamp">
+            <column name="add_time"  />
+        </property>
+         <property name="lastDownloadTime" type="timestamp">
+            <column name="last_download_time"  />
+        </property>
+        
+        <property name="billType" type="string">
+            <column name="bill_type" length="20" />
+        </property>
+        
+        <property name="special" type="string">
+            <column name="special" length="50" />
+        </property>
+        
+        <property name="nativeMoney" type="string">
+            <column name="amount" length="50" />
+        </property>
+        
+        <property name="vendorNo" type="string">
+            <column name="venderno" length="50" />
+        </property>
+        
+        <property name="optUser" type="string">
+            <column name="opt_user" length="100" />
+        </property>
+        
+        <property name="status" type="string">
+            <column name="status" length="50" />
+        </property>
+        
+    </class>
+</hibernate-mapping>

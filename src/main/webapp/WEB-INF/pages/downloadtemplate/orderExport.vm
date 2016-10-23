@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>订单明细</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<table border="1">
+		<thead>
+			<tr>
+				<td>影院名称</td>
+				<td>订单号</td>
+				<td>影院id</td>
+				<td>类目id</td>
+				<td>场次id</td>
+				<td>点单时间</td>
+				<td>放映时间</td>
+				<td>数量</td>
+				<td>结算金额</td>
+				<td>是否已结算</td>
+				<td>订单类型</td>
+				<th>日账单id</th>
+				<th>订单状态</th>
+				<th>用户是否开票</th>
+				<th>其他信息</th>
+				<th>类别</th>
+				<th>对账码</th>
+				<th>同步时间</th>
+				<th>更新时间</th>
+				<th>admininfo</th>
+				<th>取票时间</th>
+				<th>special</th>
+				<th>包场类型</th>
+				<th>特价扣减</th>
+				<th>GW开票金额</th>
+				<th>用户开票金额</th>
+			</tr>
+		</thead>
+		<tbody>
+			#if($mapList && $mapList.size() > 0)
+				#foreach($map in ${mapList})
+				<tr>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("name")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("tradeno")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("place_id")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("item_id")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("play_id")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("deal_time")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("use_time")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("quantity")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("total_cost")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("is_settled")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("order_type")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("check_bill_id")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("order_status")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("is_adjusted")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("other_info")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("category")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("outer_id")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("sync_time")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("update_time")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("admininfo")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("take_time")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("special")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("user_baochang")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("placeallowance")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("discount")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("alipaid")</td>
+				#end
+			#end
+		</tbody>
+	</table>
+</body>
+</html>

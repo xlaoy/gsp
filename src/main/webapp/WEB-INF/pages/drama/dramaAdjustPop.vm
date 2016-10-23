@@ -1,0 +1,49 @@
+<!-- <span style="color: #E5360A">注意：请在【系统应付金额】的基础上进行调整，【系统应付金额】为该单据系统计算出的应付金额，该金额不会改变，你可以进行多次调整，但本次的调整会将上次覆盖！</span> -->
+<table style="margin: auto;">
+	<tr height="40px;">
+		<td>结算单号：</td>
+		<td>
+			$!{dbill.recordid}
+		</td>
+	</tr>
+	<tr height="40px;">
+		<td>应付金额：</td>
+		<td>
+			$!{dbill.payamount}
+		</td>
+	</tr>
+	<tr height="40px;">
+		<td>调整原因：</td>
+		<td>
+			<select id="dareason" name="dareason" class="text" style="width: 200px;">
+				<option value="">全部</option>
+				<option value=""  #if($VmUtils.eq($!{params.reason},"")) selected="selected" #end></option>
+				<option value=""  #if($VmUtils.eq($!{params.reason},"")) selected="selected" #end></option>
+			</select>
+		</td>
+	</tr>
+	<tr height="40px;">
+		<td>调整票数：</td>
+		<td>
+			<input type="text" class="text" id="dadjustnum">
+		</td>
+	</tr>
+	<tr height="40px;">
+		<td>调整金额：</td>
+		<td>
+			<input type="text" class="text" id="dadjustamount">
+		</td>
+	</tr>
+	<tr height="40px;">
+		<td>调整说明：</td>
+		<td>
+			<textarea rows="3" cols="22" id="dadjustdesc"></textarea>
+		</td>
+	</tr>
+	<tr height="40px;">
+		<td></td>
+		<td>
+			<a href="javascript:saveAdjust();" class="button minBt whiteBt">保存</a>
+		</td>
+	</tr>
+</table>

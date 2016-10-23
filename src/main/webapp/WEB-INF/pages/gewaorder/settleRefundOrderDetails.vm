@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>订单明细</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+</head>
+<body id="_body">
+<div class="inner">
+	<div class="mod_hd tabs_gary" id="settleStatusId">
+		<a href="${basePath}platform/gewaorder/querySettleOrderDetails.xhtml?settleBillId=$!{params.settleBillId}" #if($ORDER) class="select" #end  >出票订单</a>
+		<a href="${basePath}platform/gewaorder/querySettleRefundmentDetails.xhtml?settleBillId=$!{params.settleBillId}" #if($REFUND) class="select" #end >退票订单</a>
+		<a href="${basePath}platform/gewaorder/querySettlePreviousDetails.xhtml?settleBillId=$!{params.settleBillId}" #if($PRIVOUSREFUND) class="select" #end>往期差异订单</a>
+		<a href="${basePath}platform/gewaorder/querySettleAdjust.xhtml?settleBillId=$!{params.settleBillId}" >调整</a>
+	</div>
+	#if($refund && $refund.size() > 0)
+	<div class="mode_search">
+		总计订单：$!{aggres[0]}笔，订单票数：$!{aggres[1]}，总计金额：$!CurrencyFmt.format(${aggres[2]})
+	</div>
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th class="sortable"><span>编号</span><span class="carat"></span></th>
+					<th class="sortable"><span>订单号</span><span class="carat"></span></th>
+					<th class="sortable"><span>下单日期</span><span class="carat"></span></th>
+					<th class="sortable"><span>退票日期</span><span class="carat"></span></th>
+					<th class="sortable"><span>场次</span><span class="carat"></span></th>
+					<th class="sortable"><span>影厅</span><span class="carat"></span></th>
+					<th class="sortable"><span>影片</span><span class="carat"></span></th>
+					<th class="sortable"><span>商品数量</span><span class="carat"></span></th>
+					<th class="sortable"><span>退票金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>结算金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>对账码</span><span class="carat"></span></th>
+					<th class="sortable"><span>订单详细</span><span class="carat"></span></th>
+					<th class="sortable"><span>退票原因</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($re in ${refund})
+				#set($o=${om.get($!{re.tradeno})})
+				<tr>
+					<td><span>
+						$!{foreach.count}
+						</span>
+					</td>
+					<td><span>
+						$!{o.tradeno}
+						</span>
+					</td>
+					<td><span>
+						 $!DateUtil.formatTimestamp($!{o.dealTime}) 
+						</span>
+					</td>
+					<td><span>
+						 $!DateUtil.formatTimestamp($!{re.refundTime}) 
+						</span>
+					</td>
+					#set($otherInfo=$!{VmUtils.readJsonToMap(${o.otherInfo})})
+					<td><span>
+						$!{otherInfo.remove("场次")}
+						</span>
+					</td>
+					<td><span>
+						$!{otherInfo.remove("影厅")}
+						</span>
+					</td>
+					<td style=""><span>
+						$!{otherInfo.remove("影片")}
+						</span>
+					</td>
+					<td><span>
+						$!{o.quantity}
+						</span>
+					</td>
+					<td>
+					#set($reamount=$VmUtils.calculate("$!{re.oldSettle}","$!{re.newSettle}","-"))
+						$!CurrencyFmt.format($reamount)
+					</td>
+					<td ><span>
+					#set($finalAmount=$VmUtils.calculate("$!{o.totalCost}","$reamount","-"))
+						$!CurrencyFmt.format($finalAmount)
+						</span>
+					</td>
+					<td><span>
+						$!{o.outerId}
+						</span>
+					</td>
+					<td><span>
+						$!{otherInfo.remove("影票")}
+						</span>
+					</td>
+					<td>
+						<span>$!{re.applyInfo}</span>
+					</td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="13">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	#else
+	<div class="ui_warning">查询条件范围内，没有数据。</div>
+	#end
+	
+</div>
+
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	#if($refund && $refund.size() > 0)
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	#end
+	completer = new Autocompleter.Local($("placeFirstLetter"), parent.pdata, {
+		'delay': 100,
+		'maxChoices': 10,
+		'minLength':0,
+		'requestid':'placeId',
+		'filter': function() {
+			var vl = this.queryValue;
+			var values = vl.trim().split(/ +/);
+			return this.tokens.filter(function(token){
+				var result = values.every(function(v){
+					var reg = new RegExp(v.escapeRegExp(),'i');
+					return reg.test(token.pinyin) || reg.test(token.name);
+				});
+				return result;
+			});
+		},
+		'injectChoice': function(choice){
+			parent.myGenChoice(this,choice);
+		}
+	});
+	lockMenu();
+});
+
+var downloadxls=function(){
+	if(document.forms[0]){
+		$("isXls").value="downloadxls";
+		document.forms[0].submit();
+		$("isXls").value="";
+	}else{
+		var a=document.location.href;
+		a=a+"&isXls=download";
+		document.location.href=a;
+	}
+};
+</script>
+</body>
+</html>

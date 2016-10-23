@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	<bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+		<property name="connectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="sendTimeout" value="10000" />
+				<property name="brokerURL">
+					<value>failover:(tcp://192.168.2.108:9521)</value>
+				</property>
+			</bean>
+		</property>
+	</bean>
+	<bean id="defaultMsgQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="defaultMsgQueue"/>
+	</bean> 
+</beans>

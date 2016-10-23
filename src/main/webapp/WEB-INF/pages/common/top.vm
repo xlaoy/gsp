@@ -1,0 +1,9 @@
+<header id="headerid">
+	<div class="adminConsole">
+		<span class="left">欢迎<a class="mr5" href="#">[$user.nickname]</a>进入结算管理系统！</span>
+		<!-- <a class="button minBt whiteBt mr10 left" href="#"><span>账户管理</span></a> -->
+		<a class="button minBt whiteBt left" href="${basePath}cas/logout.xhtml"
+			target="_top"><span>退出</span></a>
+	</div>
+</header>
+

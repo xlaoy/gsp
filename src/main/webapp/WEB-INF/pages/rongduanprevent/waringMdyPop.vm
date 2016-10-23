@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+</head>
+<body>
+<div style="margin: 20px;">
+<p>当前预警金额：$!rdp.waringAmount</p>
+<p>预警金额：<input type="text" class="text" id="waringinp_$!rdp.vendorCode" onkeyup="this.value=this.value.replace(/\D/g,'')"></p><br>
+<p style="margin-left: 60px;">
+<a href="javascript:waringMdy('$!rdp.vendorCode');" class="button minBt whiteBt">确定</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="javascript:closeWaringPop();" class="button minBt whiteBt">取消</a>
+</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>熔断汇总</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+
+<style type="text/css">
+html{background:#fff;}
+</style>
+
+</head>
+
+<body id="_body">
+<div class="inner">
+	<div class="tableGear clear">
+		#set($allOrder=0)
+		#set($allOrderAmount=0)
+		#foreach($dc in $dcList)
+			#set($allOrder=$allOrder + $!dc.num)
+			#set($allOrderAmount= $allOrderAmount + $!dc.amount)
+		#end
+		<div>
+			<span style="float:left">
+				出票总数:$allOrder、 出票总金额:$!CurrencyFmt.format($allOrderAmount)、
+				时间范围：$!DateUtil.formatTimestamp($!{rdp.startTime}) 至  $!DateUtil.formatTimestamp($!{rdp.endTime})
+			</span>
+		</div><br>
+		<table class="tableGear">
+			<thead>
+				<tr>
+					<th style="width:15%;">供应商编号</th>
+					<th style="width:35%;">供应商名称</th>
+					<th style="width:25%;">时间范围</th>
+					<th style="width:12%;">总票数</th>
+					<th>总金额</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($dc in $dcList)
+				<tr>
+					<td>$!dc.vendorCode</td>
+					<td>$!dc.vendorName</td>
+					<td>
+						$!DateUtil.formatTimestamp($!{dc.startTime}) -<br>
+						$!DateUtil.formatTimestamp($!{dc.endTime})
+					</td>
+					<td>$!dc.num</td>
+					<td>$!CurrencyFmt.format($!dc.amount)</td>
+				</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+</div>
+
+</body>
+</html>

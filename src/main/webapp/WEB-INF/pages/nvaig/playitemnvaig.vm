@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<div class="mod_hd tabs_gary" >
+	<a href="${basePath}platform/gewaorder/queryPlayItemAggre.xhtml" #if($VmUtils.eq($!nvg,'queryPlayItemAggre')) class="select" #end>结算单场次明细</a>
+	<a href="${basePath}platform/gewaorder/queryPlayItem.xhtml" #if($VmUtils.eq($!nvg,'queryPlayItem')) class="select" #end>场次明细</a>
+</div>

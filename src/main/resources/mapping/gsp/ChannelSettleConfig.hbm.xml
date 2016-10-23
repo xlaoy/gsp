@@ -1,0 +1,35 @@
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 31, 2013 2:18:24 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.ChannelSettleConfig" table="channel_settleconfig" schema="gsp">
+    	<id name="recordId" type="java.lang.Long" column="record_id">
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_channel_settle_config</param>
+			</generator>
+        </id>
+        <property name="vendorName" column="vendor_name" type="java.lang.String"/>
+        <property name="vendorCode" column="vendor_code" type="java.lang.String"/>
+        <property name="vendorType" column="vendor_type" type="java.lang.String"/>
+        <property name="settleCycle" column="settle_cycle" type="java.lang.String"/>
+        <property name="settleDays" column="settle_days" type="java.lang.Integer"/>
+        <property name="settleMoney" column="settle_money" type="java.lang.Double"/>
+        <property name="orderPercent" column="order_percent" type="java.lang.Double"/>
+        <property name="firstSettleDate" column="first_settledate" type="java.sql.Timestamp"/>
+        <property name="createTime" column="create_time" type="java.sql.Timestamp"/>
+        <property name="createUser" column="create_user" type="java.lang.String"/>
+        <property name="updateTime" column="update_time" type="java.sql.Timestamp"/>
+        <property name="updateUser" column="update_user" type="java.lang.String"/>
+        <property name="isSettleRefund" column="is_settlere_fund" type="java.lang.String"/>
+        <property name="nextExeTime" column="next_exetime" type="java.sql.Timestamp"/>
+        <property name="status" column="status" type="java.lang.String"/>
+        <property name="verifyStatus" column="verify_status" type="java.lang.String"/>
+        <property name="houtaiId" column="houtai_id" type="java.lang.Long"/>
+        <property name="pjtcode" column="pjt_code" type="java.lang.String"/>
+        <property name="syscode" column="syscode" type="java.lang.String"/>
+        <property name="timecut" column="timecut" type="java.lang.String"/>
+        <property name="settletime" column="settletime" type="java.lang.String"/>
+    </class>
+</hibernate-mapping>

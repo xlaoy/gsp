@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 31, 2013 2:18:24 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.MegerPayRecord" table="meger_pay" schema="gsp">
+    
+    	 <id name="minSettltId" type="long">
+            <column name="min_settle_billid"  />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_req_money</param>
+			</generator>
+      	 </id>
+    
+        <property name="queryStartTime" type="timestamp" column="query_start_time"/>
+        <property name="queryEndTime" type="timestamp" column="query_end_time"/>
+        <property name="payVernderNo" type="string" column="pay_vender_no"/>
+        <property name="payTime" type="timestamp" column="pay_time"/>
+        <property name="relateSettltIds" type="string" column="relate_settle_billid"/>
+        <property name="totalAmount" type="java.lang.Double" column="total_amount"/>
+        <property name="optUser" type="string" column="opt_user"/>
+    </class>
+</hibernate-mapping>

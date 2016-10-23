@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<div class="mod_hd tabs_gary">
+	<a href="${basePath}platform/wp/queryWPBill.xhtml"  #if($VmUtils.eq($!nvg,'queryWPBill')) class="select" #end>微票账单</a>
+	<a href="${basePath}platform/wp/queryWPPlaceBill.xhtml"  #if($VmUtils.eq($!nvg,'queryWPPlaceBill')) class="select" #end>影院账单</a>
+	<a href="${basePath}platform/pointcard/queryWPPointCard.xhtml"  #if($VmUtils.eq($!nvg,'queryWPPointCard')) class="select" #end>点卡账单</a>
+	<a href="${basePath}platform/pointcard/queryPlaceWPPointCard.xhtml"  #if($VmUtils.eq($!nvg,'queryPlaceWPPointCard')) class="select" #end>影院点卡账单</a>
+	<a href="${basePath}platform/pointcard/queryPointCardOrder.xhtml" #if($VmUtils.eq($!nvg,'queryPointCardOrder')) class="select" #end>点卡订单查询</a>
+</div>

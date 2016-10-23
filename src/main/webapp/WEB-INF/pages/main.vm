@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title id="titleid">结算系统</title>
+	#parse('WEB-INF/pages/common/static.vm')
+	<script type="text/javascript" src="${staticPath}scripts/apps.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+	<script type="text/javascript">
+		var pdata = $!{pdata};
+	</script>
+</head>
+<body id="_body">
+#parse('WEB-INF/pages/common/top.vm') 
+<article class="layout_shadow">
+	<div class="layout clear">
+		#parse('WEB-INF/pages/common/left.vm') 
+		<section class="layout_content shadow_l">
+			<iframe id="mainContent" config="body" name="mainContent" src="$menuTop.get(0).moduleurl" frameborder="0" scrolling="auto" width="100%" height="100%" style="padding:0px;margin:0px;"></iframe>
+		</section>
+	</div>
+</article> 
+<script type="text/javascript">
+window.addEvents({
+	'domready':function(){
+		apps.scroll();
+		var menuLink = $$('#navleftid a');
+		menuLink.addEvent('click',function(e){
+			if($defined(e))e.preventDefault();
+			menuLink.removeClass('select');
+			$('mainContent').set('src',this.get('href'));
+			this.addClass('select');
+		});
+		menuLink[0].fireEvent('click');
+	},
+	'resize':function(){apps.scroll();}
+});
+function searchPlace(el, selectId){
+	var selectInput = window.frames["mainContent"].document.getElementById(selectId);
+	
+	selectInput.options.length = 0;
+	var py = el.value;
+	if (py == ''){
+		return;
+	}
+	for(var i=0;i<parent.pdata.length;i++){
+		var p = parent.pdata[i];
+		if (p.pinyin.indexOf(py) >= 0){
+			var op = new Option(p.name,p.recordId);
+			selectInput.options.add(op);
+		}
+	}
+}
+function myGenChoice(_this, choice) {
+	var a = new Element('a', {'href': 'javascript:void(0)','html':choice.name,'rel':choice.recordId});
+	var el = new Element('li').adopt(a);
+	el.inputValue = choice.name;
+	_this.addChoiceEvents(el).injectInside(_this.choices);
+}
+//console.info(pdata);
+</script>
+
+
+</body>
+</html>

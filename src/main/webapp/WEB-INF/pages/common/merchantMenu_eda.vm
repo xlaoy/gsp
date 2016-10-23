@@ -1,0 +1,103 @@
+<div class="Mv_nav">
+	<div class="Mv_nav_left clear">
+		<div class="left" style="width:1130px;">
+			<span class="usP jsLogo"></span>
+			<h1 class="usP left" id="countPt">结算平台</h1>
+			<ul class="selNav" style="display:none;">
+				#set($menuMap=$!{session.getAttribute("menu")})
+				#if($menuMap)
+					#foreach($k in $menuMap.keySet())
+						<li><a href="$!k" title="$!menuMap.get($k)">$!menuMap.get($k)</a></li>
+					#end
+				#end
+			</ul>
+			<div class="allNav left">
+				<ul class=" ml30 clear">
+					<li #if($!isFinalStatement)class="select"#end><a href="${absPath}${basePath}merchant/settlement/settlementbills.xhtml" title="影票结算单">影票结算单</a></li>
+					<li #if($!iSstatementOfAccount)class="select"#end><a href="${absPath}${basePath}merchant/checkBill/checkbills.xhtml" title="日对账">影票日对账</a></li>
+					<li #if($!isFilmPlay)class="select"#end><a href="${absPath}${basePath}merchant/gewaorder/queryPlayItemAggre.xhtml" title="场次明细">影票场次明细</a></li>
+					<li #if($!isOrderDetail)class="select"#end><a href="${absPath}${basePath}merchant/gewaorder/queryGewarOrder.xhtml" title="订单">影票订单</a></li>
+					<li #if($!isPayMoney)class="select"#end><a href="${absPath}${basePath}merchant/settlement/queryPayBills.xhtml" title="收款单">影票收款单</a></li>
+					<li #if($!isAutoReconcile)class="select"#end><a href="${absPath}${basePath}merchant/autoreconcile/queryReconResultByCondition.xhtml" title="对账结果查询">对账结果查询</a></li>
+					<li #if($!isInvoiceManager)class="select"#end><a href="${absPath}${basePath}merchant/invoice/queryInvoice.xhtml" title="发票管理">发票管理</a></li>
+				</ul>
+			</div>
+		</div>
+		<span class="Mv_nav_right right" style="font-size: 13px;">
+			$!{session.getAttribute("dataMap").get("username")}&nbsp;&nbsp;&nbsp;&nbsp;<a href="${basePath}help.html?$!VmUtils.getRandomCaptchaId()">帮助</a>
+		</span>
+	</div>
+</div>
+<script type="text/javascript">
+/*下拉菜单*/
+var ocountPt = $('countPt');
+var oUl = $('countPt').getNext();
+var timer = null;
+
+ocountPt.onmouseover = oUl.onmouseover = navShow;
+ocountPt.onmouseout = oUl.onmouseout = navHide;
+function navShow(){
+	oUl.style.display = 'block';
+	clearTimeout(timer);
+}
+function navHide(){
+	timer = setTimeout(function(){
+		oUl.style.display = 'none';
+	},300)
+}
+
+window.addEvent('domready',function(){
+	selectBar();
+	//maxWidth();
+});
+function selectBar(){
+	var simulateSelect = $$('.simulate_select_20');
+	simulateSelect.each(function(item){
+		item.addEvent('click',function(){
+			item.getNext().toggle();
+		});
+		 item.getParent().addEvent('mouseleave',function () {
+			item.getNext().hide();
+		}) 
+		item.getNext().getElements('a').addEvent('click',function (e){
+			e.preventDefault();
+			var proviceCode = this.get('data-value');
+			item.getNext().hide();
+			item.getElement('.select_value_20').set('html',this.get('html'));
+			item.getElement('.simulate_value_20').set('value',this.get('data-value'));
+			filterCity(this);
+		}); 
+	});
+}
+
+function filterCity(con){
+	if(con && con.get('data-config') == 'city'){
+		var downCity = $('simulate_options_ul').getElements('a["data-city"]');
+		downCity.each(function(item){
+			if(!$chk(con.get('data-value'))){
+				item.getParent('li').show();
+			}else{
+				if(item.get('data-city') == con.get('data-value')){
+					item.getParent('li').show();
+				}else{
+					$('placeId').value="";
+					$('select_text').set('html','全部');
+					item.getParent('li').hide();
+				}
+			}
+		})
+	}
+}
+
+/* function maxWidth(){
+	var simulateSelect = $$('.simulate_select_20');
+	simulateSelect.each(function(item){
+		var simLi = item.getNext().getElements('li');
+		//console.info(item.getNext().getElements('li'));
+		simLi.each(function(el){
+			console.info(el,el.getWidth());
+		});
+		
+	});
+}  */
+</script>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+			http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+	<!-- ======================== FILTER CHAIN ======================= -->
+	<context:annotation-config/>
+	<bean id="securityFilter" class="com.gewara.web.filter.GewaFilterChainProxy">
+		<!-- <property name="filterUrlMap">
+			<map>
+				<entry key="/management/*" value="1"/>
+			</map>
+		</property>
+		 -->
+		<sec:filter-chain-map  request-matcher="ant">
+			<sec:filter-chain pattern="/**" filters="securityContextPersistenceFilter,logoutFilter,authenticationFilter,securityContextHolderAwareRequestFilter,exceptionTranslationFilter,filterSecurityInterceptor"/>
+		</sec:filter-chain-map>
+	</bean>
+	<bean id="securityContextRepository" class="com.gewara.web.support.GewaSecurityContextRepository" />
+	<bean id="securityContextPersistenceFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter">
+		<property name="securityContextRepository" ref="securityContextRepository" />
+	</bean>
+	<bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
+		<constructor-arg ref="gewaLogoutHandler" />
+		<constructor-arg>
+			<list>
+				<bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler" />
+			</list>
+		</constructor-arg>
+		<property name="filterProcessesUrl" value="/cas/logout.xhtml" />
+	</bean>
+	<bean id="gewaLogoutHandler" class="com.gewara.web.support.GewaUrlLogoutSuccessHandler">
+		<property name="defaultTargetUrl" value="/logout.html"/>
+		<property name="casSsoLogout" value="true"/>
+		<!-- <property name="logoutUrlMap">
+			<map>
+				<entry key="wap" value="/wap/index.xhtml"/>
+				<entry key="smp" value="/simpleLogout.html"/>
+			</map>
+		</property> -->
+	</bean>
+	<bean id="authenticationFilter" class="com.gewara.web.support.GewaAuthenticationFilter">
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="authenticationSuccessHandler" ref="successHandler" />
+		<property name="authenticationFailureHandler" ref="failureHandler" />
+		<property name="filterProcessesUrl" value="/cas/check_user.xhtml" />
+		<property name="allowSessionCreation" value="false" />
+		<property name="enableCaptcha" value="false" />
+	</bean>
+	<bean id="successHandler" class="com.gewara.web.support.GewaAuthenticationSuccessHandler">
+		<property name="defaultTargetUrl" value="/index.xhtml" />
+		<property name="targetUrlParameter" value="TARGETURL" />
+		<property name="redirectStrategy" ref="redirectStrategy" />
+		<property name="cacheService" ref="cacheService"/>
+		<!-- <property name="successUrlMap">
+			<map>
+				<entry key="partner" value="/partner/admin/console.xhtml"/>
+				<entry key="wap" value="/wap/ground/index.xhtml"/>
+			</map>
+		</property> -->
+	</bean>
+	<bean id="failureHandler" class="com.gewara.web.support.GewaAuthenticationFailureHandler">
+		<property name="defaultFailureUrl" value="/login.xhtml" />
+		<property name="targetUrlParameter" value="TARGETURL" />
+		<property name="loginFromParameter" value="ptn" />
+		<!-- <property name="failureUrlMap">
+			<map>
+				<entry key="partner" value="/partner/login.xhtml"/>
+				<entry key="user" value="/adminLogin.xhtml"/>
+			</map>
+		</property> -->
+	</bean>
+	<bean id="merchantFilter" class="com.gewara.web.filter.MerchantFilter" />
+	<bean id="redirectStrategy" class="com.gewara.web.support.GewaRedirectStrategy">
+		<property name="contextRelative" value="true"/>
+	</bean>
+	<bean id="securityContextHolderAwareRequestFilter" class="org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter" />
+	<bean id="exceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
+		<constructor-arg>
+			<bean class="com.gewara.web.support.GewaLoginUrlAuthenticationEntryPoint">
+				<constructor-arg value="/adminLogin.xhtml" />
+				<property name="enableSSO" value="true"/><!-- true when using sso login -->
+				<!-- <property name="loginFormMap">
+					<map>
+						<entry key="/admin/" value="/adminLogin.xhtml"/>
+						<entry key="/partner/admin/" value="/partner/login.xhtml"/>
+					</map>
+				</property> -->
+				<property name="targetUrlParameter" value="TARGETURL" />
+				<property name="ssoClientService" ref="ssoClientService"/>
+			</bean>
+		</constructor-arg>
+		<property name="accessDeniedHandler">
+			<bean class="org.springframework.security.web.access.AccessDeniedHandlerImpl" />
+		</property>
+		<property name="requestCache">
+			<bean class="org.springframework.security.web.savedrequest.NullRequestCache" />
+		</property>
+	</bean>
+	<bean id="securityMetadataSource"
+		class="com.gewara.web.support.DBFilterInvocationSecurityMetadataSource" />
+	<bean id="filterSecurityInterceptor"
+		class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="accessDecisionManager" ref="accessDecisionManager" />
+		<property name="securityMetadataSource" ref="securityMetadataSource" />
+	</bean>
+	<bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter">
+		<property name="rolePrefix" value="" />
+	</bean>
+	<bean id="accessDecisionManager"
+		class="org.springframework.security.access.vote.AffirmativeBased">
+		<property name="allowIfAllAbstainDecisions" value="true" />
+		<property name="decisionVoters">
+			<list><ref bean="roleVoter"/></list>
+		</property>
+	</bean>
+
+	<bean id="authenticationManager"
+		class="org.springframework.security.authentication.ProviderManager">
+		<property name="providers">
+			<list>
+				<ref bean="daoAuthenticationProvider" />
+				<ref bean="rememberMeAuthenticationProvider" />
+				<ref bean="ssoAuthenticationProvider" />
+			</list>
+		</property>
+		<property name="authenticationEventPublisher" ref="authenticationEventPublisher"/>
+	</bean>
+	
+	<bean id="daoAuthenticationProvider"
+		class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+		<property name="userDetailsService" ref="aclService" />
+		<property name="passwordEncoder" ref="passwordEncoder" />
+	</bean>
+
+	<bean id="rememberMeAuthenticationProvider"
+		class="org.springframework.security.authentication.RememberMeAuthenticationProvider">
+		<property name="key" value="gbwebRocks" />
+	</bean>
+	<bean id="ssoAuthenticationProvider" class="com.gewara.web.support.SSOAuthenticationProvider" />
+	<bean id="authenticationEventPublisher" class="com.gewara.web.support.GewaAuthenticationEventPublisher" />
+	<bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder" />
+	<bean id="loginService" class="com.gewara.web.component.LoginServiceImpl">
+		<property name="ssoClientService" ref="ssoClientService" />
+		<property name="cacheService" ref="cacheService"/>
+	</bean>
+
+	<bean id="ssoClientService" class="com.gewara.web.support.CasSSOClientService">
+		<property name="aclService" ref="aclService"/>
+	</bean>
+	<bean id="aclService" class="com.gewara.service.impl.CasSsoAclServiceImpl"/>
+	<bean id="aclManager" class="com.gewara.service.impl.AclManagerImpl"/>
+</beans>

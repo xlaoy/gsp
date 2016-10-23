@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.gewara.model.gsp.GewaUserMappingU8" table="gewa_user_mapping_u8"
+		schema="gsp">
+		<id name="recordId" type="long" column="record_id">
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_gewauser_mapping_u8</param>
+			</generator>
+		</id>
+		<property name="gewaLoginName" column="gewa_login_name" type="string"/>
+		<property name="gewaRealName" column="gewa_real_name" type="string"/>
+		<property name="createTime" column="create_time" type="timestamp"/>
+		<property name="createUser" column="create_user" type="string"/>
+		<property name="updateTime" column="update_time" type="timestamp"/>
+		<property name="updateUser" column="update_user" type="string"/>
+	</class>
+</hibernate-mapping>

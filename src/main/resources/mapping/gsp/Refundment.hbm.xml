@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 31, 2013 2:18:24 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.Refundment" table="refundment" schema="gsp" optimistic-lock="version">
+    	<id name="tradeno" type="string">
+            <column name="tradeno" length="25" />
+            <generator class="assigned" />
+        </id>
+        <version name="version" type="integer">
+            <column name="version" />
+        </version>
+        <property name="checkBillId" type="long">
+            <column name="check_bill_id" />
+        </property>
+        <property name="settleBillId" type="long">
+            <column name="settle_bill_id" />
+        </property>
+        <property name="playId" type="long">
+            <column name="play_id" />
+        </property>
+        <property name="tag" type="string">
+            <column name="order_type" length="10" />
+        </property>
+        <property name="relateId" type="long">
+            <column name="relate_id" />
+        </property>
+        <property name="refundTime" type="timestamp">
+            <column name="refund_time" />
+        </property>
+        <property name="oldSettle" type="java.lang.Double">
+            <column name="old_settle" />
+        </property>
+        <property name="newSettle" type="java.lang.Double">
+            <column name="new_settle" />
+        </property>
+        <property name="quantity" type="java.lang.Integer">
+            <column name="quantity" />
+        </property>
+        <property name="isSettled" type="string">
+            <column name="is_settled" length="10" />
+        </property>
+        
+        <property name="useTime" type="timestamp">
+            <column name="use_time" />
+        </property>
+        <property name="category" type="string">
+            <column name="refund_category" length="10" />
+        </property>
+        
+         <property name="applyInfo" type="string">
+           <column name="apply_Info" length="1000" />
+        </property>
+        
+        <property name="dealInfo" type="string">
+           <column name="deal_Info" length="1000" />
+        </property>
+        <property name="syncTime" type="timestamp">
+            <column name="sync_time" />
+        </property>
+        <property name="isChannelSettled" type="string" column="is_channel_settled" length="10"/>
+        <property name="channelCheckBillId" type="long" column="channel_check_bill_id"/>
+        <property name="channelSettleBillId" type="long" column="channel_settle_bill_id"/>
+        <property name="special" type="string" column="special"/>
+    </class>
+</hibernate-mapping>

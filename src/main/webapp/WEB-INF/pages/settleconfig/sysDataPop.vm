@@ -1,0 +1,43 @@
+<input type="hidden" class="text" id="drecordid" value="$!{data.recordid}" >
+<table style="margin: auto;">
+	<tr height="40px;">
+		<td>type：</td>
+		<td>
+			<select id="dtype" class="text" >
+				<option value="SYSCATEGORY" #if($VmUtils.eq($!{params.type},"SYSCATEGORY")) selected="selected" #end>SYSCATEGORY</option>
+				<option value="MEGERPAYVENDER" #if($VmUtils.eq($!{params.type},"MEGERPAYVENDER")) selected="selected" #end>MEGERPAYVENDER</option>
+				<option value="DRAMAMAIL" #if($VmUtils.eq($!{params.type},"DRAMAMAIL")) selected="selected" #end>DRAMAMAIL</option>
+				<option value="RONGDUANMAIL" #if($VmUtils.eq($!{params.type},"RONGDUANMAIL")) selected="selected" #end>RONGDUANMAIL</option>
+				<option value="SYSERRORMAIL" #if($VmUtils.eq($!{params.type},"SYSERRORMAIL")) selected="selected" #end>SYSERRORMAIL</option>
+				<option value="SYSADMINMAIL" #if($VmUtils.eq($!{params.type},"SYSADMINMAIL")) selected="selected" #end>SYSADMINMAIL</option>
+				<option value="TESTMAIL" #if($VmUtils.eq($!{params.type},"TESTMAIL")) selected="selected" #end>TESTMAIL</option>
+				<option value="INVOICEADMIN" #if($VmUtils.eq($!{params.type},"INVOICEADMIN")) selected="selected" #end>INVOICEADMIN</option>
+				<option value="RESETADJUST" #if($VmUtils.eq($!{params.type},"RESETADJUST")) selected="selected" #end>RESETADJUST</option>
+			</select>
+		</td>
+	</tr>
+	<tr height="40px;">
+		<td>code：</td>
+		<td>
+			<input type="text" class="text" id="dcode" value="$!{data.code}" >
+		</td>
+	</tr>
+	<tr height="40px;">
+		<td>name：</td>
+		<td>
+			<input type="text" class="text" id="dname" value="$!{data.name}" >
+		</td>
+	</tr>
+	<tr height="40px;">
+		<td>special：</td>
+		<td>
+			<textarea rows="3" cols="22" id="dspecial">$!{data.special}</textarea>
+		</td>
+	</tr>
+	<tr height="40px;">
+		<td></td>
+		<td>
+			<a href="javascript:saveBaseData();" class="button minBt whiteBt">保存</a>
+		</td>
+	</tr>
+</table>

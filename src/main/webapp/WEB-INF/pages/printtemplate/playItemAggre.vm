@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>对账单</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<style type="text/css">
+		body{position:relative;}
+		table{border-collapse:collapse;}
+	</style>
+</head>
+<body>
+	<div style="position:absolute;left: 10%; bottom: 6px;">
+		<img src="${basePath}financeChop.xhtml" style="filter:alpha(opacity=30);opacity:0.6;" width="210px" height="150px">
+	</div>
+	<div style="position:absolute;left: 80%; top: 50px;">
+		
+	</div>
+	#if($aggres && $aggres.size() > 0)
+	<table width="98%" border="1">
+		<thead>
+			<tr><th colspan="8" height="32" valign="middle">$!{place.name} 影片放映确认书
+			<label type="label" align="right" style="float:right;">No.$!{settle.recordId}</label>
+			</th>
+			</tr>
+		</thead>
+		<tbody>
+		<tr>
+			<td width="10%" valign="middle">场次ID</td>
+			<td width="10%" valign="middle">电影名称</td>
+			<td width="10%" valign="middle">放映时间</td>
+			<td width="10%" valign="middle">结算票数</td>
+			<td width="10%" valign="middle">结算金额</td>
+			<td width="10%" valign="middle">退票票数</td>
+			<td width="10%" valign="middle">退票金额</td>
+			<td rowspan="$VmUtils.calculate($!aggres.size(), "2", "+")">
+				<div style="text-align:center;">
+					<img style="margin:0 auto;" width="220" height="220" src="${basePath}qrcode.xhtml?recordId=$!{params.settleId}" align="middle">
+				</div>
+			</td>
+		</tr>
+				#set($allOrder=0)
+				#set($allOrderAmount=0)
+				#set($allRefund=0)
+				#set($allRefundmount=0)
+				#foreach($ag in ${aggres.keySet()})
+					<tr>
+						<td  align="left" height="22" valign="middle">
+							$!{ag}
+						</td>
+						#set($otherIno= $VmUtils.readJsonToMap($pom.get($!{ag}).otherInfo))
+						<td  align="right" height="22" valign="middle">
+							$!{otherIno.get("影片")}
+						</td>
+						<td  align="right" height="22" valign="middle">
+							$!{otherIno.get("场次")}
+						</td>
+						#set($aggre=$!{aggres.get(${ag})})
+						#set($orderTotal=0)
+						#set($orderAmount=0)
+						#set($refundTotal=0)
+						#set($refundAmount=0)
+						#if($!{aggre.get("orderTotal")})
+							#set($orderTotal=$!{aggre.get("orderTotal")})
+						#end
+						
+						#if($!{aggre.get("orderAmount")})
+							#set($orderAmount=$!{aggre.get("orderAmount")})
+						#end
+						
+						#if($!{aggre.get("refundTotal")})
+							#set($refundTotal=$!{aggre.get("refundTotal")})
+						#end
+						#if($!{aggre.get("refundAmount")})
+							#set($refundAmount=$!{aggre.get("refundAmount")})
+						#end
+						#if($!{aggre.get("adjustTotal")})
+							#set($adjustTotal=$!{aggre.get("adjustTotal")})
+						#end
+						#if($!{aggre.get("adjustTotal")})
+							#set($adjustAmount=$!{aggre.get("adjustAmount")})
+						#end
+						
+						
+						
+						<td  align="right" height="22" valign="middle">
+							#set($orderTotal=$VmUtils.calculate($orderTotal, $refundTotal ,"-"))
+							$!orderTotal
+						</td>
+						<td  align="right" height="22" valign="middle">
+							#set($orderAmount=$VmUtils.calculate($orderAmount, $refundAmount ,"-"))
+							$!CurrencyFmt.format($!orderAmount)
+						</td>
+						<td  align="right" height="22" valign="middle">
+							$!{refundTotal}
+						</td>
+						<td  align="right" height="22" valign="middle">
+							$!CurrencyFmt.format(${refundAmount})
+						</td>
+						
+						#set($allOrder=$allOrder + $orderTotal)
+						#set($allOrderAmount= $allOrderAmount + $orderAmount)
+						#set($allRefund= $allRefund + $refundTotal)
+						#set($allRefundmount= $allRefundmount + $refundAmount)
+						#set($allAdjust= $allAdjust + $adjustTotal)
+						#set($allAdjustAmount= $allAdjustAmount + $adjustAmount)
+					</tr>
+				#end
+			#set($updateOrderCount=0)
+			#set($updateOrderAmount=0)
+			#if($ads && $ads.size() > 0)
+				#foreach($ad in ${ads})
+					#set($updateOrderCount=$!{ad.adjustNumber}+$updateOrderCount)
+					#set($updateOrderAmount=$!{ad.amount}+$updateOrderAmount)
+				#end
+				<tr>
+					<td  align="right" colspan="3"  height="22" valign="right">调整</td>
+					<td  align="left" height="22" valign="middle">$!updateOrderCount</td>
+					<td  align="left" height="22" valign="middle">$!CurrencyFmt.format($updateOrderAmount)</td>
+				</tr>
+			#end
+			
+			#set($prn=0)
+			#set($pra=0)
+			#if($settle && ($settle.previousRefundNumber != 0 || $settle.previousRefundAmount != 0))
+			<tr>
+				<td  align="right" colspan="3"  height="22" valign="right">差异</td>
+				#set($prn=$settle.previousRefundNumber)
+				#set($pra=$settle.previousRefundAmount)
+				<td  align="left" height="22" valign="middle">$prn</td>
+				<td  align="left" height="22" valign="middle">$pra</td>
+			</tr>
+			#end
+			
+			#set($allOrder=$updateOrderCount+$allOrder)
+			#set($allOrderAmount=$allOrderAmount+$updateOrderAmount)
+			#set($allOrder=$allOrder - $prn)
+			#set($allOrderAmount=$allOrderAmount - $pra)
+			
+			<tr>
+				<td  colspan="3" align="right" height="22" valign="middle">合计</td>
+				<td  align="right" height="22" valign="middle">$!allOrder</td>
+				<td  align="right" height="22" valign="middle">$!CurrencyFmt.format($!allOrderAmount)</td>
+				<td  align="right" height="22" valign="middle">$!allRefund</td>
+				<td  align="right" height="22" valign="middle">$!CurrencyFmt.format($!allRefundmount)</td>
+			</tr>
+		</tbody>
+		<tfoot>
+			<tr><td colspan="8"  align="left" height="22" valign="middle">双方签字盖章确认</td></tr>
+			<tr><td colspan="4"  align="left" height="22" valign="middle">公司名称：上海格瓦商务信息咨询有限公司</td><td colspan="4"  align="left" height="22" valign="middle">公司名称：$!{merinfo.get("conName")}</td></tr>
+			<tr><td colspan="4"  align="left" height="22" valign="middle">传真号码：021-33608717</td><td colspan="4"  align="left" height="22" valign="middle">确认手机：$!{merinfo.get("verMobile")}</td></tr>
+			<tr><td colspan="4"  align="left" height="22" valign="middle">付款人名：$!{gst.operator}</td><td colspan="4"  align="left" height="22" valign="middle">确认人名：$!{mst.operator}</td></tr>
+			<tr><td colspan="4"  align="left" height="22" valign="middle">付款日期：$!{gst.addTime}</td><td colspan="4"  align="left" height="22" valign="middle">确认日期：$!{mst.addTime}</td></tr>
+			<tr><td colspan="4"  align="left" height="22" valign="middle"></td><td colspan="4"  align="left" height="22" valign="middle"></td></tr>
+		</tfoot>
+	</table>
+	#end
+</body>
+</html>

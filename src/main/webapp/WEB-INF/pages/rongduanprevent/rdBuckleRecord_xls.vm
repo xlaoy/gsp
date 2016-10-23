@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+
+<body id="_body">
+	<div>
+		<table border="1">
+			<thead>
+				<tr>
+					<th style="width:5%;">编号</th>
+					<th style="width:8%;">供应商编号</th>
+					<th style="width:15%;">供应商名称</th>
+					<th style="width:8%;">关联结算单号</th>
+					<th style="width:15%;">影院名称</th>
+					<th style="width:20%;">结算周期</th>
+					<th style="width:8%;">扣款金额</th>
+					<th style="width:15%;">扣款时间</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($buckle in $bucklelist)
+				<tr>
+					<td>$buckle.recordId</td>
+					<td>$buckle.vendorCode</td>
+					<td>$buckle.vendorName</td>
+					<td>$buckle.relateId</td>
+					<td>
+						$buckle.placeName<br>
+						#if($VmUtils.eq($buckle.special,'HEPING_OUTER'))
+							<span  style="color: #075F0A;">[ 大光明巨幕 ]</span>
+						#elseif($VmUtils.eq($buckle.special,'WANDA_ACTIVITY'))
+							<span  style="color: #075F0A;">[ 万达活动场 ]</span>
+						#elseif($VmUtils.eq($buckle.special,'WANDA_NOT_ACTIVITY'))
+							<span  style="color: #075F0A;">[ 万达非活动场 ]</span>
+						#end
+					</td>
+					<td>$buckle.cycle</td>
+					<td>$!CurrencyFmt.format($buckle.buckleAmount)</td>
+					<td>$!DateUtil.formatTimestamp($buckle.buckleTime)</td>
+				</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

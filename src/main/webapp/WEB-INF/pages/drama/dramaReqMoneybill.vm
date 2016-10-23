@@ -1,0 +1,95 @@
+<!Doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"></meta>
+<title>格瓦拉结算系统请款单</title>
+
+<style type="text/css">
+*{bolder0; margin:0; padding:0;}
+body{bolder0; margin:0; padding:0; font:16px/30px "微软雅黑","宋体";color: #333;}
+ul li{list-style:none;}
+.bill{ width:790px; margin:0 auto;}
+.bill h2{width:100%; text-align:center;margin-top:20px; font-size:28px; font-weight:normal; letter-spacing:3px; text-decoration:underline; }
+.bill_class{margin-top:20px;}
+.bill_class span{padding:0 1px;display:inline-block;}
+.bill_class span.crude{ font-size:16px; font-weight:bold;}
+.bill_class span.pty{min-width:40px; font-size:16px;}
+.center{ width:780px; border: 1px solid #333; padding-left:5px; font-size:16px;min-height:100px;}
+.center p{padding: 0 0 0 30px;}
+.center ul li{ width:98%;margin-left:1%;}
+.center ul li.ban{width:30%;display:inline-block;}
+.center ul li.bans{width:67%;display:inline-block;}
+.center ul li span{min-width:50px; }
+ul.approval li{ width:23%;display:inline-block; margin-top:5px;}
+.jan{margin-top:8px; min-height:50px;}
+      .jan ul li{ width:48%;margin-left:1%; display:inline-block; margin-top:10px;}
+.table{width:100%;}
+.table tr td{text-align:center;}
+</style>
+
+</head>
+<body>
+<div class="bill">
+<h2>格瓦拉结算系统请款单</h2>
+<div class="bill_class">
+<span class="crude">地区：</span><span class="pty" style="text-decoration: underline;">上海</span>
+<span class="crude">部门名称：</span><span class="pty"  style="text-decoration: underline;">财务</span>
+<span class="crude">部门编号：</span><span class="pty"  style="text-decoration: underline;">0103</span>
+<span class="crude">请款流水号：</span><span class="pty"  style="text-decoration: underline;">$!bill.recordid</span>
+<br>
+<span class="crude">请款人：</span><span class="pty"  style="text-decoration: underline;">$!user.nickname</span>
+<span class="crude">时间：</span><span class="pty"  style="text-decoration: underline;">$!reqDateStr</span>
+</div>
+
+	<div class="center">
+		<span>请款说明：</span>
+		<p>演出名称：$!{drama.dramaname}</p>
+		<p>项目类型：
+			#if($VmUtils.eq($!{drama.origin},"GW"))
+				格瓦拉
+			#elseif($VmUtils.eq($!{drama.origin},"WG"))
+				微格娱乐
+			#end
+			
+			#if($VmUtils.eq($!{drama.pretype},"M"))
+				非代售
+			#elseif($VmUtils.eq($!{drama.pretype},"E"))
+				代售
+			#end
+		</p>
+		<p>结算单号：$!{bill.recordid}</p>
+		<p>结算周期：$!{cycle}</p>
+		<p>结算金额：$!VmUtils.getTotal($!bill.payamount)</p>
+		<p>收款单位（个人）：$!{supplier.name}</p>
+		<p>银行账号：$!{bankAccount}</p>
+		<p>开户行：$!{bankName}</p>
+		<p>
+			<ul>
+				<li class="bans"><span> 请款金额合计（大写）：<span>$!chsFmtMoney</span></span></li>
+				<li class="ban"><span>请款金额合计：$!VmUtils.getTotal($!bill.payamount)</span><span></span></li>
+			</ul>
+		</p>
+	</div>
+	
+	<div class="center jan">
+		<ul>
+			<li><span>支付方式：<span>转账</span></span></li>
+			<li><span>账套编号：<span>$!{supplier.code}</span></span></li>
+		</ul>
+	</div>
+	
+	<div class="center">
+		<ul class="approval">
+			<li><span>主管审批：</span></li>
+			<li><span>部门审批：</span></li>
+			<li><span>联席CEO：</span></li>
+			<li><span>财务经理：</span></li>
+			<li><span>财务总监审批：</span></li>
+			<li><span>CEO审批：</span></li>
+			<li><span>出纳：</span></li>
+			<li><span>领款人：</span></li>
+		</ul>
+	</div>
+</div>
+</body>
+ </html>

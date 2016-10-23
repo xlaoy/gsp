@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>审核管理</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/iscroll.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/core.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+	
+</head>
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryAdjustSettlement")
+	#parse('WEB-INF/pages/nvaig/gathernvaig.vm')
+	<div class="mode_search">
+		<form action="${basePath}platform/settlement/queryAdjustSettlement.xhtml" method="post">
+			<h2>查询条件</h2>
+			<div>
+				影院名称:<input type="hidden" name="placeId" id="placeId" value="$!{params.placeId}"/>
+					  <input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}"/>		
+				<a href="javascript:document.forms[0].submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+			</div>
+		</form>
+	</div>
+	<div class="tableGear clear">
+		#if($sbs && $sbs.size() > 0)	
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th class="sortable" style="width:5%;"><span>编号</span><span class="carat"></span></th>
+					<th class="sortable" style="width:7%;"><span>单号</span><span class="carat"></span></th>
+					<th class="sortable" style="width:10%;"><span>结算单类型</span><span class="carat"></span></th>
+					<th class="sortable" style="width:10%;"><span>申请商户</span><span class="carat"></span></th>
+					<th class="sortable" style="width:10%;"><span>影院名称</span><span class="carat"></span></th>
+					<th class="sortable" style="width:5%;"><span>附件</span><span class="carat"></span></th>
+					<th class="sortable" style="width:15%;"><span>问题说明</span><span class="carat"></span></th>
+					<th class="sortable" style="width:10%;"><span>操作</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($sb in ${sbs})
+				#set($p=$pm.get($sb.configId))
+				#set($st=$stm.get($sb.recordId))
+				#set($ads=$settlead.get($sb.recordId))
+				<tr #if($ads) style="background-color: pink;" #end>
+					<td><span>
+						$!{foreach.count}
+						</span>
+					</td>
+					<td>
+						$!{st.relateId}
+					</td>
+					<td>
+						<span>
+						$!billTypeMap.get($sb.tag)
+						</span>
+					</td>
+					<td><span>
+						$!st.operator
+						</span>
+					</td>
+					<td><span>
+						$p.name
+						</span>
+					</td>
+					<td><span>
+						#set($otherInfo=$VmUtils.readJsonToMap($!{st.otherInfo}))
+						#if($VmUtils.isNotEmpty($!{otherInfo.get("attachePath")}))
+							<a href='$!{fileURL}$!{otherInfo.get("attachePath")}'>附件</a>
+						#end
+						</span>
+					</td>
+					<td>
+						$!st.comments
+					</td>
+					<td>
+						#if($VmUtils.eq($p.recordId,"5369,TICKET"))
+							<a href="${basePath}platform/wp/queryWPBill.xhtml?recordId=$!{st.relateId}">查看详情</a>
+						#else
+							<a href="${basePath}platform/settlement/settlementbills.xhtml?recordId=$!{st.relateId}">查看详情</a>
+						#end
+					</td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="12">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	#else
+	<div class="ui_warning">查询条件范围内，没有数据。</div>
+	#end
+	
+</div>
+</body>
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	#if($r && $r.size() > 0)
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	#end
+	$$('.tips').amTips();
+	completer = new Autocompleter.Local($("placeFirstLetter"), parent.pdata, {
+		'delay': 100,
+		'maxChoices': 10,
+		'minLength':0,
+		'requestid':'placeId',
+		'filter': function() {
+			var vl = this.queryValue;
+			var values = vl.trim().split(/ +/);
+			return this.tokens.filter(function(token){
+				var result = values.every(function(v){
+					var reg = new RegExp(v.escapeRegExp(),'i');
+					return reg.test(token.pinyin) || reg.test(token.name);
+				});
+				return result;
+			});
+		},
+		'injectChoice': function(choice){
+			parent.myGenChoice(this,choice);
+		}
+	});
+	lockMenu();
+})
+
+function confirmSettleConfig(recordId){
+	gewa.util.issure('','确认通过此结算配置吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+		var url = "${basePath}platform/settleconfig/approveConfig.xhtml";
+		var values = {"recordId":recordId};
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask();
+			if(result.success == true){
+				gewaUtil.alert("已通过， 系统在两小时之内为该场馆生成结算单.！", function(){window.location.reload()});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+	
+}
+</script>
+</html>

@@ -1,0 +1,77 @@
+<div class="mod_hd">$!{place.name}</div>
+#if($resultMap && $resultMap.size() > 0)
+<div class="tableGear clear" style="height:300px; overflow-y:auto; overflow-x:hidden;">
+	<table class="tableGear" id="_tableGear">
+		<thead>
+			<tr>
+				<th class="sortable"><span>编号</span><span class="carat"></span></th>
+				<th class="sortable"><span>场次ID</span><span class="carat"></span></th>
+				<th class="sortable"><span>电影名称</span><span class="carat"></span></th>
+				<th class="sortable"><span>影厅</span><span class="carat"></span></th>
+				<th class="sortable date"><span>放映时间</span><span class="carat"></span></th>
+				<th class="sortable"><span>成功票数</span><span class="carat"></span></th>
+				<th class="sortable"><span>单票差价</span><span class="carat"></span></th>
+				<th class="sortable"><span>总计差价</span><span class="carat"></span></th>
+			</tr>
+		</thead>
+		<tbody>
+		#set($totalQuantity=0)
+		#set($totalAmount=0)
+			#foreach($m in $resultMap)
+			#set($play=$ppim.get($m.get("play_id")))
+			<tr>
+				<td ><span>
+					$!{foreach.count}
+					</span>
+				</td>
+				<td ><span>
+					<a href="${basePath}platform/gewaorder/queryGewarOrder.xhtml?playId=$m.play_id&placeId=$!{place.placeId}">$m.play_id</a>
+					</span>
+				</td>
+				<td ><span>
+					$play.movieName
+					</span>
+				</td>
+				<td ><span>
+					$play.roomName
+					</span>
+				</td>
+				<td ><span>
+					$play.playTime
+					</span>
+				</td>
+				<td ><span>
+					#set($quantity=$m.get("sum"))
+					$quantity
+					#set($totalQuantity=$totalQuantity+$quantity)
+					</span>
+				</td>
+				<td ><span>
+					$play.actualPrice
+					</span>
+				</td>
+				<td ><span>
+					#set($pricedAmount=$VmUtils.calculate($quantity, $play.actualPrice, "*"))
+					$pricedAmount
+					#set($totalAmount=$totalAmount+$pricedAmount)
+					</span>
+				</td>
+			</tr>
+			#end
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="11">
+				<span style="float:left"></span>
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+</div>
+<div class="ui_warning">合计【成功票数：$totalQuantity 张、差价合计：$totalAmount 元】</div>
+<script>
+	new TableGear("_tableGear");
+</script>
+#else
+<div class="ui_warning">查询条件范围内，没有数据。</div>
+#end

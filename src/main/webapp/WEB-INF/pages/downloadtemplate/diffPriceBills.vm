@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>异价账单</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	</head>
+<body>
+	<table border="1">
+		<thead>
+			<tr><th colspan="5" height="32" valign="middle">$!{place.name} 异价账单</th></tr>
+		</thead>
+		
+		<tbody>
+		
+			<tr>
+				<th width="110" height="22" valign="middle"><span>单号</span></th>
+				<th width="110" height="22" valign="middle"><span>对账周期</span></th>
+				<th width="110" height="22" valign="middle"><span>异价票数量</span></th>
+				<th width="110" height="22" valign="middle"><span>异价票退票数量</span></th>
+				<th width="110" height="22" valign="middle"><span>异价差额</span></th>
+			</tr>
+			#if($dpbList && $dpbList.size() > 0)
+				#foreach($dpb in ${dpbList})
+				<tr>
+					<td  align="left" height="22" valign="middle">
+						$!{dpb.checkBillId}
+					</td>
+					<td  align="left" height="22" valign="middle">
+						[ $!DateUtil.formatTimestamp($!{dpb.start}) -
+							$!DateUtil.formatTimestamp($!{dpb.end})]
+					</td>
+					<td  align="right" height="22" valign="middle">
+						$!{dpb.diffOrderNum}
+					</td>
+					<td  align="right" height="22" valign="middle">
+						$!{dpb.diffRefundNum}
+					</td>
+					<td  align="right" height="22" valign="middle">
+						$!CurrencyFmt.format($dpb.diffAmount)
+					</td>
+				</tr>
+				#end
+			#else
+				<tr>
+					<td  align="left" height="22" valign="middle">
+						&nbsp;
+					</td>
+					<td  align="right" height="22" valign="middle">
+						&nbsp;
+					</td>
+					<td  align="right" height="22" valign="middle">
+						&nbsp;
+					</td>
+					<td  align="right" height="22" valign="middle">
+						&nbsp;
+					</td>
+					<td  align="right" height="22" valign="middle">
+						&nbsp;
+					</td>
+				</tr>
+			#end
+		</tbody>
+		
+		<tfoot>
+			<tr>
+				<td colspan="2">合计</td>
+				<td>$!{diffPriceOrderNumber}</td>
+				<td>$!{diffRefundOrderNumber}</td>
+				<td>$!{diffPriceAmount}</td>
+			</tr>
+		</tfoot>
+	</table>
+</body>
+</html>

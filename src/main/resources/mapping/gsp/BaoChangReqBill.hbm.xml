@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.BaoChangReqBill" table="bc_req_bill" schema="gsp">
+       <id name="recordId" type="long">
+            <column name="record_id"  />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_req_money</param>
+			</generator>
+       </id>
+       <property name="pjtCode" column="pjt_code" type="java.lang.String" />
+       <property name="relatedId" column="related_id" type="java.lang.String" />
+       <property name="movieName" column="movie_name" type="java.lang.String" />
+       <property name="pjtDesc" column="pjt_desc" type="java.lang.String" />
+       <property name="vendorNo" column="vendor_no" type="java.lang.String" />
+       <property name="vendorName" column="vendor_name" type="java.lang.String" />
+       <property name="amount" column="amount" type="java.lang.Double" />
+       <property name="optUser" column="opt_user" type="java.lang.String" />
+       <property name="reqTime" column="req_time" type="java.sql.Timestamp" />
+       <property name="placeId" column="place_id" type="java.lang.String" />
+        
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<paybill gsprecordId="$!{pb.gsprecordId}">
+		<body>
+					<vendorNo>$!{pb.vendorNo}</vendorNo>
+					<iID></iID>
+					<cBillID>$!{pb.cBillID}</cBillID>
+					<dBillDate>$!pb.dBillDate</dBillDate>
+					<mOriginMoney>$!pb.mOriginMoney</mOriginMoney>
+					<cPaySpeed>$!pb.cPaySpeed</cPaySpeed>
+					<sExchRate>$!pb.sExchRate</sExchRate>
+					<mNativeMoney>$!pb.mNativeMoney</mNativeMoney>
+					<cMoneyType>$!pb.cMoneyType</cMoneyType>
+					<cAccountFrom>$!pb.cAccountFrom</cAccountFrom>
+					<cAccountTo>$!pb.cAccountTo</cAccountTo>
+					<cComeFrom>$!pb.cComeFrom</cComeFrom>
+					<cOperator>$!pb.cOperator</cOperator>
+					<cApprover>$!pb.cApprover</cApprover>
+					<cExaminer>$!pb.cExaminer</cExaminer>
+					<iBillStatus>$!pb.iBillStatus</iBillStatus>
+					<cSettle>$!pb.cSettle</cSettle>
+					<cPurpose>$!pb.cPurpose</cPurpose>
+					<cAppend>$!pb.cAppend</cAppend>
+					<cRemark>$!pb.cRemark</cRemark>
+		</body>
+	</paybill>

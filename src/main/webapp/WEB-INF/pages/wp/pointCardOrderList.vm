@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>微票月账单</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+
+<style type="text/css">
+html{background:#fff;}
+</style>
+
+</head>
+
+<body id="_body">
+<div class="inner">
+	<div class="mode_search">
+	#if($VmUtils.eq($!etype, "wpc"))
+		单号：$!{pcsb.recordid}，系统：微票系统，时间：$!DateUtil.formatTimestamp($!{pcsb.starttime}) - $!DateUtil.formatTimestamp($!{pcsb.endtime})
+	#end
+	#if($VmUtils.eq($!etype, "ppc"))
+		单号：$!{pcpb.recordid}，影院：$!{pcpb.cinemaname}，时间：$!DateUtil.formatTimestamp($!{pcpb.starttime}) - $!DateUtil.formatTimestamp($!{pcpb.endtime})
+	#end
+	</div>
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th>影院名称</th>
+					<th>外部订单号</th>
+					<th>内部订单号</th>
+					<th>订单类型</th>
+					<th>订单状态</th>
+					<th>订票数</th>
+					<th>外部下单时间</th>
+					<th>放映时间</th>
+					<th>卡号</th>
+					<th>卡券类型</th>
+					<th>卡支付金额</th>
+					<th>外部支付金额</th>
+					<th>外部订单总金额</th>
+					<th>其他信息</th>
+					<th>退款时间</th>
+					<th>退款金额</th>
+					<th>退款类型</th>
+					<th>退款原因</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($o in ${orderlist})
+				<tr>
+					<td >$!{o.cinemaname}</td>
+					<td >$!{o.outtradeno}</td>
+					<td >$!{o.tradeno}</td>
+					<td >$!{o.ordertype}</td>
+					<td >$!{o.status}</td>
+					<td >$!{o.ticketnum}</td>
+					<td >$!{o.ordertime}</td>
+					<td >$!{o.playtime}</td>
+					<td >$!{o.cardno}</td>
+					<td >$!{o.cardtype}</td>
+					<td >$!{o.carduseamount}</td>
+					<td >$!{o.outamount}</td>
+					<td >$!{o.orderamount}</td>
+					<td >$!{o.otherinfo}</td>
+					<td >$!{refundmap.get($o.otherinfo).get("refundtime")}</td>
+					<td >$!{refundmap.get($o.otherinfo).get("amount")}</td>
+					<td >$!{refundmap.get($o.otherinfo).get("refundtype")}</td>
+					<td >$!{refundmap.get($o.otherinfo).get("refundreason")}</td>
+				</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+</div>
+
+</body>
+</html>

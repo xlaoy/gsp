@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html style="background: #fff;">
+<head>
+<title>演出</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+<style type="text/css">
+.s{background:#f0f0f0;}
+</style>
+</head>
+
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryDrama")
+	#parse('WEB-INF/pages/nvaig/dramadatanvaig.vm')
+	
+	<div class="mode_search">
+		<form action="${basePath}platform/drama/queryDrama.xhtml" method="post" id="dramaForm">
+				<h2>查询条件</h2><br>
+				<div>
+					项目版本：
+					<input type="text" class="text" name="dramaversionid" id="dramaversionid" value="$!{params.dramaversionid}" style="width: 150px;"/>
+					&nbsp;&nbsp;
+					项目id：
+					<input type="text" class="text" name="recordid" id="recordid" value="$!{params.recordid}" style="width: 150px;"/>
+					&nbsp;&nbsp;
+					项目组织：
+					<select id="origin" name="origin" class="text" style="width: 100px;">
+						<option value="">全部</option>
+						<option value="GW"  #if($VmUtils.eq($!{params.origin},"GW")) selected="selected" #end>格瓦拉</option>
+						<option value="WG"  #if($VmUtils.eq($!{params.origin},"WG")) selected="selected" #end>微格娱乐</option>
+						<option value="NAN"  #if($VmUtils.eq($!{params.origin},"NAN")) selected="selected" #end>未知</option>
+					</select>
+					&nbsp;&nbsp;
+					项目名称：
+					<input type="text" class="text" name="dramaname" id="dramaname" value="$!{params.dramaname}" style="width: 300px;"/>
+					&nbsp;&nbsp;
+					<a href="javascript:$('dramaForm').submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="javascript:showdramaMark();" class="button minBt whiteBt"><span>手动同步演出</span></a>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="javascript:showplayitemMark();" class="button minBt whiteBt"><span>手动同步场次</span></a>
+				</div>
+		</form>
+	</div>
+	
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th style="width:5%;">序号</th>
+					<th style="width:10%;">项目版本</th>
+					<th style="width:10%;">项目id</th>
+					<th>项目名称</th>
+					<th style="width:10%;">代售类型</th>
+					<th style="width:10%;">项目组织</th>
+					<th style="width:10%;">添加时间</th>
+					<th style="width:10%;">开始演出时间</th>
+					<th style="width:10%;">结束时间</th>
+					<th style="width:10%;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($map in ${mapList})
+				<tr>
+					<td>$!{foreach.count}</td>
+					<td>$!{map.get("dramaversionid")}</td>
+					<td>$!{map.get("recordid")}</td>
+					<td>$!{map.get("dramaname")}</td>
+					<td>
+						#if($VmUtils.eq($!{map.get("pretype")},"M"))
+							非代售
+						#elseif($VmUtils.eq($!{map.get("pretype")},"E"))
+							代售
+						#end	
+					</td>
+					<td>
+						#if($VmUtils.eq($!{map.get("origin")},"GW"))
+							格瓦拉
+						#elseif($VmUtils.eq($!{map.get("origin")},"WG"))
+							微格娱乐
+						#else
+							$!{map.get("origin")}
+						#end
+					</td>
+					<td>$!DateUtil.formatTimestamp($!{map.get("addtime")})</td>
+					<td>$!DateUtil.formatTimestamp($!{map.get("starttime")})</td>
+					<td>$!DateUtil.formatTimestamp($!{map.get("endtime")})</td>
+					<td>
+						<a href="${basePath}platform/drama/queryDramaConfig.xhtml?dramaid=$!{map.get('recordid')}&dramaversionid=$!{map.get('dramaversionid')}">查看结算配置</a>
+						<br><a href="javascript:loadplayitem('$!{map.get("dramaversionid")}');">查看场次信息</a>
+					</td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="10">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
+
+<div id="playitemMark" style="display:none; height: 300px;overflow-y:auto;"></div>
+
+<div id="getdramaMark" style="display:none; height: 150px;overflow-y:auto;">
+	<p style="font-weight: bold; color: #E49212">手动同步演出</p>
+	<p style="height: 50px; line-height: 50px;">
+		<span style="margin-left: 30px;">项目id：</span>
+		<input type="text" class="text" id="mdramaid"/>
+	</p>
+	<p style="height: 50px; line-height: 50px;">
+		<span  style="margin-left: 60px; margin-right: 30px; cursor: pointer;">
+			<a href="javascript:getDramaById();" class="button minBt whiteBt">同&nbsp;&nbsp;步</a>
+		</span>
+		<a href="javascript:disposegetdramaMark();" class="button minBt whiteBt">取&nbsp;&nbsp;消</a>	
+	</p>
+</div>
+
+<div id="getplayitemMark" style="display:none; height: 150px;overflow-y:auto;">
+	<p style="font-weight: bold; color: #E49212">手动同步场次</p>
+	<p style="height: 50px; line-height: 50px;">
+		<span style="margin-left: 30px;">项目id：</span>
+		<input type="text" class="text" id="pdramaid"/>
+	</p>
+	<p style="height: 50px; line-height: 50px;">
+		<span  style="margin-left: 60px; margin-right: 30px; cursor: pointer;">
+			<a href="javascript:getPlayItemById();" class="button minBt whiteBt">同&nbsp;&nbsp;步</a>
+		</span>
+		<a href="javascript:disposegetplayitemMark();" class="button minBt whiteBt">取&nbsp;&nbsp;消</a>	
+	</p>
+</div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	$$('.tips').amTips();
+	lockMenu();
+});
+
+function lockMenu(){
+	var menus = parent.document.getElements('#navleftid a');
+	if(menus)menus.filter(function(link){
+		link.removeClass('select');
+		return link.get('href').indexOf(document.location.pathname) >= 0;
+	}).addClass('select');
+}
+
+/**
+ * 弹出手动同步演出框
+ */
+function showdramaMark() {
+	gewa.util.maskContent('','getdramaMark','',360,'getdramaMark');
+}
+function disposegetdramaMark() {
+	document.getElementById('mdramaid').value = "";
+	gewa.util.container['getdramaMark'].dispose('getdramaMark');
+}
+function getDramaById() {
+	var dramaid = document.getElementById('mdramaid').value;
+	if(dramaid == null || dramaid == "") {
+		return;
+	}
+	var reg = new RegExp("^[0-9]*$");
+	if(!reg.test(dramaid)) {
+		return;
+	}
+	var url = "${basePath}/platform/drama/syncDramaByDramaid.xhtml";
+	var values = {"dramaid":dramaid};
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask(mid);
+		if(result.success == true){
+			gewaUtil.alert(result.retval, function(){$('dramaForm').submit();});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	});
+}
+
+/**
+ * 弹出手动同步场次框
+ */
+function showplayitemMark() {
+	gewa.util.maskContent('','getplayitemMark','',360,'getplayitemMark');
+}
+function disposegetplayitemMark() {
+	document.getElementById('pdramaid').value = "";
+	gewa.util.container['getplayitemMark'].dispose('getplayitemMark');
+}
+function getPlayItemById() {
+	var dramaid = document.getElementById('pdramaid').value;
+	if(dramaid == null || dramaid == "") {
+		return;
+	}
+	var reg = new RegExp("^[0-9]*$");
+	if(!reg.test(dramaid)) {
+		return;
+	}
+	var url = "${basePath}/platform/drama/syncPlayItemByDramaid.xhtml";
+	var values = {"dramaid":dramaid};
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask(mid);
+		if(result.success == true){
+			gewaUtil.alert(result.retval, function(){$('dramaForm').submit();});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	});
+}
+
+
+/**
+ * 查看场次
+ */
+function loadplayitem(dramaversionid){
+	var url = '${basePath}/platform/drama/queryPlayItem.xhtml';
+	var values = {"dramaversionid":dramaversionid};
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('playitemMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','playitemMark','版本' + dramaversionid + '场次明细' ,500,'playitemMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+</script>
+</body>
+</html>

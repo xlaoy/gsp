@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<style>
+#detailtable{font-size: 15px;}
+#detailtable tr{height: 40px; line-height: 40px;}
+</style>
+<form style="margin: 0px;padding: 0px;" id="invoicedetailForm" accept-charset="UTF-8">
+	<table id="detailtable">
+		<tr>
+			<td colspan="2"><span style="color: red; font-size: 14px; line-height: 16px;">注：结款时，需向格瓦拉提供增值税专用发票。若无法开具专票，请选择普票并备注好说明，以便及时沟通。</span></td>
+		</tr>
+		<tr>
+			<td width="100px;" align="right" valign="top">影院名称：</td>
+			<td>$!{place.name}</td>
+		</tr>
+		<tr>
+			<td width="100px;" align="right">发票类型：</td>
+			<td>
+				<select id="minvoicetype"  style="width: 200px;">
+					<option value="ZYFP" #if($VmUtils.eq($!invconfig.invoicetype,"ZYFP")) selected="selected" #end>增值税专用发票</option>
+					<option value="PTFP" #if($VmUtils.eq($!invconfig.invoicetype,"PTFP")) selected="selected" #end>增值税普通发票</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px;" align="right">税率：</td>
+			<td>
+				<select id="mtaxrate"  style="width: 200px;" >
+					<option value="">=选择=</option>
+					<option value="0" #if($!invconfig.taxrate == 0) selected="selected" #end>0%</option>
+					<option value="3" #if($!invconfig.taxrate == 3) selected="selected" #end>3%</option>
+					<option value="6" #if($!invconfig.taxrate == 6) selected="selected" #end>6%</option>
+					<option value="17" #if($!invconfig.taxrate == 17) selected="selected" #end>17%</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px;" align="right">税务资质：</td>
+			<td>
+				<select id="mtaxcondition"  style="width: 200px;" >
+					<option value="">=选择=</option>
+					<option value="XGMNSR" #if($VmUtils.eq($!invconfig.taxcondition,"XGMNSR")) selected="selected" #end>小规模纳税人</option>
+					<option value="YBNSR" #if($VmUtils.eq($!invconfig.taxcondition,"YBNSR")) selected="selected" #end>一般纳税人</option>
+					<option value="JYZS" #if($VmUtils.eq($!invconfig.taxcondition,"JYZS")) selected="selected" #end>一般纳税人（简易征收）</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px;" align="right" valign="top">备注：</td>
+			<td>
+				<textarea rows="5" cols="25" id="mcontent">$!invconfig.content</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><a class="button largeBt mr20" href="javascript:void();" onclick="saveconfig();"><span style="width:70px;">保存</span></a></td>
+		</tr>
+	</table>
+	<input type="hidden" name="mplaceid" id ="mplaceid" value="$!{place.recordId}"/>
+	<input type="hidden" name="minvoiceid" id ="minvoiceid" value="$!{invconfig.recordid}"/>
+</form>

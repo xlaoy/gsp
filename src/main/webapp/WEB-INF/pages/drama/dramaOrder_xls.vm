@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+	<div>
+		<table border="1">
+			<thead>
+				<tr>
+					<th>演出名称</th>
+					<th>订单号</th>
+					<th>订单状态</th>
+					<th>下单时间</th>
+					<th>付款时间</th>
+					<th>支付方式</th>
+					<th>用户id</th>
+					<th>用户名</th>
+					<th>用户组</th>
+					<th>其他费用</th>
+					<th>优惠原因</th>
+					<th>订单来源</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($order in ${onlineorderlist})
+					<tr>
+						<td>$!{drama.dramaname}</td>
+						<td style="vnd.ms-excel.numberformat:@">$!{order.tradeno}</td>
+						<td>
+							#if($VmUtils.eq($!{order.status},"paid_success"))
+								交易成功
+							#elseif($VmUtils.eq($!{order.status},"paid_return"))
+								退票成功
+							#end
+						</td>
+						<td style="vnd.ms-excel.numberformat:@">$!DateUtil.formatTimestamp($!{order.ordertime})</td>
+						<td style="vnd.ms-excel.numberformat:@">$!DateUtil.formatTimestamp($!{order.paidtime})</td>
+						<td></td>
+						<td style="vnd.ms-excel.numberformat:@">$!{order.memberid}</td>
+						<td></td>
+						<td></td>
+						<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{order.otherfee})</td>
+						<td>$!{order.disreason}</td>
+						<td>线上</td>
+					</tr>
+				#end
+				#foreach($order in ${offlineorderlist})
+					<tr>
+						<td>$!{drama.dramaname}</td>
+						<td style="vnd.ms-excel.numberformat:@">$!{order.tradeno}</td>
+						<td>
+							#if($VmUtils.eq($!{order.status},"checked"))
+								已批准
+							#end
+						</td>
+						<td style="vnd.ms-excel.numberformat:@">$!DateUtil.formatTimestamp($!{order.ordertime})</td>
+						<td style="vnd.ms-excel.numberformat:@">$!DateUtil.formatTimestamp($!{order.paidtime})</td>
+						<td>
+							#if($VmUtils.eq($!{order.paymethod},"ZFB"))
+								支付宝
+							#elseif($VmUtils.eq($!{order.paymethod},"ZZ"))
+								银行转账
+							#elseif($VmUtils.eq($!{order.paymethod},"XJ"))
+								现金
+							#elseif($VmUtils.eq($!{order.paymethod},"SK"))
+								刷卡
+							#elseif($VmUtils.eq($!{order.paymethod},"GSJS"))
+								公司结算
+							#end
+						</td>
+						<td></td>
+						<td>$!{order.username}</td>
+						<td></td>
+						<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{order.otherfee})</td>
+						<td></td>
+						<td>线下</td>
+					</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

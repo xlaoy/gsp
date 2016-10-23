@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>通道费回滚数据查询</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+
+	<style type="text/css">
+		#center{ 
+		width: 100%;
+		height:100px;
+		background:#898989;
+		line-height:100px;
+		font-size:24;
+		font-weight:900;
+		}
+		#dataShow{
+			line-height:30px;
+			height: 700px;
+			overflow: scroll;
+			background: #fff
+		}
+		td{
+			height: 30px;
+			border: 1px solid #aaa;
+			width: 150px;
+		}
+	</style>
+	<body>
+		<div id="center">
+			<form action="${basePath}queryRollBackDate.xhtml"  method="post" id="queryForm">
+				<label for="status">请选择结算单更新时间</label>
+				<input style="width:200px;" name="updatestartTime" id="updatestart" value="$!{updatestartTime}" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'updateend\')||\'2020-10-01\'}'})"
+									onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" />至
+				<input style="width:200px;" name="updateendTime" id="updateend" value="$!{updateendTime}" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'updatestart\')}',maxDate:'2020-10-01'})" 
+									onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" />
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<label for="status">结算单状态</label>
+				<input id="status" type="text" value="NEW" disabled="disabled">
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<label for="type">结算单类型</label>
+				<input id="type" type="text" value="CHANNEL" disabled="disabled">
+				<input type="submit" value="查询" style="width: 100px;">
+			</form>
+			<div id="dataShow">
+				<table>
+					<thead>
+						<tr>
+							<td>record_id</td>
+							<td>start_time</td>
+							<td>end_time</td>
+							<td>relate_id</td>
+							<td>order_total_number</td>
+							<td>order_total_amount</td>
+							<td>refund_total_number</td>
+							<td>refund_total_amount</td>
+							<td>adjust_total_number</td>
+							<td>adjust_total_amount</td>
+							<td>status</td>
+							<td>update_time</td>
+							<td>last_operator</td>
+							<td>config_id</td>
+							<td>tag</td>
+							<td>unrefund_total_number</td>
+							<td>unrefund_total_amount</td>
+							<td>previous_refund_amount</td>
+							<td>previous_refund_number</td>
+							<td>diff_price_number</td>
+							<td>diff_price_amount</td>
+							<td>succ_ticket_number</td>
+							<td>succ_ticket_amount</td>
+						</tr>
+					</thead>
+					<tbody>
+						#foreach($sb in ${sbList})
+							<tr>
+								<td>$!{sb.recordId}</td>
+								<td>$!{sb.startTime}</td>
+								<td>$!{sb.endTime}</td>
+								<td>$!{sb.relateId}</td>
+								<td>$!{sb.orderTotalNumber}</td>
+								<td>$!{sb.orderTotalAmount}</td>
+								<td>$!{sb.refundTotalNumber}</td>
+								<td>$!{sb.refundTotalAmount}</td>
+								<td>$!{sb.adjustTotalNumber}</td>
+								<td>$!{sb.adjustTotalAmount}</td>
+								<td>$!{sb.status}</td>
+								<td>$!{sb.updateTime}</td>
+								<td>$!{sb.lastOperator}</td>
+								<td>$!{sb.configId}</td>
+								<td>$!{sb.tag}</td>
+								<td>$!{sb.unrefundTotalNumber}</td>
+								<td>$!{sb.unrefundTotalAmount}</td>
+								<td>$!{sb.previousRefundAmount}</td>
+								<td>$!{sb.previousRefundNumber}</td>
+								<td>$!{sb.diffPriceNumber}</td>
+								<td>$!{sb.diffPriceAmount}</td>
+								<td>$!{sb.succTicketNumber}</td>
+								<td>$!{sb.succTicketAmount}</td>
+							</tr>
+						#end
+					</tbody>
+				</table>
+			</div>
+			共 $!{sbList.size()} 条记录 &nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="hidden" value="$!{strb}" id="slIds"/>
+			<input type="button" onclick="rollback();" value="开始回滚数据" style="width: 100px; height: 30px;"/>
+		</div>
+	</body>
+	
+<script type="text/javascript">
+	function rollback() {
+		var slIds = $('slIds').value;
+		if(slIds == null || slIds == "") {
+			gewaUtil.alert("没有要回滚的结算单号！");
+			return;
+		}
+		gewa.util.issure('','确认要回滚[' + slIds + ']这些结算单号吗？' , '提示', 420, 'keys', function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+			var url = "${basePath}rollBack.xhtml";
+			var values = {"slIds":slIds};
+			var mid = "T" + Date.now();
+			GewaraUtil.mask('',mid);
+			GewaraUtil.sendRequest(url, values, function(result){
+				GewaraUtil.unmask(mid);
+				if(result.success == true){
+					gewaUtil.alert("回滚成功！", function(){location = "${basePath}gotoRollBack.xhtml"});
+				}else{
+					gewaUtil.alert(result.msg);
+				}
+			});
+			gewa.util.container['keys'].dispose('keys');
+		});
+	}
+</script>
+</html>

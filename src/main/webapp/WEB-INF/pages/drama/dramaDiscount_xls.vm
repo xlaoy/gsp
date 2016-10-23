@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+	<div>
+		<table border="1">
+			<thead>
+				<tr>
+					<th>订单号</th>
+					<th>tag</th>
+					<th>卡券类型</th>
+					<th>销售类型</th>
+					<th>金额</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($discount in ${discountlist})
+					<tr>
+						<td style="vnd.ms-excel.numberformat:@">$!{discount.relatedid}</td>
+						<td>$!{discount.tag}</td>
+						<td>$!{discount.cardtype}</td>
+						<td>$!{discount.soldtype}</td>
+						<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{discount.amount})</td>
+					</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

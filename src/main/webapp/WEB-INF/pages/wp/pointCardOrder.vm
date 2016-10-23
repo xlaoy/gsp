@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>微票月账单</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+
+<style type="text/css">
+html{background:#fff;}
+</style>
+
+</head>
+
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryPointCardOrder")
+	#parse('WEB-INF/pages/nvaig/wpnvaig.vm')
+	
+	<div class="mode_search">
+		<form action="${basePath}platform/pointcard/queryPointCardOrder.xhtml" method="post">
+			<div >
+				<input type="hidden" name="partnerid" value="50001886"/>
+				合作商订单号：<input type="text" class="text" name="outtradeno" id="outtradeno" value="$!{outtradeno}"/> 
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				格瓦拉订单号：<input type="text" class="text" name="tradeno" id="tradeno" value="$!{tradeno}"/> 
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<a href="javascript:document.forms[0].submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+			</div>
+		</form>
+		
+		<br>
+		<h2>订单详情：</h2>
+		#if($o)
+		<table class="tableGear">
+			<tr>
+				<td width="10%;">合作商订单号：</td>
+				<td width="20%;">$!{o.outtradeno}</td>
+				<td width="10%;">内部订单号：</td>
+				<td width="20%;">$!{o.tradeno}</td>
+				<td width="10%;">合作商id：</td>
+				<td >$!{o.partnerid}</td>
+			</tr>
+			<tr>
+				<td width="10%;">影院id：</td>
+				<td width="20%;">$!{o.cinemaid}</td>
+				<td width="10%;">影院名称：</td>
+				<td width="20%;">$!{o.cinemaname}</td>
+				<td width="10%;">订单类型：</td>
+				<td >$!{o.ordertype}</td>
+			</tr>
+			<tr>
+				<td width="10%;">订单状态：</td>
+				<td width="20%;">$!{o.status}</td>
+				<td width="10%;">订票数：</td>
+				<td width="20%;">$!{o.ticketnum}</td>
+				<td width="10%;">外部下单时间：</td>
+				<td >$!DateUtil.formatTimestamp($!{o.ordertime})</td>
+			</tr>
+			<tr>
+				<td width="10%;">放映时间：</td>
+				<td width="20%;">$!DateUtil.formatTimestamp($!{o.playtime})</td>
+				<td width="10%;">卡号：</td>
+				<td width="20%;">$!{o.cardno}</td>
+				<td width="10%;">卡券类型：</td>
+				<td >$!{o.cardtype}</td>
+			</tr>
+			<tr>
+				<td width="10%;">卡支付金额：</td>
+				<td width="20%;">$!{o.carduseamount}</td>
+				<td width="10%;">外部支付金额：</td>
+				<td width="20%;">$!{o.outamount}</td>
+				<td width="10%;">外部订单总金额：</td>
+				<td >$!{o.orderamount}</td>
+			</tr>
+			<tr>
+				<td width="10%;">其他信息：</td>
+				<td colspan="5">$!{o.otherinfo}</td>
+			</tr>
+		</table>
+		#else
+		<div class="ui_warning">没有订单数据。</div>
+		#end
+		<br>
+		<h2>支付流水：</h2>
+		<table class="tableGear">
+			<thead>
+				<tr>
+					<th style="width:7%;">合作商key</th>
+					<th style="width:10%;">本次交易时间</th>
+					<th style="width:7%;">交易类型</th>
+					<th style="width:7%;">支付卡券id</th>
+					<th style="width:7%;">本次交易金额</th>
+					<th style="width:10%;">退款时间</th>
+					<th style="width:7%;">退款类型</th>
+					<th >退款原因</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($paymap in ${paymentlist})
+				<tr>
+					<td>$!{paymap.get("partnerkey")}</td>
+					<td>$!DateUtil.formatTimestamp($!{paymap.get("tradetime")})</td>
+					<td>$!{paymap.get("tradetype")}</td>
+					<td>$!{paymap.get("relatedid")}</td>
+					<td>$!{paymap.get("amount")}</td>
+					<td>$!DateUtil.formatTimestamp($!{paymap.get("refundtime")})</td>
+					<td>$!{paymap.get("refundtype")}</td>
+					<td>$!{paymap.get("refundreason")}</td>
+				</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	lockMenu();
+});
+
+function lockMenu(){
+	var menus = parent.document.getElements('#navleftid a');
+	if(menus)menus.filter(function(link){
+		link.removeClass('select');
+		return link.get('href').indexOf(document.location.pathname) >= 0;
+	}).addClass('select');
+}
+</script>
+
+</body>
+</html>

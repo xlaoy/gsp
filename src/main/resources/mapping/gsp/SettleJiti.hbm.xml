@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.SettleJiti" table="settle_jiti" schema="gsp">
+    
+       <id name="recordid" type="long">
+            <column name="recordid"  />
+            <generator class="assigned" />
+       </id>
+       
+       <property name="placename"		column="placename"	type="string" />
+       <property name="vendername"		column="vendername"	type="string" />
+       <property name="vendercode"		column="vendercode"	type="string" />
+       <property name="billtype"		column="billtype"	type="string" />
+       <property name="special"		column="special"	type="string" />
+       <property name="playtype"		column="playtype"	type="string" />
+       <property name="starttime"		column="starttime"	type="timestamp" />
+       <property name="endtime"		column="endtime"	type="timestamp" />
+       <property name="num"		column="num"	type="long" />
+       <property name="amount"		column="amount"	type="double" />
+       <property name="kpamount"		column="kpamount"	type="double" />
+       <property name="taxrate"		column="taxrate"	type="double" />
+       <property name="taxamount"		column="taxamount"	type="double" />
+       <property name="exclutax"		column="exclutax"	type="double" />
+       <property name="updatetime"		column="updatetime"	type="timestamp" />
+        
+    </class>
+</hibernate-mapping>

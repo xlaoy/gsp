@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>结算详细设置</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/iscroll.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/core.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+	<script type="text/javascript">
+	</script>
+</head>
+<body id="_body">
+	<div class="mod_hd">
+		<form id="submitform" >
+			<div class="mode_search clear">
+				<h2>$!{place.name}</h2>
+				<input class="text" type="hidden" name="recordId" value="$!{place.recordId}" />
+				<p>
+				<p>首次结算日期：<input class="text" name="firstSettle" id="firstSettle" value="$!DateUtil.formatDate($!{config.firstSettle})" 
+									onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" />第一次结算日期，按结算周期累加
+				</p>
+				<p>
+				结算方式：<select name="settleBase" id="settleBase">
+							<option value="ORDERTIME" #if(${VmUtils.eq("ORDERTIME",$!{config.settleBase})}) selected="selected" #end>下单时间</option>
+							<option value="USETIME" #if(${VmUtils.eq("USETIME",$!{config.settleBase})}) selected="selected" #end>消费时间</option>
+						</select>
+				结算时点：<select name="settleTime" id="settleTime">
+							<option value="00:00" #if(${VmUtils.eq("00:00",$!{config.settleTime})}) selected="selected" #end>00:00-00:00</option>
+							<option value="06:00" #if(${VmUtils.eq("06:00",$!{config.settleTime})}) selected="selected" #end>06:00-06:00</option>
+						</select>
+				</p>
+				<label>结算周期：</label>
+				<div id="inputBox">
+				<p>
+					<input type="radio" name="settleCycle" value="WEEKLY" >按<select name="settleValue">
+																				<option value="1">1</option>
+																				<option value="2">2</option>
+																				<option value="3">3</option>
+																			</select>
+																			周的
+																			<select name="offsetValue">
+																				<option value="2">2</option>
+																				<option value="3">3</option>
+																				<option value="4">4</option>
+																				<option value="5">5</option>
+																				<option value="6">6</option>
+																			</select>个工作日后结算</p>
+																			<p>
+					<input type="radio" name="settleCycle" value="MONTHLY">按<select name="settleValue">
+																				<option value="1">1</option>
+																				<option value="2">2</option>
+																				<option value="3">3</option>
+																			</select>
+																			月的
+																			<select name="offsetValue">
+																				<option value="2">2</option>
+																				<option value="3">3</option>
+																				<option value="4">4</option>
+																				<option value="5">5</option>
+																				<option value="6">6</option>
+																			</select>个工作日后结算<p>
+					<input type="radio" name="settleCycle" value="MIDDLE">月中、月底<select name="offsetValue">
+																				<option value="2">2</option>
+																				<option value="3">3</option>
+																				<option value="4">4</option>
+																				<option value="5">5</option>
+																			</select>
+																			个工作日后结算<p>
+					<input type="radio" name="settleCycle" value="TENDAY">按每月10日，20日，月底<select name="offsetValue">
+																				<option value="2">2</option>
+																				<option value="3">3</option>
+																				<option value="4">4</option>
+																				<option value="5">5</option>
+																			</select>
+																			个工作日后结算<p>
+					<input type="radio" name="settleCycle" value="TN">T+<select name="settleValue">
+																				#foreach ($i in [2 .. 15])
+																					<option value="$i">$i</option>
+																				#end
+																			</select>
+																			结算<p>
+					</p>
+				</div>
+				<div>
+					是否生成卖品账单：是<input type="radio" name="isGoodsSettle" value="Y">
+						                       否<input type="radio" name="isGoodsSettle" value="N" checked="checked" >
+				</div>
+				#if($!{place.openType} == 'WD2')
+					<div>
+						是否付款给业务供应商(只对万达配置有效)：是<input type="radio" name="playType" value="Y" #if($!{config.playType} == 'Y') checked="checked" #end>
+							                       否<input type="radio" name="playType" value="N" #if($!{config.playType} == 'N') checked="checked" #end >
+					</div>
+				#end
+				<p>帐&nbsp;套&nbsp;编&nbsp;号：<input class="text" name="zhangtaoNo" id="zhangtaoNo" value="$!config.zhangtaoNo" />
+				<p>业务供应商编号：<input class="text" name="venderNo" id="venderNo" value="$!config.venderNo" />
+				<p>业务供应商名称：<input class="text" name="venderName" id="venderName" value="$!config.venderName" />
+				<p>付款供应商编号：<input class="text" name="payVenderNo" id="payVenderNo" value="$!config.payVenderNo" />
+				<p>付款供应商名称：<input class="text" name="payVenderName" id="payVenderName" value="$!config.payVenderName" />
+				</p>
+				<a href="javascript:submitConfigDetailsForm()" class="button bigBt redBt"><span>提交</span></a>
+				<a href="javascript:cancelCommentMarks()" class="button bigBt redBt"><span>取消</span></a>
+			</div>
+		</form>
+	</div>
+<script type="text/javascript">
+		window.addEvents({'domready':function(){
+			var oSelect = $('inputBox').getElements('select');
+			var oRadio = $('inputBox').getElements('input[type="radio"]');
+			oRadio.addEvent('click',function(){
+				oRadio.each(function(item){
+					oSelect.removeProperty("enabled");
+					oSelect.set('disabled','disabled');
+				});
+				this.getParent('p').getElements('select').removeProperty("disabled");
+				this.getParent('p').getElements('select').set('enabled','enabled');
+			});
+			#if(${VmUtils.isNotBlank($!{config.settleCycle})})
+				var defaultRadio = $('inputBox').getElements('input[type="radio"][value="$!{config.settleCycle}"]');
+				defaultRadio.fireEvent("click");
+				defaultRadio.set('checked','checked');
+			#end
+			
+			#if($VmUtils.isNotEmpObj($!{config.settleValue}))
+				var settleValue = $('inputBox').getElements('[name="settleValue"][enabled="enabled"]');
+				settleValue.set("value", $!{config.settleValue});
+			#end
+			#if($VmUtils.isNotEmpObj($!{config.offsetValue}))
+				var settleValue = $('inputBox').getElements('[name="offsetValue"][enabled="enabled"]');
+				settleValue.set("value", $!{config.offsetValue});
+			#end
+			
+			#if($!config)
+				#if($!{config.isGoodsSettle} == 'Y')
+					document.all("isGoodsSettle")[0].checked=true;
+				#else
+					document.all("isGoodsSettle")[1].checked=true;
+				#end
+// 				var isGoodsSettle = $('inputBox').getElements('[name="isGoodsSettle"][value="$!{config.isGoodsSettle}"]');
+// 				alert(isGoodsSettle);
+// 				isGoodsSettle.checked = true;
+			#end
+			/*
+			#if($!{config.status} == 'Y')
+				document.getElementById("firstSettle").disabled = true;
+				document.getElementById("settleBase").disabled = true;
+				document.getElementById("settleTime").disabled = true;
+				var settleCycles = document.getElementsByName("settleCycle");
+				for(i = 0 ; i < settleCycles.length; i++){
+					settleCycles[i].disabled = true;
+				}
+ 				var settleValues = document.getElementsByName("settleValue");
+ 				for(i = 0 ; i < settleValues.length; i++){
+ 					settleValues[i].disabled = true;
+ 				}
+ 				var offsetValues = document.getElementsByName("offsetValue");
+ 				for(i = 0 ; i < offsetValues.length; i++){
+ 					offsetValues[i].disabled = true;
+ 				}
+			#end
+			*/
+		}
+	});
+</script>
+</body>
+</html>

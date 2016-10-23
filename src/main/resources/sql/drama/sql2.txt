@@ -1,0 +1,23 @@
+ALTER TABLE "gsp"."drama_config"
+DROP COLUMN "pretype";
+
+
+ALTER TABLE "gsp"."drama_jitibill"
+DROP COLUMN "pretype";
+
+
+ALTER TABLE "gsp"."drama_settlebill"
+DROP COLUMN "pretype";
+
+
+ALTER TABLE "gsp"."drama"
+ADD COLUMN "origin" varchar(50);
+
+
+update gsp.drama set origin = 'GW';
+
+create or replace view VIEW_DRAMAPROFILE as
+select p.DRAMAID, p.ORIGIN from drama_profile p;
+
+grant select on WEBDATA.VIEW_DRAMAPROFILE to gspview;
+

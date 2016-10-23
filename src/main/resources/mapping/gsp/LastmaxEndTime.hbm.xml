@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.LastMaxEndTime" table="lastmax_endtime" schema="gsp">
+   		    <id name="configId" type="string">
+	            <column name="config_id"  />
+	            <generator class="assigned" />
+	        </id>
+   		    <property name="tag" type="string" column="tag" />
+   		    <property name="settleId" type="java.lang.Long" column="last_settle_id" />
+   		    <property name="checkId" type="java.lang.Long" column="last_check_id" />
+   		    <property name="maxEndTime" type="timestamp" column="last_max_endtime" />
+   		    <property name="updateTime" type="timestamp" column="update_time" />
+    </class>
+</hibernate-mapping>

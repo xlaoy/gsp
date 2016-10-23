@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>结算配置</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/iscroll.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/core.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+	
+</head>
+<body id="_body">
+<div class="inner">
+	#set($nvg="settleconfigs")
+	#parse('WEB-INF/pages/nvaig/confignvaig.vm')
+	
+	<div class="mode_search">
+		<form action="${basePath}platform/settleconfig/settleconfigs.xhtml" method="post" id="configform">
+				<h2>查询条件</h2>
+				<div>
+					影院名称：
+					<input type="hidden" name="placeId" id="placeId" value="$!{params.placeId}"/>
+					<input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}"/>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					影院id：
+					<input type="text" class="text" name="relateId" id="relateId" value="$!{params.relateId}" style="width: 150px;"/>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					 合并付款供应商：
+					<select id="payVenderNo" name="payVenderNo" class="text" style="width:18%;">
+						<option value=""></option>
+						#foreach($map in ${megermap.entrySet()})
+							<option value="$!{map.key}" #if($VmUtils.eq($!payVenderNo,$!{map.key})) selected="selected" #end>$!megermap.get($!{map.key}).name</option>
+						#end
+					</select>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					业务供应商：
+					<input type="text" class="text" name="venderName" id="venderName" value="$!{params.venderName}"/>
+					<br><br>
+					管理人：
+					<input type="text" class="text" name="owner" id="owner" value="$!{params.owner}" style="width: 150px;"/>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					院线：
+					<select id="" name="" class="text" style="width:18%;">
+						<option value=""></option>
+					</select>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="javascript:querysubmit();" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<input type="hidden" name="xls" id="isXls"/>
+					<a href="javascript:void(0);" class="button minBt whiteBt" onclick="downloadxls();">导出EXCEL</a>
+					#if($VmUtils.eq($!{resetadjust},"Y"))
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="javascript:replaceowner();" class="button minBt whiteBt">替换管理人</a>
+					#end
+				</div>
+			</form>
+	</div>
+	
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th style="width:5%;"><span>影院id</span></th>
+					<th style="width:5%;"><span>统一编码</span></th>
+					<th style="width:4%;"><span>系统</span></th>
+					<th style="width:4%;"><span>院线</span></th>
+					<th><span>名称</span></th>
+					<th style="width:5%;"><span>结算周期</span></th>
+					<th style="width:5%;"><span>结算时限</span></th>
+					<th style="width:5%;"><span>结算方式</span></th>
+					<th style="width:6%;"><span>结算时间点</span></th>
+					<th style="width:7%;"><span>首次结算日期</span></th>
+					<th style="width:6%;"><span>帐套编号</span></th>
+					<th><span>业务供应商</span></th>
+					<th style="width:8%;"><span>业务供应商结算</span></th>
+					<th><span>付款供应商</span></th>
+					<th style="width:5%;"><span>卖品结算</span></th>
+					<th style="width:5%;"><span>管理人</span></th>
+					<th style="width:4%;"><span>状态</span></th>
+					<th style="width:5%;"><span>操作</span></th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($map in ${maplist})
+				<tr>
+					<td><span>$!{map.get("place_id")}</span></td>
+					<td><span>$!{map.get("pcid")}</span></td>
+					<td><span>$!{map.get("open_type")}</span></td>
+					<td><span>$!{map.get("belong_to")}</span></td>
+					<td><span>$!{map.get("name")}</span></td>
+					<td><span>$!{VmUtils.displayEnums("SettleCycleEnums",$!{map.get("settle_cycle")})}</span></td>
+					<td><span>$!{map.get("offset_value")}个工作日</span></td>
+					<td><span>$!{VmUtils.displayEnums("SettleBaseEnums",$!{map.get("settle_base")})}</span></td>
+					<td><span>$!{map.get("settle_time")}</span></td>
+					<td><span>$!DateUtil.formatDate($!{map.get("first_settle")})</span></td>
+					<td><span>$!{map.get("zhangtao_no")}</span></td>
+					<td><span>【$!{map.get("vender_no")}】$!{map.get("vender_name")}</span></td>
+					<td><span>
+						#if($VmUtils.eq($!{map.get("play_type")},"Y"))
+							是
+						#elseif($VmUtils.eq($!{map.get("play_type")},"N"))
+							否
+						#else
+							
+					    #end
+						</span>
+					</td>
+					<td><span>【$!{map.get("pay_vender_no")}】$!{map.get("pay_vender_name")}</span></td>
+					<td><span>
+						#if($VmUtils.eq($!{map.get("is_goods_settle")},"Y"))
+							是
+						#elseif($VmUtils.eq($!{map.get("is_goods_settle")},"N"))
+						            否
+						#else
+					    #end
+						</span>
+					</td>
+					<td><span>$!{map.get("owner")}</span></td>	
+					<td><span>
+						#if($VmUtils.eq($!{map.get("status")},"Y"))
+							已审核
+						#elseif($VmUtils.eq($!{map.get("status")},"N"))
+							未审核
+						#else 
+							未配置
+						#end
+						</span>
+					</td>
+					<td><span>
+						#if($map.get("status"))
+							<a href="javascript:loadConfigDetails('$!{map.get('record_id')}')">修改配置</a>
+							<br><a href="javascript:reMoveConfigDetails('$!{map.get('record_id')}')">删除配置</a>
+							<!-- <br><a href="${basePath}platform/channelsettle/loadChannelConfigPage.xhtml?placeId=$!{map.get('record_id')}">通道费配置</a> -->
+							<br><a href="${basePath}platform/settlement/settlementbills.xhtml?placeId=$!{map.get('record_id')}">查看结算单</a>
+						#else
+							<a href="javascript:loadConfigDetails('$!{map.get('record_id')}')">配置规则</a>
+						#end
+						#if($VmUtils.eq($!{resetadjust},"Y"))
+							<br><a href="javascript:modifyowner('$!{map.get('record_id')}', '$!{map.get('owner')}', '$!{map.get('name')}')">修改管理人</a>
+						#end
+						</span>
+					</td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="19">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	
+</div>
+<div id="commMark" style="display:none; height: 480px; overflow:auto"></div>
+
+<div id="modifyowner" style="display:none;">
+	<div class="mode_search clear">
+		<h2>修改管理人</h2>
+		<p style="line-height: 40px;">影院：<span id="mdfowp"></span><input type="hidden" id="mdfowpid" value=""/></p>
+		<p style="line-height: 40px;">旧管理人：<span id="oldmowner"></span></p>
+		<p style="line-height: 40px;">新管理人：<input type="text" id="newmowner" value="" class="text"/></p>
+		<p  style="line-height: 40px;" align="center">
+			<a href="javascript:modifyownerSubmit();" class="button bigBt redBt"><span>提交</span></a>
+			<a href="javascript:modifyownerCacnel();" class="button bigBt redBt"><span>取消</span></a>
+		</p>
+	</div>
+</div>
+
+<div id="replaceowner" style="display:none;">
+	<div class="mode_search clear">
+		<h2>管理人替换后，所有的‘旧管理人’所管理的影院将被‘新管理人’所管理</h2>
+		<p style="line-height: 40px;">旧管理人：<input type="text" id="olerowner" value=""  class="text"/></p>
+		<p style="line-height: 40px;">新管理人：<input type="text" id="newrowner" value="" class="text"/></p>
+		<p  style="line-height: 40px;" align="center">
+			<a href="javascript:replaceownerSubmit();" class="button bigBt redBt"><span>提交</span></a>
+			<a href="javascript:replaceownerCacnel();" class="button bigBt redBt"><span>取消</span></a>
+		</p>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	$$('.tips').amTips();
+	completer = new Autocompleter.Local($("placeFirstLetter"), parent.pdata, {
+		'delay': 100,
+		'maxChoices': 10,
+		'minLength':0,
+		'requestid':'placeId',
+		'filter': function() {
+			var vl = this.queryValue;
+			var values = vl.trim().split(/ +/);
+			return this.tokens.filter(function(token){
+				var result = values.every(function(v){
+					var reg = new RegExp(v.escapeRegExp(),'i');
+					return reg.test(token.pinyin) || reg.test(token.name);
+				});
+				return result;
+			});
+		},
+		'injectChoice': function(choice){
+			parent.myGenChoice(this,choice);
+		}
+	});
+})
+
+function querysubmit() {
+	var placeFirstLetter = $("placeFirstLetter").value;
+	if(placeFirstLetter == null || placeFirstLetter == "") {
+		$("placeId").value = "";
+	}
+	$('configform').submit();
+}
+
+function loadConfigDetails(recordId){
+	var url = '${basePath}platform/settleconfig/loadConfigDetails.xhtml';
+	var values = {"recordId":recordId}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('commMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','commMark','配置规则',900,'commMark');
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+function submitConfigDetailsForm(){
+	var values = gewara.util.getPostValues("submitform");
+	for (var v in values){
+		if (values[v] == ''){
+			gewaUtil.alert("结算配置所有字段为必填项");
+			return;
+		}
+	}
+	var base = values['settleBase'];
+	var settleValue = values['settleValue'];
+	var settleCycle = values['settleCycle'];
+	if (settleCycle == 'TN'){
+		if (base == 'ORDERTIME' ){
+			if (settleValue < 3){
+				gewaUtil.alert("结算方式为下单时间时，N值最小为3，最大为15");
+				return;
+			}
+		}else if (base = 'USETIME'){
+			if (settleValue < 2){
+				gewaUtil.alert("当结算方式为消费时间时，N值最小为2， 最大为15");
+				return;
+			}
+		}
+	}
+		
+	var url = "${basePath}platform/settleconfig/modifyConfigDetails.xhtml";
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask();
+		if(result.success == true){
+			gewaUtil.alert("操作完成！", function(){
+				cancelCommentMarks();
+				$('configform').submit();
+			});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	});
+}
+
+function reMoveConfigDetails(recordId){
+	gewa.util.issure('','删除结算规则将清除所有未提交到商户的对账、结算单. 确定要删除吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+		var values = {"recordId":recordId}
+		var url = "${basePath}platform/settleconfig/removeConfig.xhtml";
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask();
+			if(result.success == true){
+				gewaUtil.alert("已删除！", function(){$('configform').submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+
+function cancelCommentMarks(){
+	gewa.util.container['commMark'].dispose('commMark');
+}
+
+var downloadxls=function(){
+	$("isXls").value="downloadxls";
+	$('configform').submit();
+	$("isXls").value="";
+};
+
+function modifyowner(placeid, oldowner, placename){
+	$("mdfowp").innerHTML = placename;
+	$("mdfowpid").value = placeid;
+	$("oldmowner").innerHTML = oldowner;
+	gewa.util.maskContent('','modifyowner','',360,'modifyowner');
+}
+
+function modifyownerCacnel() {
+	$("newmowner").value = "";
+	gewa.util.container['modifyowner'].dispose('modifyowner');
+}
+
+function modifyownerSubmit() {
+	var placeid = $("mdfowpid").value;
+	var newowner = $("newmowner").value;
+	if(placeid == null || placeid == "") {
+		gewaUtil.alert("影院id不能为空！");
+		return;
+	}
+	if(newowner == null || newowner == "") {
+		gewaUtil.alert("新管理人不能为空！");
+		return;
+	}
+	var values = {"placeid":placeid, "newowner":newowner}
+	var url = "${basePath}platform/settleconfig/modifyOwner.xhtml";
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask();
+		if(result.success == true){
+			gewaUtil.alert("修改成功！", function(){$('configform').submit();});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	});
+}
+
+function replaceowner(){
+	gewa.util.maskContent('','replaceowner','',360,'replaceowner');
+}
+
+function replaceownerCacnel() {
+	$("olerowner").value = "";
+	$("newrowner").value = "";
+	gewa.util.container['replaceowner'].dispose('replaceowner');
+}
+
+function replaceownerSubmit() {
+	var olerowner = $("olerowner").value;
+	var newowner = $("newrowner").value;
+	if(olerowner == null || olerowner == "") {
+		gewaUtil.alert("旧管理人不能为空！");
+		return;
+	}
+	if(newowner == null || newowner == "") {
+		gewaUtil.alert("新管理人不能为空！");
+		return;
+	}
+	var values = {"olerowner":olerowner, "newowner":newowner}
+	var url = "${basePath}platform/settleconfig/replaceOwner.xhtml";
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask();
+		if(result.success == true){
+			gewaUtil.alert(result.retval, function(){$('configform').submit();});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	});
+}
+</script>
+</body>
+</html>

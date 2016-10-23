@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>日账单</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+	</head>
+<body id="_body">
+<div class="inner">
+	<div class="mod_hd"><h2>影票日账单</h2></div>
+	<div class="mode_search">
+		<table style="width: 100%">
+			<tr style="height: 40px;">
+				<td colspan="6">
+					<a href="javascript:window.history.back();" class="button minBt whiteBt"><span>返回</span></a>
+				</td>
+			</tr>
+			<tr style="height: 40px;">
+				<td style="width: 5%"><h2>结算单号：</h2></td>
+				<td style="width: 28%">$!{settle.recordId}</td>
+				<td style="width: 5%"><h2>影院名称：</h2></td>
+				<td style="width: 28%">$!{p.name}</td>
+				<td style="width: 6%"><h2>结算周期：</h2></td>
+				<td style="width: 28%">[ $!DateUtil.formatTimestamp($!{settle.startTime}) - $!DateUtil.formatTimestamp($!{settle.endTime}) )</td>
+			</tr>
+			<tr style="height: 40px;">
+				<td style="width: 5%"><h2>结算状态：</h2></td>
+				<td style="width: 28%">$!{VmUtils.displayEnums("CheckBillStatusEnums",$!{settle.status})}</td>
+				<td style="width: 5%"><h2>单据类型：</h2></td>
+				<td style="width: 28%">
+					影票结算单
+					#if($VmUtils.eq($!settle.playType,'ZL'))
+						【直连】
+					#elseif($VmUtils.eq($!settle.playType,'XN'))
+						【虚拟】
+					#elseif($VmUtils.eq($!settle.playType,'GW'))
+						【格瓦票务】
+					#elseif($VmUtils.eq($!settle.playType,'BC'))
+						【包场】
+					#end
+					#if($VmUtils.eq($!s.special,'HEPING_OUTER'))
+						【大光明巨幕】
+					#elseif($VmUtils.eq($!s.special,'WANDA_ACTIVITY'))
+						【万达活动场】
+					#elseif($VmUtils.eq($!s.special,'WANDA_NOT_ACTIVITY'))
+						【万达非活动场】
+					#end
+				</td>
+				<td style="width: 6%"><h2>开票金额：</h2></td>
+				<td style="width: 28%">$!extend.billingamount</td>
+			</tr>
+		</table>
+	</div>
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th width="5%" ><span>序号</span><span class="carat"></span></th>
+					<th width="6%" ><span>单号</span><span class="carat"></span></th>
+					<th ><span>对账周期</span><span class="carat"></span></th>
+					<th width="6%" ><span>出票数量</span><span class="carat"></span></th>
+					<th width="6%" ><span>出票金额</span><span class="carat"></span></th>
+					<th width="6%" ><span>退票数量</span><span class="carat"></span></th>
+					<th width="6%" ><span>退票金额</span><span class="carat"></span></th>
+					<th width="6%" ><span>结算票数</span><span class="carat"></span></th>
+					<th width="6%"><span>结算金额</span><span class="carat"></span></th>
+					<th width="5%"><span>其他</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				#set($allOrder=0)
+				#set($allOrderAmount=0)
+				#set($refundTotal=0)
+				#set($refundTotalAmount=0)
+				#set($orderTotal=0)
+				#set($orderTotalAmount=0)
+				
+				#foreach($ck in ${cklist})
+					#set($allOrder=$allOrder + $ck.succTicketNumber)
+					#set($allOrderAmount= $allOrderAmount + $ck.succTicketAmount)
+					#set($refundTotal=$refundTotal + $!{ck.refundTotalNumber})
+					#set($refundTotalAmount=$refundTotalAmount + $!{ck.refundTotalAmount})
+					#set($orderTotal=$orderTotal+$!{ck.orderTotalNumber})
+					#set($orderTotalAmount=$orderTotalAmount + $!{ck.orderTotalAmount})
+					<tr>
+						<td><span>
+							$!{foreach.count}
+							</span>
+						</td>
+						<td><span>
+							<a href="${basePath}platform/checkBill/queryCheckBillDetails.xhtml?checkBillId=$!{ck.recordId}">$!{ck.recordId}</a>
+							</span>
+						</td>
+						<td><span>
+							[ $!DateUtil.formatTimestamp($!{ck.start}) - $!DateUtil.formatTimestamp($!{ck.end}) )
+							</span>
+						</td>
+						<td><span>
+							$!{ck.succTicketNumber}
+							</span>
+						</td>
+						<td><span>
+							$!{ck.succTicketAmount}
+							</span>
+						</td>
+						<td><span>
+							$!{ck.refundTotalNumber}
+							</span>
+						</td>
+						<td><span>
+							$!CurrencyFmt.format(${ck.refundTotalAmount})
+							</span>
+						</td>
+						<td><span>
+							$!{ck.orderTotalNumber}
+							</span>
+						</td>
+						<td><span>
+							$!CurrencyFmt.format(${ck.orderTotalAmount})
+							</span>
+						</td>
+						<td> </td>
+					</tr>
+				#end
+				
+				<tr>
+					<td colspan="3">小计</td>
+					<td>$!allOrder</td>
+					<td>$!allOrderAmount </td>
+					<td>$!refundTotal</td>
+					<td>$!refundTotalAmount</td>
+					<td>$!orderTotal</td>
+					<td>$!orderTotalAmount</td>
+					<td> </td>
+				</tr>
+				<tr>
+					<td colspan="7">调整</td>
+					<td>$!{settle.adjustTotalNumber}</td>
+					<td>$!{settle.adjustTotalAmount}</td>
+					<td><a href="javascript:loadAdjustList('$!{settle.recordId}');">详情</a></td>
+				</tr>
+				<tr>
+					<td colspan="7">异价差额</td>
+					<td>$!{settle.diffPriceNumber} </td>
+					<td>$!{settle.diffPriceAmount} </td>
+					<td><a href="${basePath}platform/diffPriceBill/diffPriceBillDetail.xhtml?recordId=$!{settle.recordId}">详情</a></td>
+				</tr>
+				<tr>
+					<td colspan="8">包场预付</td>
+					<td>$!CurrencyFmt.format($!{extend.bcPrePay}) </td>
+					<td> </td>
+				</tr>
+				<tr>
+					<td colspan="7">合计</td>
+					<td>$!{settle.orderTotalNumber}</td>
+					<td>$!{settle.orderTotalAmount}</td>
+					<td> </td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+</div>
+
+<div id="adListcommMark" style="display:none; height: 450px;overflow-y:auto;"></div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	lockMenu();
+});
+function lockMenu(){
+	var menus = parent.document.getElements('#navleftid a');
+	if(menus)menus.filter(function(link){
+			link.removeClass('select');
+			return link.get('href').indexOf(document.location.pathname) >= 0;
+		}).addClass('select');
+}
+
+function loadAdjustList(recordId){
+	var url = "${basePath}platform/adjust/loadAdjustList.xhtml";
+	var values = {"settleId":recordId}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('adListcommMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','adListcommMark','调整列表',800,'adListcommMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+</script>
+</body>
+</html>

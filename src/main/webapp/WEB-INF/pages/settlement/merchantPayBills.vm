@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>影院结算平台</title>
+#parse('WEB-INF/pages/common/common.vm')
+#parse('WEB-INF/pages/common/edaStyle.vm')
+</head>
+<body>
+#set($isPayMoney=true)
+#parse('WEB-INF/pages/common/merchantMenu_eda.vm')
+<div class="bodyBox">
+	<div class="mlr30 mt20">
+		<form id="" method="post" action="${basePath}merchant/settlement/queryPayBills.xhtml">
+			<ul class="clear chosOp">
+				<li>
+					#*
+					<div id="placeName"></div>
+						<input type="hidden" name="placeId" id="placeId" value="$!{params.placeId}"/>
+						<input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}"/>
+					*#
+					<div class="ui_simulate_20">
+							<div class="simulate_select_20">
+								<div class="select_value_20">#if($VmUtils.isNotBlank($!place.name)) $place.name #else 全部 #end</div>
+								<a class="select_arrow_20" href="javascript:void(0);"></a>
+								<input class="simulate_value_20" type="hidden" value="$!{params.placeId}" name="placeId" id="placeId"/>
+							</div>
+							
+							<ul class="simulate_options_20" id="simulate_options_ul">
+								<li><a href="javascript:void(0);" data-value="">全部</a></li>
+								#foreach($citycode in $optionData.keySet())
+									#foreach($key in $optionData.get($citycode).keySet())
+										<li><a href="javascript:void(0);" data-value="$key">$optionData.get($citycode).get($key)</a></li>
+									#end
+								#end
+							</ul>
+						</div>
+				</li>
+				<li>
+					<input type="hidden" name="isXls" id="isXls"/>
+					<a class="button largeBt mr20" href="#" onclick="document.forms[0].submit()"><span style="width:70px;">查询</span></a>
+				</li>
+			</ul>
+		</form>
+		<div class="bill_panel">
+			<div class="bill_tool">
+				<div class="right">
+					#parse('WEB-INF/include/pageUtil.vm')
+				</div>
+				<div class="left">
+					#parse("WEB-INF/pages/common/goback.vm")
+				</div>
+			</div>
+			<table class="isTable" width="100%">
+				<thead>
+					<tr>
+						<th >编号</th>
+						<th >单号</th>
+						<th >付款时间</th>
+						<th >付款金额</th>
+						<th >影院审核人</th>
+						<th >联系方式</th>
+						<th >付款人</th>
+						<th >联系方式</th>
+					</tr>
+				</thead>
+				<tbody>
+					#foreach($s in ${sb})
+						<tr>
+							<td style="width:30px;"><span>
+								$!{foreach.count}
+								</span>
+							</td>
+							<td style="width:30px;"><span>
+								$!{s.recordId}
+								</span>
+							</td>
+							#set($ps=$gp.get($!{s.recordId}))
+							#set($cs=$mc.get($!{s.recordId}))
+							<td style="width:150px;"><span>
+								$!DateUtil.formatTimestamp($!{ps.addTime}) 
+								</span>
+							</td>
+							<td style="width:150px;"><span>
+								$!{s.orderTotalAmount}
+								</span>
+							</td>
+							<td style="width:150px;"><span>
+								$!{cs.operator}
+								</span>
+							</td>
+							
+							<td style="width:150px;"><span>
+								暂无
+								</span>
+							</td>
+							<td style="width:150px;"><span>
+								$!{ps.operator}
+								</span>
+							</td>
+							<td style="width:150px;"><span>
+								暂无
+								</span>
+							</td>
+						</tr>
+					#end
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	//isCreateOption();
+	document.getElements('tbody tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	autoCountHeight();
+});
+
+
+function autoCountHeight(flag){
+	var id = parent.document.getElementById('coverForm');
+	if(id){
+		id.style.height = window.innerHeight+'px';
+	}
+	if(flag)return;
+	document.addEvent('resize',function(){
+		autoCountHeight(true);
+	});
+}
+</script>
+</body>
+</html>

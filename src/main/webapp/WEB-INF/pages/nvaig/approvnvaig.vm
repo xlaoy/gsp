@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<div class="mod_hd tabs_gary" id="settleStatusId">
+	<a href="${basePath}platform/settleconfig/queryUnApprovedConfig.xhtml" #if($VmUtils.eq($!nvg,'queryUnApprovedConfig')) class="select" #end>影院配置审核</a>
+	<a href="${basePath}platform/channelsettle/loadUnVerifiedConfig.xhtml" #if($VmUtils.eq($!nvg,'loadUnVerifiedConfig')) class="select" #end>通道费配置审核</a>
+	<a href="${basePath}platform/adjust/queryUnApprovedAdjustment.xhtml" #if($VmUtils.eq($!nvg,'queryUnApprovedAdjustment')) class="select" #end>影院结算调整审核</a>
+	<a href="${basePath}platform/adjust/queryDramaUnapprovedAdjust.xhtml" #if($VmUtils.eq($!nvg,'queryDramaUnapprovedAdjust')) class="select" #end>演出结算调整审核</a>
+</div>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+#parse('WEB-INF/pages/common/common.vm')
+#parse('WEB-INF/pages/common/edaStyle.vm')
+<script type="text/javascript" src="${staticPath}scripts/scrollerbar.js?v=00000"></script>
+<style type="text/css">
+.invotab {height: 35px; border-bottom: 1px solid #C1C1C1; margin-bottom: 20px; font-size: 15px; line-height: 35px; list-style: none;}
+.invotab li a{color: white;}
+.invotab li a:HOVER{color: black;}
+.invotab li {float: left; width: 120px; background: #E1E1E1; text-align: center; display: block;}
+.invotab .select {color: white; background: #EB6120;}
+</style>
+</head>
+<body id="_body">
+#set($isFinalStatement=true)
+#parse('WEB-INF/pages/common/merchantMenu_eda.vm')
+<div class="bodyBox" style="position:relative;z-index:1;">
+	
+	<div class="mlr30 mt20">
+	
+		<ul class="invotab">
+			<li ><a href="javascript:history.back();" class="back">返回</a>
+			<li class="select"><a href="${basePath}merchant/settlement/baochangList.xhtml?recordId=$!{params.recordId}" >包场场次</a></li>
+		</ul>
+		
+	#if($bclist && $bclist.size() > 0)
+	<div class="bill_panel">
+		<table class="isTable" style="width:100%;">
+			<thead id="tableY">
+				<tr>
+					<th width="4%"><span>场次id</span></th>
+					<th><span>影院名称</span></th>
+					<th width="5%"><span>包场类型</span></th>
+					<th><span>电影名称</span></th>
+					<th width="9%"><span>放映时间</span></th>
+					<th width="5%"><span>影票数量</span></th>
+					<th width="5%"><span>影票成本</span></th>
+					<th width="5%"><span>卖品数量</span></th>
+					<th width="5%"><span>卖品成本</span></th>
+					<th width="5%"><span>总成本</span></th>
+					<th width="5%"><span>是否预付</span></th>
+					<th width="5%"><span>关联结算单号</span></th>
+					<th width="5%"><span>状态</span></th>
+				</tr>
+			</thead>
+			<tbody  id="tableB">
+				#foreach($bc in ${bclist})
+				<tr>
+					<td ><span>
+						$!{bc.playId}
+					</span></td>
+					<td ><span>
+						$!placeMap.get($!{bc.placeId}).name
+					</span></td>
+					<td ><span>
+						[ #if($VmUtils.eq($!bc.playType,'ZL'))
+							直连
+						#elseif($VmUtils.eq($!bc.playType,'XN')) 
+							虚拟
+						#elseif($VmUtils.eq($!bc.playType,'GW')) 
+							格瓦票务
+						#end
+						]
+						<br/>
+						[ #if($VmUtils.eq($!bc.bcType,'user'))
+							用户包场
+						#elseif($VmUtils.eq($!bc.bcType,'gewa')) 
+							格瓦包场
+						#end
+						]
+					</span></td>
+					
+					<td ><span>$!{bc.filmName}</span></td>
+					<td ><span>$!DateUtil.formatTimestamp($!{bc.playTime})</span></td>
+					<td ><span>$!{bc.bcNum}</span></td>
+					<td ><span>$!CurrencyFmt.format($!{bc.bcAmount})</span></td>
+					<td ><span>$!{bc.goodsNum}</span></td>
+					<td ><span>$!CurrencyFmt.format($!{bc.goodsAmount})</span></td>
+					<td ><span >$!CurrencyFmt.format($!{bc.costAmount})</span></td>
+					<td ><span>
+						#if($VmUtils.eq($!bc.prePay,'Y'))
+							预付
+						#elseif($VmUtils.eq($!bc.prePay,'N'))
+							月结
+						#end
+					</span></td>
+					<td >
+						<span><a href="javascript:loadSettleDeatil('$!{bc.settleId}');">$!{bc.settleId}</a></span><br>
+						<span><a href="javascript:loadSettleDeatil('$!{bc.goodsSettleId}');">$!{bc.goodsSettleId}</a></span>
+					</td>
+					<td ><span>
+						#if($VmUtils.eq($!bc.status,'NOPAY'))
+							未付款
+						#elseif($VmUtils.eq($!bc.status,'YESPAY'))
+							已付款
+						#elseif($VmUtils.eq($!bc.status,'SELLET'))
+							已结算
+						#elseif($VmUtils.eq($!bc.status,'PASS'))
+							已过期
+						#end
+					</span></td>
+				</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+	#else
+	<div class="ui_warning">查询条件范围内，没有数据。</div>
+	#end
+	</div>
+</div>
+<div id="detailMark" style="display:none; height: 400px;overflow-y:auto;"></div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	document.getElements('tbody tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+});
+
+//查看结算单详情
+function loadSettleDeatil(settleId){
+	var url = '${basePath}merchant/settlement/settleMore.xhtml';
+	var values = {"recordId":settleId}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('detailMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','detailMark','结算单' + settleId ,850,'detailMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+</script>
+</body>
+</html>

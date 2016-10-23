@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<style>
+#configtable tr{height: 40px; line-height: 40px;}
+</style>
+
+<div class="mode_search">
+	<form id="submitform">
+		<table  style="width: 100%" id="configtable">
+			<tr>
+				<td width="120px;" valign="top" align="right">影院名称：</td>
+				<td align="left"><h2>$!{place.name}</h2><input type="hidden" name="recordId" value="$!{place.recordId}" /></td>
+				<td width="120px;" align="right">首次结算日期：</td>
+				<td align="left"><input name="firstSettle" id="firstSettle" value="$!DateUtil.formatDate($!{config.firstSettle})" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" /></td>
+			</tr>
+			<tr>
+				<td width="120px;" align="right">结算方式：</td>
+				<td align="left">
+					<select name="settleBase" id="settleBase">
+						<option value="ORDERTIME" #if(${VmUtils.eq("ORDERTIME",$!{config.settleBase})}) selected="selected" #end>下单时间</option>
+						<option value="USETIME" #if(${VmUtils.eq("USETIME",$!{config.settleBase})}) selected="selected" #end>消费时间</option>
+					</select>
+				</td>
+				<td width="120px;" align="right">结算时间点：</td>
+				<td align="left">
+					<select name="settleTime" id="settleTime">
+						<option value="00:00" #if(${VmUtils.eq("00:00",$!{config.settleTime})}) selected="selected" #end>00:00-00:00</option>
+						<option value="06:00" #if(${VmUtils.eq("06:00",$!{config.settleTime})}) selected="selected" #end>06:00-06:00</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td width="120px;" align="right">帐套编号：</td>
+				<td align="left"><input class="text" name="zhangtaoNo" id="zhangtaoNo" value="$!config.zhangtaoNo" /></td>
+				<td width="120px;" align="right">卖品是否结算：</td>
+				<td align="left">
+					<input type="radio" name="isGoodsSettle" value="Y">是
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<input type="radio" name="isGoodsSettle" value="N" checked="checked" > 否
+				</td>
+			</tr>
+			<tr>
+				<td width="120px;" align="right">业务供应商编号：</td>
+				<td align="left"><input class="text" name="venderNo" id="venderNo" value="$!config.venderNo" /></td>
+				<td width="120px;" align="right">业务供应商名称：</td>
+				<td align="left"><input class="text" name="venderName" id="venderName" value="$!config.venderName" /></td>
+			</tr>
+			<tr>
+				<td width="120px;" align="right">付款供应商编号：</td>
+				<td align="left"><input class="text" name="payVenderNo" id="payVenderNo" value="$!config.payVenderNo" /></td>
+				<td width="120px;" align="right">付款供应商名称：</td>
+				<td align="left"><input class="text" name="payVenderName" id="payVenderName" value="$!config.payVenderName" /></td>
+			</tr>
+			#if($!{place.openType} == 'WD2' || $!{place.openType} == 'WD3')
+			<tr>
+				<td width="120px;" align="right">业务供应商结算：</td>
+				<td align="left" colspan="3">
+					<input type="radio" name="playType" value="Y" #if($!{config.playType} == 'Y') checked="checked" #end>是
+					<input type="radio" name="playType" value="N" #if($!{config.playType} == 'N') checked="checked" #end >否
+					&nbsp;&nbsp;<span style="color: red;">（目前只对万达配置有效，若万达有活动场则需要结算给业务供应商）</span>
+				</td>
+			</tr>
+			#end
+			<tr>
+				<td width="120px;" valign="top" align="right">结算周期：</td>
+				<td align="left" colspan="3" id="inputBox">
+					<p>
+						<input type="radio" name="settleCycle" value="WEEKLY" >按
+						<select name="settleValue">
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+						</select>周的
+						<select name="offsetValue">
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+						</select>个工作日后结算
+					</p>
+					<p>
+						<input type="radio" name="settleCycle" value="MONTHLY">按
+						<select name="settleValue">
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+						</select>月的
+						<select name="offsetValue">
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+						</select>个工作日后结算
+					<p>
+					<p>
+						<input type="radio" name="settleCycle" value="MIDDLE">月中、月底
+						<select name="offsetValue">
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+						</select>个工作日后结算
+					</p>
+					<p>
+						<input type="radio" name="settleCycle" value="TENDAY">按每月10日，20日，月底
+						<select name="offsetValue">
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+						</select>个工作日后结算
+					</p>
+					<p>
+						<input type="radio" name="settleCycle" value="TN">T+
+						<select name="settleValue">
+							#foreach ($i in [2 .. 15])
+								<option value="$i">$i</option>
+							#end
+						</select>结算
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td align="right" colspan="4">
+					<a href="javascript:submitConfigDetailsForm()" class="button bigBt redBt"><span>提交</span></a>
+					<a href="javascript:cancelCommentMarks()" class="button bigBt redBt"><span>取消</span></a>
+				</td>
+			</tr>
+		</table>
+	</form>
+</div>
+
+
+<script type="text/javascript">
+window.addEvents({
+	'domready': function(){
+		var oSelect = $('inputBox').getElements('select');
+		var oRadio = $('inputBox').getElements('input[type="radio"]');
+		oRadio.addEvent('click',function(){
+			oRadio.each(function(item){
+				oSelect.removeProperty("enabled");
+				oSelect.set('disabled','disabled');
+			});
+			this.getParent('p').getElements('select').removeProperty("disabled");
+			this.getParent('p').getElements('select').set('enabled','enabled');
+		});
+		#if(${VmUtils.isNotBlank($!{config.settleCycle})})
+			var defaultRadio = $('inputBox').getElements('input[type="radio"][value="$!{config.settleCycle}"]');
+			defaultRadio.fireEvent("click");
+			defaultRadio.set('checked','checked');
+		#end
+		#if($VmUtils.isNotEmpObj($!{config.settleValue}))
+			var settleValue = $('inputBox').getElements('[name="settleValue"][enabled="enabled"]');
+			settleValue.set("value", $!{config.settleValue});
+		#end
+		#if($VmUtils.isNotEmpObj($!{config.offsetValue}))
+			var settleValue = $('inputBox').getElements('[name="offsetValue"][enabled="enabled"]');
+			settleValue.set("value", $!{config.offsetValue});
+		#end
+		#if($!config)
+			#if($!{config.isGoodsSettle} == 'Y')
+				document.all("isGoodsSettle")[0].checked=true;
+			#else
+				document.all("isGoodsSettle")[1].checked=true;
+			#end
+		#end
+	}
+});
+</script>

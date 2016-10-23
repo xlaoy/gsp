@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>发票配置</title>
+<script type="">
+</script>
+#parse('WEB-INF/pages/common/common.vm')
+#parse('WEB-INF/pages/common/edaStyle.vm')
+<script type="text/javascript" src="${staticPath}scripts/scrollerbar.js?v=00000"></script>
+<style type="text/css">
+.invotab {height: 35px; border-bottom: 1px solid #C1C1C1; margin-bottom: 20px; font-size: 14px; line-height: 35px; list-style: none;}
+.invotab li a{color: white;}
+.invotab li a:HOVER{color: black;}
+.invotab li {float: left; width: 120px; background: #E1E1E1; text-align: center;}
+.invotab .select {color: white; background: #EB6120;}
+</style>
+</head>
+<body>
+#set($isInvoiceManager=true)
+#parse('WEB-INF/pages/common/merchantMenu_eda.vm')
+<div class="bodyBox" style="position:relative;z-index:1;">
+	<div class="mlr30 mt20">
+	
+		<ul class="invotab">
+			<li ><a href="${basePath}merchant/invoice/queryInvoice.xhtml">发票查询</a></li>
+			<li class="select"><a href="${basePath}merchant/invoice/queryInvoiceConfig.xhtml" class="aselect">发票配置</a></li>
+		</ul>
+		
+		<div class="bill_panel">
+			<table class="isTable" style="width:100%;">
+				<thead id="tableY">
+					<tr>
+						<th width="8%">编号</th>
+						<th>影院名称</th>
+						<th width="8%">业务供应商编号</th>
+						<th width="8%">税率</th>
+						<th width="10%">发票类型</th>
+						<th width="10%">发票资质</th>
+						<th width="20%">备注说明</th>
+						<th width="8%">操作</th>
+					</tr>
+				</thead>
+				<tbody id="tableB">
+					#foreach($place in ${placelist})
+					<tr>
+						<td><span class="inbl">$!{foreach.count}</span></td>
+						<td><span class="inbl">$!{place.name}</span></td>
+						<td><span class="inbl">$!{configMap.get($!{place.recordId}).venderNo}</span></td>
+						<td><span class="inbl">$!{invoiceMap.get($!{place.recordId}).taxrate}%</span></td>
+						<td><span class="inbl">
+							#if($VmUtils.eq($!{invoiceMap.get($!{place.recordId}).invoicetype},"ZYFP"))
+								增值税专用发票
+							#elseif($VmUtils.eq($!{invoiceMap.get($!{place.recordId}).invoicetype},"PTFP"))
+								增值税普通发票
+							#end
+						</span></td>
+						<td><span class="inbl">
+							#if($VmUtils.eq($!{invoiceMap.get($!{place.recordId}).taxcondition},"XGMNSR"))
+								小规模纳税人
+							#elseif($VmUtils.eq($!{invoiceMap.get($!{place.recordId}).taxcondition},"YBNSR"))
+								一般纳税人
+							#elseif($VmUtils.eq($!{invoiceMap.get($!{place.recordId}).taxcondition},"JYZS"))
+								一般纳税人（简易征收）
+							#end
+						</span></td>
+						<td><span class="inbl">$!{invoiceMap.get($!{place.recordId}).content}</span></td>
+						<td><span class="inbl"><a href="javascript:loadSettleDeatil('$!{place.recordId}');" >编辑配置</a></span></td>
+					</tr>
+					#end
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<div id="detailMark" style="display:none; height: 370px;overflow-y:auto;"></div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	document.getElements('tbody tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	$$('.tips').amTips();
+	getScrollWidth();
+});
+window.addEvents({
+	'resize':function(){
+		getScrollWidth();
+	},
+	'scroll':function(){
+		var navH = $('tableY').getPosition().y;
+		var scroH = this.getScroll().y;
+		if(scroH > navH){
+			$('tableY').setStyles({
+				'position':'fixed',
+				'top':'0px',
+				'margin-left':'-1px'
+			});
+			getScrollWidtha();
+		}else{
+			$('tableY').setStyles({
+				'position':'static'
+			});
+		};
+	}
+});
+
+function getScrollWidth(){
+	var otb_d= $('tableB').getElements('tr')[0];
+	var oth_d = $('tableY').getElements('tr')[0];
+	$('tableY').setStyle('width',$('tableB').getDimensions().width);
+	otb_d.getElements('td').each(function(item,index){
+		oth_d.getElements('th')[index].setStyle('width',(item.getDimensions().width-1)+'px');
+	})
+}
+function getScrollWidtha(){
+	var otb_d= $('tableB').getElements('tr')[0];
+	var oth_d = $('tableY').getElements('tr')[0];
+	$('tableB').setStyle('width',$('tableY').getDimensions().width);
+	oth_d.getElements('th').each(function(item,index){
+		otb_d.getElements('td')[index].setStyle('width',(item.getDimensions().width-1)+'px');
+	})
+}
+
+//查看详情
+function loadSettleDeatil(placeid){
+	var url = '${basePath}merchant/invoice/loadInvoiceConfigDetail.xhtml';
+	var values = {"placeid":placeid}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('detailMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','detailMark','编辑配置' ,400,'detailMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+function saveconfig() {
+	var placeid = $("mplaceid").value;
+	var minvoiceid = $("minvoiceid").value;
+	var minvoicetype = $("minvoicetype").value;
+	var mtaxrate = $("mtaxrate").value;
+	var mtaxcondition = $("mtaxcondition").value;
+	var mcontent = $("mcontent").value;
+	if(placeid == null || placeid == "") {
+		gewaUtil.alert("信息不完整！");
+		return;
+	}
+	if(minvoicetype == null || minvoicetype == "") {
+		gewaUtil.alert("请选择发票类型！");
+		return;
+	}
+	if(mtaxrate == null || mtaxrate == "") {
+		gewaUtil.alert("请选择税率！");
+		return;
+	}
+	if(mtaxcondition == null || mtaxcondition == "") {
+		gewaUtil.alert("请选择税务资质！");
+		return;
+	}
+	if("PTFP" == minvoicetype && (mcontent == null || mcontent == "")) {
+		gewaUtil.alert("增值税普通发票请备注好说明！");
+		return;
+	}
+	var url = "${basePath}merchant/invoice/saveInvoiceConfig.xhtml";
+	var values = {"recordid":minvoiceid, "placeid":placeid, "taxrate":mtaxrate, "invoicetype":minvoicetype , "taxcondition": mtaxcondition, "content":mcontent}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask(mid);
+		if(result.success == true){
+			gewaUtil.alert(result.retval, function() {location="${basePath}merchant/invoice/queryInvoiceConfig.xhtml"});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	}); 
+}
+</script>
+
+</body>
+</html>

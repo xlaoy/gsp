@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.drama.DramaPriceBill" table="drama_pricebill" schema="gsp">
+    
+       <id name="recordid" type="long">
+            <column name="recordid"  />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_drama_bill</param>
+			</generator>
+       </id>
+       
+       <property name="price"		column="price"	type="double" />
+       <property name="rate"		column="rate"	type="string" />
+       <property name="disticket"		column="disticket"	type="string" />
+       <property name="ticketnum"		column="ticketnum"	type="long" />
+       <property name="ticketamount"		column="ticketamount"	type="double" />
+       <property name="refundnum"		column="refundnum"	type="long" />
+       <property name="refundamount"		column="refundamount"	type="double" />
+       <property name="settleamount"		column="settleamount"	type="double" />
+       <property name="madisamount"		column="madisamount"	type="double" />
+       <property name="payamount"		column="payamount"	type="double" />
+       <property name="taopiaonum"		column="taopiaonum"	type="long" />
+       <property name="settlebillid"		column="settlebillid"	type="long" />
+       <property name="pricerateid"		column="pricerateid"	type="long" />
+       <property name="placeid"		column="placeid"	type="long" />
+       <property name="gspupdatetime"		column="gspupdatetime"	type="timestamp" />
+				        
+    </class>
+</hibernate-mapping>

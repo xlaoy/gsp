@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>影院结算平台</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="es" />
+	<link rel="stylesheet" type="text/css" href="http://img5.gewara.com/css/sportClient.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="http://img5.gewara.com/scripts/mootools.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="http://img5.gewara.com/scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<style type="text/css">
+		.htmlText{width:800px;margin:20px auto;padding:20px;background:#fff;font-size:14px;font-family: '宋体';}
+		.htmlText h1{display: block;text-align: center;font-size:20px;}
+		.htmlText h2{display: inline-block;width:auto;border-bottom:3px solid #FF6600;font-size:16px;line-height: 26px;margin:20px 0 15px;}
+		.htmlText .listText{padding-left:40px;}
+		.htmlText .listText a{line-height: 26px;}
+		.htmlText .listText a:hover{text-decoration: underline;color: #FF6600}
+		.htmlText .textP{line-height: 22px;margin-bottom:30px;}
+		.htmlText .textP b{font-size:16px;color:#FF6600}
+	</style>
+</head>
+<body>
+<div class="header">
+	<div class="title">
+		<div class="left">
+			<h1 class="left">影院结算平台</h1>
+			<span style="float:left;display: inline-block;font-size:12px;margin:1px 0 0 -7px;">公测版</span>
+			<ul class="left ml30">
+				<li><a href="/gsp/merchant/settlement/settlementbills.xhtml" title="结算单">结算单</a></li>
+				<li><a href="/gsp/merchant/checkBill/checkbills.xhtml" title="日对账明细">日对账明细</a></li>
+				<li><a href="/gsp/merchant/gewaorder/queryPlayItemAggre.xhtml" title="场次明细">场次明细</a></li>
+				<li><a href="/gsp/merchant/gewaorder/queryGewarOrder.xhtml" title="订单明细">订单明细</a></li>
+				<li><a href="/gsp/merchant/settlement/queryPayBills.xhtml" title="收款单">收款单</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<div class="bodyBox">
+	<div class="htmlText">
+		<h1>结算模块使用说明文档</h1>
+		<h2>目录</h2>
+		<ul class="listText">
+			<li><a href="javascript:gewa.util.pagePos('employ');">1、如何结算？</a></li>
+			<li><a href="javascript:gewa.util.pagePos('isChecked');">2、怎样判断结算数据正确性</a></li>
+			<li><a href="javascript:gewa.util.pagePos('dataCheck');">3、结算数据有问题时怎么解决</a></li>
+			<li><a href="javascript:gewa.util.pagePos('dataProblem');">4、导致结算数据出现问题的几种情况</a></li>
+			<li><a href="javascript:gewa.util.pagePos('isFlow');">5、结算流程图</a></li>
+			<li><a href="javascript:gewa.util.pagePos('dataExplain');">6、结算小结</a></li>
+		</ul>
+		<h2 id="employ">1、如何结算？</h2>
+		<div class="textP listText">
+			<p><b>第一步：</b>登录商户系统。</p>
+			<p><img src="http://img5.gewara.com/css/buss/gsp_help_01.jpg"/></p>
+			<p>登录链接地址：<a href="http://cinema.gewara.com/cinemapro/login.xhtml">http://cinema.gewara.com/cinemapro/login.xhtml</a></p>
+		</div>
+		<div class="textP listText">
+			<p><b>第二步：</b>点击结算模块。</p>
+			<p><img src="http://img5.gewara.com/css/buss/gsp_help_02.jpg"/></p>
+		</div>
+		<div class="textP listText">
+			<p><b>第三步：</b>进入影院结算平台。</p>
+			<p>可以通过交易场馆、结算周期及结算状态来筛选结算单。</p>
+			<p><img src="http://img5.gewara.com/css/buss/gsp_help_03.jpg"/></p>
+		</div>
+		<div class="textP listText">
+			<p><b>第四步：</b>关注列表中状态为等待确认的结算单并核对。</p>
+			<p>勾选或者确认需要结算的结算单。</p>
+			<p><img src="http://img5.gewara.com/css/buss/gsp_help_04.jpg"/></p>
+			<p><img src="http://img5.gewara.com/css/buss/gsp_help_05.jpg"/></p>
+			<p>在这一步的时候需要注意，只需关注状态一栏为“等待确认”的数据；每一行代表一个结算周期的数据汇总；所有数据汇总的依据均来自这个周期内产生的订单，并可通过查看详细，查询到此结算周期内每日的出票量、每场次出票情况及详细订单；核对无误则点击“确认通过”链接或者在表头复选框 上打钩；后统一通过“确认结算已选择”按钮操作。</p>
+		</div>
+		<div class="textP listText">
+			<p><b>第五步：</b>结算状态改变。</p>
+			<p>确认结算一笔结算单后，结算状态将会改变成“已确认”。</p>
+			<p><img src="http://img5.gewara.com/css/buss/gsp_help_06.jpg"/></p>
+			<p>这个步骤代表已经通过影院的审核，此状态的结算单将反馈给格瓦拉结算人员确认后付款。</p>
+		</div>
+		<div class="textP listText">
+			<p><b>第六步：</b>查看收款情况。</p>
+			<p>当结算单状态变为“已结算”，影院就可以在收款单中查询收款单，用以核对银行收款记录。</p>
+			<p><img src="http://img5.gewara.com/css/buss/gsp_help_07.jpg"/></p>
+			<p>这个步骤代表已经通过影院的审核，此状态的结算单将反馈给格瓦拉结算人员确认后付款。</p>
+		</div>
+		<div class="textP listText">
+			<p><b>第七步：</b>结算完毕。</p>
+		</div>
+		<h2 id="isChecked">2、怎样判断结算数据正确性</h2>
+		<div class="textP listText">
+			<p><b>第一：</b>进入结算平台看到的结算单数据，完全来自影院在格瓦拉生活网产生的订单数据（目前版本仅支持影院系统直接出票的订单）。每一分钱都是以出票成功订单为依据的，包括每一笔订单状态都会展示给影院。</p>
+			<p><img src="http://img5.gewara.com/css/buss/gsp_help_08.jpg"/></p>
+		</div>
+		<div class="textP listText">
+			<p><b>第二：</b>每一笔结算单，影院都可以点击后面的查看详情链接去查看详细。</p>
+			<p><img src="http://img5.gewara.com/css/buss/gsp_help_09.jpg"/></p>
+		</div>
+		<div class="textP listText">
+			<p><b>第三：</b>格瓦拉结算模块每天都会按照合作影院的结算时间点（如：00:00到00:00）生成日对账明细，并为排查每一天数据是否正常提供直接依据。</p>
+			<p><img src="http://img5.gewara.com/css/buss/gsp_help_10.jpg"/></p>
+		</div>
+		<div class="textP listText">
+			<p><b>第四：</b>格瓦拉结算模块可查询每日具体场次的结算数据汇总。</p>
+			<p><img src="http://img5.gewara.com/css/buss/gsp_help_11.jpg"/></p>
+		</div>
+		<div class="textP listText">
+			<p><b>第五：</b>影院可查看每一个场次产生的订单的详细情况。</p>
+			<p><img src="http://img5.gewara.com/css/buss/gsp_help_12.jpg"/></p>
+			<p>通过以上五点，可以保证订单数据是结算核心依据；避免出现结算数据无意增加或减少等情况！</p>
+		</div>
+		<h2 id="dataCheck">3、结算数据有问题时怎么解决</h2>
+		<div class="textP listText">
+			<p><b>第一步：</b>首先确认问题所在，并准备一份可靠的订单数据反馈给格瓦拉。</p>
+		</div>
+		<div class="textP listText">
+			<p><b>第二步：</b>点击结算单中的申请调整链接。</p>
+			<p><img src="http://img5.gewara.com/css/buss/gsp_help_13.jpg"/></p>
+		</div>
+		<div class="textP listText">
+			<p><b>第三步：</b>反馈问题或提交订单数据给格瓦拉。</p>
+			<p><img src="http://img5.gewara.com/css/buss/gsp_help_14.jpg"/></p>
+		</div>
+		<div class="textP listText">
+			<p><b>第四步：</b>问题反馈后，该笔结算单会直接反馈到格瓦拉结算人员，随后会及时进行排查处理。处理完毕后，会再次等待影院确认调整后的结算数据是否正确。</p>
+		</div>
+		<h2 id="dataProblem">4、导致结算数据出现问题的几种情况</h2>
+		<div class="textP listText">
+			<p><b>第一：</b>上期数据结算之后，发生了退票的情况。即已结算订单在后期退票。</p>
+		</div>
+		<div class="textP listText">
+			<p><b>第二：</b>场次已经出票，但由于特定因素需要修改原先设置的结算价。</p>
+		</div>
+		<div class="textP listText">
+			<p><b>第三：</b>场次调整或更换后产生的退票订单。</p>
+		</div>
+		<div class="textP listText">
+			<p><b>第四：</b>场次结算价格设置错误。</p>
+		</div>
+		<h2 id="isFlow">5、结算流程图</h2>
+		<div class="textP listText">
+			<p><img src="http://img5.gewara.com/css/buss/gsp_help_15.jpg"/></p>
+		</div>
+		<h2 id="dataExplain">6、结算小结</h2>
+		<div class="textP listText">
+			<p>a、	结算单，是结算的基本单位，一个结算周期对应一个结算单，即按照与影院约定的结算周期生成的订单汇总数据。</p>
+		</div>
+		<div class="textP listText">
+			<p>b、	日对账明细，是统计的基本单位，一个结算单对应多个或一个日对账明细，按照与影院约定的结算时间点（如：00:00到00:00），以一天为单位的订单汇总数据。日对账明细数据为未等待确认状态时，由于退票会发生变化。</p>
+		</div>
+		<div class="textP listText">
+			<p>c、	场次详情，是影院在一个时间段内按照场次汇总所产生的订单数据。</p>
+		</div>
+		<div class="textP listText">
+			<p>d、	订单明细，是影院在一个时间段内产生的订单详细数据。</p>
+		</div>
+		<div class="textP listText">
+			<p>e、	收款单，是影院与格瓦拉结算后，收到的款项证明之一。</p>
+		</div>
+		<div class="textP listText">
+			<p>f、结算状态；等待确认，是指到达结算时间点后（一般为结算期结束后的第三天），格瓦拉结算模块提供的需要影院方审核并确认的结算单状态</p>
+		</div>
+		<div class="textP listText">
+			<p>g、结算状态；已确认，是影院确认结算后的状态。</p>
+		</div>
+		<div class="textP listText">
+			<p>h、结算状态；申请调整，是影院确认时发现数据有问题并提交给格瓦拉结算人员处理的状态。</p>
+		</div>
+		<div class="textP listText">
+			<p>i、结算状态；d)	已结算，是影院与格瓦拉双方都完成结算确认，并已经产生收款单的状态。</p>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	window.addEvent('domready',function(){
+		autoCountHeight();
+	});
+	function autoCountHeight(flag){
+		var id = parent.document.getElementById('coverForm');
+		if(id){
+			id.style.height = window.innerHeight+'px';
+		}
+		if(flag)return;
+		document.addEvent('resize',function(){
+			autoCountHeight(true);
+		});
+	}
+</script>
+
+</body>
+</html>

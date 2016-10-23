@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body id="_body">
+	<div>
+		<table border="1">
+			<thead>
+				<tr>
+					<th colspan="7" style="font-weight: bold;">结算单信息</th>
+					<th colspan="5" style="font-weight: bold; background: #1FF139;">实际数</th>
+					<th colspan="5" style="font-weight: bold; background: #F6F933;">计提数</th>
+					<th colspan="5" style="font-weight: bold; background: #33E7F9;">调整数</th>
+				</tr>
+				<tr>
+					<th>结算单号</th>
+					<th>结算类型</th>
+					<th>影院场馆</th>
+					<th>业务供应商编号</th>
+					<th>开始时间</th>
+					<th>结束时间</th>
+					<th>税率</th>
+					
+					<th style="background: #1FF139;">结算金额</th>
+					<th style="background: #1FF139;">开票金额</th>
+					<th style="background: #1FF139;">不开票金额</th>
+					<th style="background: #1FF139;">不含税金额</th>
+					<th style="background: #1FF139;">税额</th>
+					
+					<th style="background: #F6F933;">结算金额</th>
+					<th style="background: #F6F933;">开票金额</th>
+					<th style="background: #F6F933;">不开票金额</th>
+					<th style="background: #F6F933;">不含税金额</th>
+					<th style="background: #F6F933;">税额</th>
+					
+					<th style="background: #33E7F9;">结算金额</th>
+					<th style="background: #33E7F9;">开票金额</th>
+					<th style="background: #33E7F9;">不开票金额</th>
+					<th style="background: #33E7F9;">不含税金额</th>
+					<th style="background: #33E7F9;">税额</th>
+				</tr>
+			</thead>
+			#if($silist && $silist.size() > 0)
+			<tbody>
+				#foreach($si in ${silist})
+				<tr>
+					<td style="vnd.ms-excel.numberformat:@">$!{si.recordid}</td>
+					<td style="vnd.ms-excel.numberformat:@">影票结算单</td>
+					<td style="vnd.ms-excel.numberformat:@">$!{si.placename}</td>
+					<td style="vnd.ms-excel.numberformat:@">$!{si.vendercode}</td>
+					<td style="vnd.ms-excel.numberformat:@">$!DateUtil.formatTimestamp($!{si.starttime})</td>
+					<td style="vnd.ms-excel.numberformat:@">$!DateUtil.formatTimestamp($!{si.endtime})</td>
+					<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{si.taxrate})%</td>
+					
+					<td style="vnd.ms-excel.numberformat:@; background: #1FF139;">$!CurrencyFmt.format($!{si.jsamount})</td>
+					<td style="vnd.ms-excel.numberformat:@; background: #1FF139;">$!CurrencyFmt.format($!{si.jskpamount})</td>
+					<td style="vnd.ms-excel.numberformat:@; background: #1FF139;">$!CurrencyFmt.format($!{si.jsbkpamount})</td>
+					<td style="vnd.ms-excel.numberformat:@; background: #1FF139;">$!CurrencyFmt.format($!{si.jsbhsamount})</td>
+					<td style="vnd.ms-excel.numberformat:@; background: #1FF139;">$!CurrencyFmt.format($!{si.jstaxamount})</td>
+					
+					<td style="vnd.ms-excel.numberformat:@; background: #F6F933;">$!CurrencyFmt.format($!{si.jtamount})</td>
+					<td style="vnd.ms-excel.numberformat:@; background: #F6F933;">$!CurrencyFmt.format($!{si.jtkpamount})</td>
+					<td style="vnd.ms-excel.numberformat:@; background: #F6F933;">$!CurrencyFmt.format($!{si.jtbkpamount})</td>
+					<td style="vnd.ms-excel.numberformat:@; background: #F6F933;">$!CurrencyFmt.format($!{si.jtbhsamount})</td>
+					<td style="vnd.ms-excel.numberformat:@; background: #F6F933;">$!CurrencyFmt.format($!{si.jttaxamount})</td>
+					
+					<td style="vnd.ms-excel.numberformat:@; background: #33E7F9;">$!CurrencyFmt.format($!{si.tzamount})</td>
+					<td style="vnd.ms-excel.numberformat:@; background: #33E7F9;">$!CurrencyFmt.format($!{si.tzkpamount})</td>
+					<td style="vnd.ms-excel.numberformat:@; background: #33E7F9;">$!CurrencyFmt.format($!{si.tzbkpamount})</td>
+					<td style="vnd.ms-excel.numberformat:@; background: #33E7F9;">$!CurrencyFmt.format($!{si.tzbhsamount})</td>
+					<td style="vnd.ms-excel.numberformat:@; background: #33E7F9;">$!CurrencyFmt.format($!{si.tztaxamount})</td>
+				#end
+			</tbody>
+			#end
+		</table>
+	</div>
+</body>
+</html>

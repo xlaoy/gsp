@@ -1,0 +1,6 @@
+<a href='javascript:goback();' style="display: inline-block;height:30px;line-height:30px;padding:0px 16px 0 40px;background:url(${staticPath}/css/buss/left_round.png) 2px center no-repeat;color:#DD4232;font-size: 14px;">返回上一页</a>
+<script>
+	function goback(){
+		window.history.back();
+	}
+</script>

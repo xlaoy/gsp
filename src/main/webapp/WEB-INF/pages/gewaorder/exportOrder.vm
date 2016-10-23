@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>订单明细</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+</head>
+<body id="_body">
+<div class="inner">
+
+	#set($nvg="exportGewarOrder")
+	#parse('WEB-INF/pages/nvaig/ordernvaig.vm')
+	
+	<div class="mode_search">
+		<h2>订单导出</h2>
+		<div>
+			类别：
+			<select id="whatordertype" class="text" style="width: 100px;">
+				<option value="TICKET">影票</option>
+				<option value="GOODS">卖品</option>
+			</select>
+			<select id="whatTime" class="text" style="width: 100px;">
+				<option value="dealTime">下单时间</option>
+				<option value="useTime">使用时间</option>
+			</select>
+			<select id="whatcate" class="text" style="width: 100px;">
+				<option value="ZL">直连系统</option>
+				<option value="XN">虚拟系统</option>
+				<option value="GW">票务系统</option>
+				<option value="WP">微票系统</option>
+			</select>
+			时间：
+			<input style="width:150px;" id="orderstartTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" 
+										onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'orderendTime\')||\'2020-10-01 00:00:00\'}'})"/>至
+			<input style="width:150px;" id="orderendTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" 
+										onFocus="WdatePicker({minDate:'#F{$dp.$D(\'orderstartTime\')}',maxDate:'2020-10-01 00:00:00'})"/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="javascript:orderexport();" class="button minBt whiteBt"><span>导出</span></a><br>
+			<p style="margin: 5px;">影院id序列：（多个影院id中间使用英文逗号隔开，如要导出“龙溪中影嘉莱影城 ”和“龙影DMAX影城 ”的订单，下面填写：273853961,132744473 &nbsp;&nbsp; 注意结尾不能有逗号，一次最多100个影院！！）</p>
+			<textarea rows="5" cols="150" id="orderplaceIds"></textarea>
+		</div>
+		<script type="text/javascript">
+			function orderexport() {
+				var ordertype = document.getElementById("whatordertype").value;
+				if(ordertype == "" || ordertype == null) {
+					return;
+				}
+				var whatTime = document.getElementById("whatTime").value;
+				if(whatTime == "" || whatTime == null) {
+					return;
+				}
+				var whatcate = document.getElementById("whatcate").value;
+				if(whatcate == "" || whatcate == null) {
+					return;
+				}
+				var startTime = document.getElementById("orderstartTime").value;
+				if(startTime == "" || startTime == null) {
+					return;
+				}
+				var endTime = document.getElementById("orderendTime").value;
+				if(endTime == "" || endTime == null) {
+					return;
+				}
+				var orderplaceIds = document.getElementById("orderplaceIds").value;
+				if(orderplaceIds == "" || orderplaceIds == null) {
+					return;
+				}
+				var t = orderplaceIds.split(",");
+				if(t.length > 100) {
+					gewaUtil.alert("影院个数超过100！");
+					return;
+				}
+				location = "${basePath}platform/settlement/exportOrder.xhtml?start=" + startTime
+						+ "&end=" + endTime
+						+ "&type=" + whatTime
+						+ "&placeIds=" + orderplaceIds
+						+ "&cate=" + whatcate
+						+ "&ordertype=" + ordertype;
+			}
+		</script>
+	</div>
+	
+	<div class="mode_search">
+		<h2>退单导出</h2>
+		<div>
+			类别：
+			<select id="refundordertype" class="text" style="width: 100px;">
+				<option value="TICKET">影票</option>
+				<option value="GOODS">卖品</option>
+			</select>
+			<select id="refundwhatTime" class="text" style="width: 100px;">
+				<option value="refundTime">退单时间</option>
+				<option value="useTime">使用时间</option>
+			</select>
+			<select id="refundwhatcate" class="text" style="width: 100px;">
+				<option value="ZL">直连系统</option>
+				<option value="XN">虚拟系统</option>
+				<option value="GW">票务系统</option>
+				<option value="WP">微票系统</option>
+			</select>
+			时间：
+			<input style="width:150px;" id="refundstartTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" 
+										onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'refundendTime\')||\'2020-10-01 00:00:00\'}'})"/>至
+			<input style="width:150px;" id="refundendTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" 
+										onFocus="WdatePicker({minDate:'#F{$dp.$D(\'refundstartTime\')}',maxDate:'2020-10-01 00:00:00'})"/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="javascript:tuipiao();" class="button minBt whiteBt"><span>导出</span></a><br>
+			<p style="margin: 5px;">影院id序列：（多个影院id中间使用英文逗号隔开，如要导出“龙溪中影嘉莱影城 ”和“龙影DMAX影城 ”的订单，下面填写：273853961,132744473 &nbsp;&nbsp; 注意结尾不能有逗号，一次最多100个影院！！）</p>
+			<textarea rows="5" cols="150" id="refundPlaceIds"></textarea>
+		</div>
+		<script type="text/javascript">
+			function tuipiao() {
+				var ordertype = document.getElementById("refundordertype").value;
+				if(ordertype == "" || ordertype == null) {
+					return;
+				}
+				var whatTime = document.getElementById("refundwhatTime").value;
+				if(whatTime == "" || whatTime == null) {
+					return;
+				}
+				var whatcate = document.getElementById("refundwhatcate").value;
+				if(whatcate == "" || whatcate == null) {
+					return;
+				}
+				var startTime = document.getElementById("refundstartTime").value;
+				if(startTime == "" || startTime == null) {
+					return;
+				}
+				var endTime = document.getElementById("refundendTime").value;
+				if(endTime == "" || endTime == null) {
+					return;
+				}
+				var orderplaceIds = document.getElementById("refundPlaceIds").value;
+				if(orderplaceIds == "" || orderplaceIds == null) {
+					return;
+				}
+				var t = orderplaceIds.split(",");
+				if(t.length > 100) {
+					gewaUtil.alert("影院个数超过100！");
+					return;
+				}
+				location = "${basePath}platform/settlement/exportRefund.xhtml?start=" + startTime 
+						+ "&end=" + endTime 
+						+ "&type=" + whatTime 
+						+ "&placeIds=" + orderplaceIds 
+						+ "&cate=" + whatcate 
+						+ "&ordertype=" + ordertype;
+			}
+		</script>
+	</div>
+	
+	<div class="mode_search">
+		<h2>自赔订单导出</h2>
+		<div>
+			 月份（按下单时间统计）：
+			<input style="width:150px;" onclick="WdatePicker({dateFmt:'yyyy-MM'})" class="Wdate" onFocus="WdatePicker({dateFmt:'yyyy-MM'})" id="zipeimonth"/>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="javascript:exportzipei();" class="button minBt whiteBt" ><span>导出</span></a>
+		</div>
+		<script type="text/javascript">
+			function exportzipei() {
+				var mounth = document.getElementById("zipeimonth").value;
+				if(mounth == "" || mounth == null) {
+					return;
+				}
+				location = "${basePath}platform/settlement/exportZipeiOrder.xhtml?month=" + mounth;
+			}
+		</script>
+	</div>
+	
+</div>
+
+
+<script type="text/javascript">
+
+window.addEvent('domready',function(){
+	lockMenu();
+});
+function lockMenu(){
+	var menus = parent.document.getElements('#navleftid a');
+	if(menus)menus.filter(function(link){
+			link.removeClass('select');
+			return link.get('href').indexOf(document.location.pathname) >= 0;
+		}).addClass('select');
+}
+</script>
+</body>
+</html>

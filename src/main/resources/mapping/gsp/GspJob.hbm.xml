@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.gewara.model.GspJob" table="gsp_job">
+		<id name="tag" type="string" column="tag">
+        	<generator class="assigned"/>
+		</id>
+        <property name="status" type="string">
+            <column name="status"/>
+        </property>
+        <property name="updateTime" type="timestamp">
+            <column name="update_time"/>
+        </property>
+	</class>
+</hibernate-mapping>

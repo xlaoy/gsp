@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.PointCardPlaceBill" table="pointcard_placebill" schema="gsp">
+    
+       <id name="recordid" type="long">
+            <column name="recordid"  />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_settlement_bill</param>
+			</generator>
+       </id>
+       
+       <property name="cinemaid"		column="cinemaid"	type="long" />
+       <property name="cinemaname"		column="cinemaname"	type="string" />
+       <property name="ctype"		column="ctype"	type="string" />
+       <property name="starttime"		column="starttime"	type="timestamp" />
+       <property name="endtime"		column="endtime"	type="timestamp" />
+       <property name="successnum"		column="successnum"	type="integer" />
+       <property name="successamount"		column="successamount"	type="double" />
+       <property name="refundnum"		column="refundnum"	type="integer" />
+       <property name="refundamount"		column="refundamount"	type="double" />
+       <property name="totalnum"		column="totalnum"	type="integer" />
+       <property name="totalamount"		column="totalamount"	type="double" />
+       <property name="kpamount"		column="kpamount"	type="double" />
+       <property name="relatedbillid"		column="relatedbillid"	type="long" />
+       <property name="partnerid"		column="partnerid"	type="long" />
+    </class>
+</hibernate-mapping>

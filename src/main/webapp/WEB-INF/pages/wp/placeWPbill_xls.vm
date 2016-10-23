@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+
+<body id="_body">
+	<div>
+		<table border="1">
+			<thead>
+				<tr>
+					<th style="width:7%;">编号</th>
+					<th style="width:20%;">影院名称</th>
+					<th style="width:8%;">统计类型</th>
+					<th style="width:25%;">统计周期</th>
+					<th style="width:8%;">出票数量</th>
+					<th style="width:8%;">出票金额</th>
+					<th style="width:8%;">退票数量</th>
+					<th style="width:8%;">退票金额</th>
+					<th style="width:8%;">开票金额</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($ck in ${ckList})
+					<tr>
+						<td>$ck.recordId</td>
+						<td>$!pmap.get($ck.configId).name</td>
+						<td>
+							#if($VmUtils.eq($!{ck.special},"DAY"))
+								按天
+							#elseif($VmUtils.eq($!{ck.special},"MONTH"))
+								按月
+							#end
+						</td>
+						<td>[ $!DateUtil.formatTimestamp($!{ck.start}) - $!DateUtil.formatTimestamp($!{ck.end}) )</td>
+						<td>$VmUtils.getTotal($ck.succTicketNumber)</td>
+						<td>$!CurrencyFmt.format($ck.succTicketAmount)</td>
+						<td>$VmUtils.getTotal($ck.refundTotalNumber)</td>
+						<td>$!CurrencyFmt.format($ck.refundTotalAmount)</td>
+						<td>$!CurrencyFmt.format($ck.billingamount)</td>
+					</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

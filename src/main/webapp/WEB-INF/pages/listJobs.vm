@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>执行JOB</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<script type="text/javascript">
+		function selectMethodByService(value){
+			var obj = document.getElementById("method");
+			obj.options.length=0;
+			if(value == 'dataExtractionJob'){
+				obj.options.add(new Option('syncRefundment','syncRefundment'));
+				obj.options.add(new Option('syncGoodsOrder','syncGoodsOrder'));
+				obj.options.add(new Option('syncPlace','syncPlace'));
+				obj.options.add(new Option('syncPlayItemPrice','syncPlayItemPrice'));
+				obj.options.add(new Option('syncOrder','syncOrder'));
+				obj.options.add(new Option('syncSettleConfig','syncSettleConfig'));
+				obj.options.add(new Option('syncChannleConfig','syncChannleConfig'));
+				obj.options.add(new Option('sysDiffPriceOrder','sysDiffPriceOrder'));
+				obj.options.add(new Option('sysBaoChang','sysBaoChang'));
+			}else if(value == 'channelSettleJob'){
+				obj.options.add(new Option('generateChannelCheckBill','generateChannelCheckBill'));
+				obj.options.add(new Option('generateChannelSettleBill','generateChannelSettleBill'));
+				obj.options.add(new Option('doChannelSettleFilling','doChannelSettleFilling'));
+			}else if(value == 'goodsSettleJob'){
+				obj.options.add(new Option('generateGoodsCheckBill','generateGoodsCheckBill'));
+				obj.options.add(new Option('generateGoodsSettleBill','generateGoodsSettleBill'));
+				obj.options.add(new Option('doGoodsSettleFilling','doGoodsSettleFilling'));
+				obj.options.add(new Option('updateGoodsTakeTime','updateGoodsTakeTime'));
+			}else if(value == 'billsGenerateJob'){
+				obj.options.add(new Option('baochangFulling','baochangFulling'));
+				obj.options.add(new Option('generateSettlementBill','generateSettlementBill'));
+				obj.options.add(new Option('autoTomerchant','autoTomerchant'));
+				obj.options.add(new Option('uploadBill','uploadBill'));
+			}else if(value == 'miscJob'){
+				obj.options.add(new Option('validateNumber','validateNumber'));
+			}else if(value == 'wandaOrderJob'){
+				obj.options.add(new Option('doWandaOrderJob','doWandaOrderJob'));
+			}else{
+				alert("请配置该任务下的方法");
+			}
+	  	}
+		function reflect(){
+			var service = document.getElementById("service").options[document.getElementById("service").selectedIndex].value;
+			var method = document.getElementById("method").options[document.getElementById("method").selectedIndex].value;
+			var form = document.getElementById("jobName");
+			gewa.util.issure('','确定要执行该JOB？<br><h3>service:'+'<font color="red">'+service+'</font><br>method:' + '<font color="red">'+ method + '</font>' + '</h3>','注意',420,'keys',function(calls,id){
+				var url = "/gsp/commonTask/exeJobTask.xhtml?b="+service+"&m="+method;
+				window.open(url);
+				gewa.util.container['keys'].dispose('keys');
+			});
+		}
+	</script>
+	<style type="text/css">
+		body{TEXT-ALIGN: center;}
+		#center{ 
+		height:200px;
+		background:#898989;
+		width:700px;
+		vertical-align:middle;
+		margin: 300px auto 200px;
+		line-height:200px;
+		font-size:24;
+		font-weight:900;
+		}
+	</style>
+	<body>
+		<div id="center">
+			<form action="" id="jobName" method="get">
+				<label for="service">请选择service</label>
+				<select id="service" onchange="javascript:selectMethodByService(this.options[this.selectedIndex].text);"  class="text">
+					<option value="dataExtractionJob">dataExtractionJob</option>
+					<option value="miscJob">miscJob</option>
+					<option value="billsGenerateJob">billsGenerateJob</option>
+					<option value="goodsSettleJob">goodsSettleJob</option>
+					<option value="channelSettleJob">channelSettleJob</option>
+					<option value="wandaOrderJob">wandaOrderJob</option>
+				</select>
+				<label for="method">请选择method</label>
+				<select id="method"  class="text">
+					<option value="syncRefundment">syncRefundment</option>
+					<option value="syncGoodsOrder">syncGoodsOrder</option>
+					<option value="syncPlace">syncPlace</option>
+					<option value="syncPlayItemPrice">syncPlayItemPrice</option>
+					<option value="syncOrder">syncOrder</option>
+					<option value="sysDiffPriceOrder">sysDiffPriceOrder</option>
+					<option value="sysBaoChang">sysBaoChang</option>
+				</select>
+				<input type="button" onclick="javascript:reflect();" value="执行" class="button minBt whiteBt">
+			</form>
+		</div>
+		<div id="keys"></div>
+	</body>
+</html>

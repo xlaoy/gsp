@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>订单明细</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+</head>
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryGewarOrderByTrandeno")
+	#parse('WEB-INF/pages/nvaig/ordernvaig.vm')
+	<div class="mode_search">
+		<form action="${basePath}platform/gewaorder/queryGewarOrderByTrandeno.xhtml" method="post" onkeydown="javascript:submitByEnter();">
+			<div >
+				订单号：<input type="text" class="text" name="tradeNo" id="tradeNo" value="$!{params.tradeNo}"/> 
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<a href="javascript:document.forms[0].submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+			</div>
+		</form>
+		#if($o)
+		<br>
+		<h2>订单详情：</h2>
+		<table class="tableGear">
+			<tr>
+				<td width="10%;">订单号：</td>
+				<td width="20%;">$!{o.tradeno}</td>
+				<td width="10%;">下单日期：</td>
+				<td width="20%;">$!DateUtil.formatTimestamp($!{o.dealTime}) </td>
+				<td width="10%;">订单类型：</td>
+				<td >#if($VmUtils.eq("TICKET",$!o.tag))
+						影票
+					#elseif($VmUtils.eq("GOODS",$!o.tag))
+						卖品
+					#end
+				</td>
+			</tr>
+			<tr>
+				<td width="10%;">结算金额：</td>
+				<td width="20%;">$!CurrencyFmt.format($!{o.totalCost})</td>
+				<td width="10%;">结算单价：</td>
+				<td width="20%;">$VmUtils.calculate("$!{o.totalCost}","$!{o.quantity}","/")</td>
+				<td width="10%;">Gewa付款-瓦币支付：</td>
+				<td >$!CurrencyFmt.format($!{o.alipaid})（影院开票给用户）</td>
+			</tr>
+			<tr>
+				<td width="10%;">商品数量：</td>
+				<td width="20%;">$!{o.quantity}</td>
+				<td width="10%;">对账码：</td>
+				<td width="20%;">$!{o.outerId}</td>
+				<td width="10%;">优惠+瓦币：</td>
+				<td >$!CurrencyFmt.format($!{o.discount})（影院开票给GW）</td>
+			</tr>
+			<tr>
+				<td width="10%;">订单状态：</td>
+				<td width="20%;">
+					#if($VmUtils.eq("paid_success",$!o.orderStatus))
+						成功
+					#elseif($VmUtils.eq("paid_return",$!o.orderStatus))
+						退款
+					#end
+				</td>
+				<td width="10%;">影票对账单：</td>
+				<td width="20%;">$!{o.checkBillId}</td>
+				<td width="10%;">影票结算单：</td>
+				<td >
+					<a href="javascript:loadSettleDeatil('$!{checkbill.settlementId}');">$!{checkbill.settlementId}</a>
+				</td>
+			</tr>
+			<tr>
+				<td width="10%;">订单系统：</td>
+				<td width="20%;">$!{o.category}</td>
+				<td width="10%;">使用时间：</td>
+				<td width="20%;">$!DateUtil.formatTimestamp($!{o.useTime}) </td>
+				<td width="10%;">同步时间：</td>
+				<td >$!DateUtil.formatTimestamp($!{o.syncTime}) </td>
+			</tr>
+			<tr>
+				<td width="10%;">取票时间：</td>
+				<td width="20%;">$!DateUtil.formatTimestamp($!{o.takeTime}) </td>
+				<td width="10%;">更新时间：</td>
+				<td width="20%;">$!DateUtil.formatTimestamp($!{o.updateTime})（上海后台更新时间） </td>
+				<td width="10%;">special：</td>
+				<td >$!{o.special}</td>
+			</tr>
+			<tr>
+				<td width="10%;">包场信息：</td>
+				<td width="20%;">$!{o.userBaochang}</td>
+				<td width="10%;">用户是否开票：</td>
+				<td width="20%;">$!{o.isAdjusted}</td>
+				<td width="10%;">其他信息：</td>
+				<td >$!{o.otherInfo}</td>
+			</tr>
+			<tr>
+				<td width="10%;">特价扣减：</td>
+				<td width="20%;">$!{o.placeallowance}</td>
+				<td width="10%;"></td>
+				<td width="20%;"></td>
+				<td width="10%;"></td>
+				<td ></td>
+			</tr>
+		</table>
+		#else
+		<div class="ui_warning">没有订单数据。</div>
+		#end
+		
+		#if($r)
+		<br>
+		<br>
+		<h2>退单详情：</h2>
+		<table class="tableGear">
+			<tr>
+				<td width="10%;">订单号：</td>
+				<td width="20%;">$!{r.tradeno}</td>
+				<td width="10%;">退票时间：</td>
+				<td width="20%;">$!DateUtil.formatTimestamp($!{r.refundTime}) </td>
+				<td width="10%;">退票数量：</td>
+				<td >$!{r.quantity}</td>
+			</tr>
+			<tr>
+				<td width="10%;">oldSettle：</td>
+				<td width="20%;">$!{r.oldSettle}</td>
+				<td width="10%;">newSettle：</td>
+				<td width="20%;">$!{r.newSettle}</td>
+				<td width="10%;">对账单号：</td>
+				<td >$!{r.checkBillId}</td>
+			</tr>
+			<tr>
+				<td width="10%;">结算单号：</td>
+				<td width="20%;">
+					<a href="javascript:loadSettleDeatil('$!{r.settleBillId}');">$!{r.settleBillId}</a>
+				</td>
+				<td width="10%;">同步时间：</td>
+				<td width="20%;">$!DateUtil.formatTimestamp($!{r.syncTime})</td>
+				<td width="10%;">退单系统</td>
+				<td >$!{r.category}</td>
+			</tr>
+			<tr>
+				<td width="10%;">special：</td>
+				<td width="20%;">$!{r.special}</td>
+				<td width="10%;">applyInfo：</td>
+				<td width="20%;">$!{r.applyInfo}</td>
+				<td width="10%;">dealInfo：</td>
+				<td >$!{r.dealInfo}</td>
+			</tr>
+		</table>
+		#else
+		<div class="ui_warning">没有退单数据。</div>
+		#end
+		
+	</div>
+	
+</div>
+
+<div id="detailMark" style="display:none; height: 450px;overflow-y:auto;"></div>
+<script type="text/javascript">
+function submitByEnter(){
+    if(event.keyCode == 13){
+     document.forms[0].submit();
+    }
+}
+
+window.addEvent('domready',function(){
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+});
+
+
+//查看详情
+function loadSettleDeatil(settleId){
+	var url = '${basePath}platform/settlement/settleMore.xhtml';
+	var values = {"recordId":settleId}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('detailMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','detailMark','结算单' + settleId ,850,'detailMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+</script>
+</body>
+</html>

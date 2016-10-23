@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html style="background: #fff;">
+<head>
+<title>演出</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+<style type="text/css">
+.detailtable{width: 100%;}
+.detailtable td{height: 40px; line-height: 40px;}
+.s{background:#f0f0f0;}
+</style>
+</head>
+
+<body id="_body">
+<div class="inner">
+
+	<div class="mode_search">
+		<a href="${basePath}/platform/drama/exportOrderItem.xhtml?recordid=$!{pricebill.recordid}&isXls=xls" class="button minBt whiteBt">导出订单条目</a>
+	</div>
+
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th style="width:6%;">订单号</th>
+					<th style="width:6%;">订单状态</th>
+					<th style="width:10%;">下单时间</th>
+					<th style="width:10%;">付款时间</th>
+					<th style="width:6%;">用户id</th>
+					<th>用户名</th>
+					<th style="width:10%;">用户组</th>
+					<th style="width:6%;">票面价格</th>
+					<th style="width:6%;">出票数量</th>
+					<th style="width:6%;">出票金额</th>
+					<th style="width:6%;">套票套数</th>
+					<th style="width:6%;">是否退票</th>
+					<th style="width:6%;">订单来源</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($order in ${orderList})
+					<tr>
+						<td>$!{order.get("tradeno")}</td>
+						<td>
+							#if($VmUtils.eq($!{order.get("status")},"paid_success"))
+								交易成功
+							#elseif($VmUtils.eq($!{order.get("status")},"paid_return"))
+								退票成功
+							#elseif($VmUtils.eq($!{order.get("status")},"checked"))
+								已批准
+							#end
+						</td>
+						<td >$!DateUtil.formatTimestamp($!{order.get("ordertime")})</td>
+						<td >$!DateUtil.formatTimestamp($!{order.get("paidtime")})</td>
+						<td >$!{order.get("memberid")}</td>
+						<td>$!{order.get("username")}</td>
+						<td >$!{order.get("usergroup")}</td>
+						<td >$!CurrencyFmt.format($!pricebill.price)</td>
+						<td >$!{order.get("quantity")}</td>
+						<td >$!{order.get("totalfee")}</td>
+						<td >$!{order.get("taopiaonum")}</td>
+						<td>
+							#if($VmUtils.eq($!{order.get("hasrefund")},"Y"))
+								是
+							#else
+								否
+							#end
+						</td>
+						<td>
+							#if($VmUtils.eq($!{order.get("orderfrom")},"ONLINE"))
+								线上
+							#elseif($VmUtils.eq($!{order.get("orderfrom")},"OFFLINE"))
+								线下
+							#elseif($VmUtils.eq($!{order.get("orderfrom")},"PIAOWU"))
+								票务
+							#end
+						</td>
+					</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+});
+
+</script>
+
+</body>
+</html>

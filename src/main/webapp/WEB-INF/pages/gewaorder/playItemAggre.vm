@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>对账明细</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/iscroll.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/core.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+	<script type="text/javascript">
+	</script>
+</head>
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryPlayItemAggre")
+	#parse('WEB-INF/pages/nvaig/playitemnvaig.vm')
+	<div class="mode_search">
+		<form action="${basePath}platform/gewaorder/queryPlayItemAggre.xhtml" method="post" onkeydown="javascript:submitByEnter();">
+				<h2>查询条件</h2>
+				<dl class="mode_search_title">
+					<dt>场馆：</dt>
+						<dd>
+							<input type="hidden" name="placeId" id="placeId" value="$!{params.placeId}"/>
+							<input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}"/>
+						</dd>
+				</dl>
+				<dl class="mode_search_title">
+					<dt>账单时间：</dt>
+						<dd>
+							<input style="width:150px;" class="text" name="start" id="start" value="$!{params.start}" 
+									onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'end\')||\'2020-10-01\'}'})"/>至
+							<input style="width:150px;" class="text" name="end" id="end" value="$!{params.end}" 
+									onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'start\')}',maxDate:'2020-10-01'})"/>
+						</dd>
+				</dl>
+				<div class="mode_search_title">
+					<a href="javascript:document.forms[0].submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+					<input type="hidden" name="isXls" id="isXls"/>
+					<input type="hidden" name="settleId" id="settleId" value="$!params.settleId"/>
+					<a href="javascript:void(0);" class="button minBt whiteBt" onclick="downloadxls();">导出EXCEL</a>
+					#parse("WEB-INF/pages/common/goback.vm")
+				</div>
+		</form>
+	</div>
+	
+	#if($aggres && $aggres.size() > 0)
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th class="sortable"><span>编号</span><span class="carat"></span></th>
+					<th class="sortable"><span>场次ID</span><span class="carat"></span></th>
+					<th class="sortable"><span>电影名称</span><span class="carat"></span></th>
+					<th class="sortable"><span>放映时间</span><span class="carat"></span></th>
+					<th class="sortable"><span>结算票数</span><span class="carat"></span></th>
+					<th class="sortable"><span>结算金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>退票数量</span><span class="carat"></span></th>
+					<th class="sortable"><span>退票金额</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				#set($allOrder=0)
+				#set($allOrderAmount=0)
+				#set($allRefund=0)
+				#set($allRefundmount=0)
+				#foreach($ag in ${aggres.keySet()})
+				<tr>
+					<td style="width:30px;"><span>
+						$!{foreach.count}
+						</span>
+					</td>
+					<td style="width:30px;"><span>
+						<a href="${basePath}platform/gewaorder/queryGewarOrder.xhtml?playId=$!{ag}&start=$!{params.start}&end=$!{params.end}&placeId=$!{place.recordId}">$!{ag}</a>
+						</span>
+					</td>
+					#set($otherIno= $VmUtils.readJsonToMap($pom.get($!{ag}).otherInfo))
+					<td style="width:150px;"><span>
+						$!{otherIno.get("影片")}
+						</span>
+					</td>
+					<td style="width:150px;"><span>
+						$!{otherIno.get("场次")}
+						</span>
+					</td>
+					
+					#set($aggre=$!{aggres.get(${ag})})
+					
+					#set($orderTotal=0)
+					#set($orderAmount=0)
+					#set($refundTotal=0)
+					#set($refundAmount=0)
+					#if($!{aggre.get("orderTotal")})
+						#set($orderTotal=$!{aggre.get("orderTotal")})
+					#end
+					
+					#if($!{aggre.get("orderAmount")})
+						#set($orderAmount=$!{aggre.get("orderAmount")})
+					#end
+					
+					#if($!{aggre.get("refundTotal")})
+						#set($refundTotal=$!{aggre.get("refundTotal")})
+					#end
+					#if($!{aggre.get("refundAmount")})
+						#set($refundAmount=$!{aggre.get("refundAmount")})
+					#end
+					#if($!{aggre.get("adjustTotal")})
+						#set($adjustTotal=$!{aggre.get("adjustTotal")})
+					#end
+					#if($!{aggre.get("adjustTotal")})
+						#set($adjustAmount=$!{aggre.get("adjustAmount")})
+					#end
+					<td><span>
+						#set($orderTotal=$VmUtils.calculate($orderTotal, $refundTotal ,"-"))
+						$!orderTotal
+						</span>
+					</td>
+					<td><span>
+						#set($orderAmount=$VmUtils.calculate($orderAmount, $refundAmount ,"-"))
+						$!CurrencyFmt.format($!orderAmount)
+						</span>
+					</td>
+					<td><span>
+						${refundTotal}
+						</span>
+					</td>
+					<td><span>
+						$!CurrencyFmt.format(${refundAmount})
+						</span>
+					</td>
+				</tr>
+				
+					#set($allOrder=$allOrder + $orderTotal)
+					#set($allOrderAmount= $allOrderAmount + $orderAmount)
+					#set($allRefund= $allRefund + $refundTotal)
+					#set($allRefundmount= $allRefundmount + $refundAmount)
+				#end
+				
+				#set($allAdjust=0)
+				#set($allAdjustAmount=0)
+				#if($ads && $ads.size() > 0)
+					#foreach($ad in ${ads})
+						#set($allAdjust=$!{ad.adjustNumber}+$allAdjust)
+						#set($allAdjustAmount=$!{ad.amount}+$allAdjustAmount)
+					#end
+					<tr>
+						<td>调整</td>
+						<td colspan="3"></td>
+						<td>$allAdjust</td>
+						<td>$allAdjustAmount</td>
+						<td colspan="4"><a><span style="cursor: pointer;" onclick="loadAdjustList();">查看详情</span></a></td>
+					</tr>
+				#end
+				
+				#set($prn=0)
+				#set($pra=0)
+				
+				#if($settle && ($settle.previousRefundNumber != 0 || $settle.previousRefundAmount != 0))
+				<tr>
+					<td>差异</td>
+					<td colspan="3"></td>
+					#set($prn=$settle.previousRefundNumber)
+					#set($pra=$settle.previousRefundAmount)
+					<td>$prn</td>
+					<td>$pra</td>
+					<td colspan="4"></td>
+				</tr>
+				#end
+				#set($allOrder=$allOrder + $allAdjust)
+				#set($allOrderAmount= $allOrderAmount + $allAdjustAmount)
+				#set($allOrder=$allOrder - $prn)
+				#set($allOrderAmount=$allOrderAmount - $pra)
+			</tbody>
+			<tfoot>
+				<tr>
+					<td>合计</td>
+					<td colspan='3'></td>
+					<td><span>$!allOrder</span></td>
+					<td><span>$!CurrencyFmt.format($allOrderAmount)</span></td>
+					<td><span>$!allRefund</span></td>
+					<td><span>$!CurrencyFmt.format($allRefundmount)</span></td>
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	#else
+	<div class="ui_warning">查询条件范围内，没有数据。</div>
+	#end
+	
+</div>
+<div id="commMark" style="display:none; height: 400px">
+</div>
+<div id="commMark1" style="display:none; height: 400px;overflow-y: auto;">
+	#if($ads && $ads.size() > 0)
+		<table class="tableGear" style="margin-top:0px;">
+			<thead>
+				<tr>
+					<th class="sortable"><span>调整数量</span><span class="carat"></span></th>
+					<th class="sortable"><span>调整金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>调整申请人</span><span class="carat"></span></th>
+					<th class="sortable"><span>调整原因</span><span class="carat"></span></th>
+					<th class="sortable"><span>调整备注</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+			<tbody>
+			#foreach($ad in ${ads})
+				<tr>
+				<td style="width:60px;"><span>
+						$!{ad.adjustNumber}
+						</span>
+					</td>
+					<td style="width:60px;"><span>
+						$!{ad.amount}
+						</span>
+					</td>
+					
+					<td style="width:60px;"><span>
+						$!{ad.operator}
+						</span>
+					</td>
+					<td style="width:120px;"><span>
+						$VmUtils.displayEnums("AdjustReasonEnums" , $!{ad.reason})
+						</span>
+					</td>
+					<td style="width:60px;"><span>
+						$!{ad.comments}
+						</span>
+					</td>
+				</tr>
+			#end
+			</tbody>
+		</table>
+	#end
+</div>
+
+<script type="text/javascript">
+function submitByEnter(){
+    if(event.keyCode == 13){
+     document.forms[0].submit();
+    }
+}
+
+window.addEvent('domready',function(){
+	#if($aggres && $aggres.size() > 0)
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	#end
+	$$('.tips').amTips();
+	completer = new Autocompleter.Local($("placeFirstLetter"), parent.pdata, {
+		'delay': 100,
+		'maxChoices': 10,
+		'minLength':0,
+		'requestid':'placeId',
+		'filter': function() {
+			var vl = this.queryValue;
+			var values = vl.trim().split(/ +/);
+			return this.tokens.filter(function(token){
+				var result = values.every(function(v){
+					var reg = new RegExp(v.escapeRegExp(),'i');
+					return reg.test(token.pinyin) || reg.test(token.name);
+				});
+				return result;
+			});
+		},
+		'injectChoice': function(choice){
+			parent.myGenChoice(this,choice);
+		}
+	});
+});
+function loadAdjustList(){
+	gewa.util.maskContent('','commMark1','调整列表',800,'commMark1','','','','','',function(){});
+}
+var downloadxls=function(){
+	if(document.forms[0]){
+		$("isXls").value="downloadxls";
+		document.forms[0].submit();
+		$("isXls").value="";
+	}else{
+		var a=document.location.href;
+		a=a+"&isXls=download";
+		document.location.href=a;
+	}
+};
+</script>
+</body>
+</html>

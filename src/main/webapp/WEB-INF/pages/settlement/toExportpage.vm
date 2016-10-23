@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>数据导出</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/iscroll.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/core.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+	
+</head>
+<body id="_body">
+<div class="inner">
+	#set($nvg="exportSettlementBills")
+	#parse('WEB-INF/pages/nvaig/gathernvaig.vm')
+	
+	<!-- <div class="mode_search">
+		<h2>结算单导出</h2>
+		<div>
+			 结算单时间：
+			<input style="width:150px;" id="jiesuandanstartTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" 
+										onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'jiesuandanendTime\')||\'2020-10-01 00:00:00\'}'})"/>至
+			<input style="width:150px;" id="jiesuandanendTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" 
+									    onFocus="WdatePicker({minDate:'#F{$dp.$D(\'jiesuandanstartTime\')}',maxDate:'2020-10-01 00:00:00'})"/>
+			系统名称：<input type="text" name="sysId" class="text">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="javascript:jiesuandan();" class="button minBt whiteBt"><span>导出</span></a>
+		</div>
+		<script type="text/javascript">
+			function jiesuandan() {
+				var startTime = document.getElementById("jiesuandanstartTime").value;
+				if(startTime == "" || startTime == null) {
+					return;
+				}
+				var endTime = document.getElementById("jiesuandanendTime").value;
+				if(endTime == "" || endTime == null) {
+					return;
+				}
+				location = "${basePath}platform/settlement/exportSettlementBills.xhtml?start=" + startTime + "&end=" + endTime;
+			}
+		</script>
+	</div> -->
+	
+	<div class="mode_search">
+		<h2>成本计提专用结算单导出</h2>
+		<div>
+			 月份：
+			<input style="width:150px;" onclick="WdatePicker({dateFmt:'yyyy-MM'})" class="Wdate" onFocus="WdatePicker({dateFmt:'yyyy-MM'})" id="month"/>
+			结算单类型：
+			<select id="jitibilltag" class="text" style="width: 150px;">
+				<option value="TICKET">影票结算单</option>
+				<option value="GOODS">卖品结算单</option>
+				<option value="CHANNEL">通道费结算单</option>
+			</select>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="javascript:exportTiJi();" class="button minBt whiteBt" ><span>结算单导出</span></a>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="javascript:jizhang();" class="button minBt whiteBt" ><span>结算单记账</span></a>
+		</div>
+		<script type="text/javascript">
+			function exportTiJi() {
+				var mounth = document.getElementById("month").value;
+				if(mounth == "" || mounth == null) {
+					return;
+				}
+				var tag = document.getElementById("jitibilltag").value;
+				location = "${basePath}platform/settlement/exportTiji.xhtml?tag=" + tag + "&month=" + mounth;
+			}
+			function jizhang() {
+				var mounth = document.getElementById("month").value;
+				if(mounth == "" || mounth == null) {
+					return;
+				}
+				var tag = document.getElementById("jitibilltag").value;
+				var title = "";
+				if(tag == "TICKET") {
+					title = "确定要对" + mounth + "影票结算单记账吗？";
+				}
+				if(tag == "GOODS") {
+					title = "确定要对" + mounth + "卖品结算单记账吗？";
+				}
+				if(tag == "CHANNEL") {
+					title = "确定要对" + mounth + "通道结算单记账吗？";
+				}
+				gewa.util.issure('',title,'提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+					var mid = "T" + Date.now();
+					GewaraUtil.mask('',mid);
+					var url = "${basePath}platform/settlement/jizhang.xhtml";
+					var values = {"tag":tag, "month":mounth};
+					GewaraUtil.sendRequest(url, values, function(result){
+						GewaraUtil.unmask(mid);
+						if(result.success == true){
+							gewaUtil.alert(result.retval);
+						}else{
+							gewaUtil.alert(result.msg);
+						}
+					});
+					gewa.util.container['keys'].dispose('keys');
+				});
+			}
+		</script>
+	</div>
+	
+	<div class="mode_search">
+		<h2>影票结算单发票统计导出</h2>
+		<div>
+			抵扣月份：
+			<input style="width:150px;" onclick="WdatePicker({dateFmt:'yyyy-MM'})" class="Wdate" onFocus="WdatePicker({dateFmt:'yyyy-MM'})" id="simonth"/>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="javascript:exportSettleInvoice();" class="button minBt whiteBt" ><span>导出数据</span></a>
+		</div>
+		<script type="text/javascript">
+			function exportSettleInvoice() {
+				var mounth = document.getElementById("simonth").value;
+				if(mounth == "" || mounth == null) {
+					return;
+				}
+				location = "${basePath}platform/settlement/exportSettleInvoice.xhtml?month=" + mounth;
+			}
+		</script>
+	</div>
+	
+	<!-- <div class="mode_search">
+		<h2>通道费计提基础订单导出</h2>
+		<div>
+			订单时间：
+			<input style="width:150px;" id="tongdaostartTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" 
+										onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'tongdaoendTime\')||\'2020-10-01 00:00:00\'}'})"/>至
+			<input style="width:150px;" id="tongdaoendTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" 
+										onFocus="WdatePicker({minDate:'#F{$dp.$D(\'tongdaostartTime\')}',maxDate:'2020-10-01 00:00:00'})"/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="javascript:tongdaofei();" class="button minBt whiteBt"><span>导出</span></a>
+		</div>
+		<script type="text/javascript">
+			function tongdaofei() {
+				var startTime = document.getElementById("tongdaostartTime").value;
+				if(startTime == "" || startTime == null) {
+					return;
+				}
+				var endTime = document.getElementById("tongdaoendTime").value;
+				if(endTime == "" || endTime == null) {
+					return;
+				}
+				location = "${basePath}platform/settlement/exportChannelBaseData.xhtml?start=" + startTime + "&end=" + endTime;
+			}
+		</script>
+	</div> -->
+	
+	
+	
+</div>
+
+</body>
+</html>

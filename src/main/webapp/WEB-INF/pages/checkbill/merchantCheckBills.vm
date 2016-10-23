@@ -1,0 +1,269 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>影院结算平台</title>
+#parse('WEB-INF/pages/common/common.vm')
+#parse('WEB-INF/pages/common/edaStyle.vm')
+<script type="text/javascript" src="${staticPath}scripts/scrollerbar.js?v=00000"></script>
+</head>
+<body>
+#set($iSstatementOfAccount=true)
+#parse('WEB-INF/pages/common/merchantMenu_eda.vm')
+<div class="bodyBox">
+	<div class="mlr30 mt20">
+		<form id="" method="post" action="${basePath}merchant/checkBill/checkbills.xhtml">
+		<div class="clear">
+			<div class="left">
+				<ul class="clear chosOp">
+					<li>
+						<div class="ui_simulate_20">
+							<div class="simulate_select_20">
+								<div class="select_value_20">#if($VmUtils.isNotBlank($!place.name)) $place.name #else 全部 #end</div>
+								<a class="select_arrow_20" href="javascript:void(0);"></a>
+								<input class="simulate_value_20" type="hidden" value="$!{params.placeId}" name="placeId" id="placeId"/>
+							</div>
+							
+							<ul class="simulate_options_20" id="simulate_options_ul">
+								<li><a href="javascript:void(0);" data-value="">全部</a></li>
+								#foreach($citycode in $optionData.keySet())
+									#foreach($key in $optionData.get($citycode).keySet())
+										<li><a href="javascript:void(0);" data-value="$key">$optionData.get($citycode).get($key)</a></li>
+									#end
+								#end
+							</ul>
+						</div>
+					</li>
+					<li>
+						<div class="ui_simulate_20">
+							<div class="simulate_select_20">
+								#set($statusMap = $VmUtils.ck2Map())
+								<div class="select_value_20">#if($!statusMap.get($!{params.status})) $!statusMap.get($!{params.status})  #else 全部 #end</div>
+								<a class="select_arrow_20" href="javascript:void(0);"></a>
+								<input class="simulate_value_20" type="hidden" value="$!{params.status}"  name="status" id="status" />
+							</div>
+							<ul class="simulate_options_20">
+								<li><a href="javascript:void(0);" data-value="">全部</a></li>
+								#foreach($status in $statusMap.keySet())
+									<li><a href="javascript:void(0);" data-value="$!status">$statusMap.get($!{status})</a></li>
+								#end
+							</ul>
+						</div>
+					</li>
+					<li>
+						<input class="text t_Icon mr5" name="start" id="start"  value='$!params.start'  
+									onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" />至
+						<input class="text t_Icon mr10" name="end" id="end"  value='$!params.end' 
+							onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" />
+					</li>
+					<li>
+						<a class="button largeBt mr20" href="#" onclick="document.forms[0].submit()"><span style="width:70px;">查询</span></a>
+					</li>
+				</ul>
+			</div>
+			<input type="hidden" name="isXls" id="isXls"/>
+			<input type="hidden" name="settleId" id="settleId" value="$!{params.settleId}"/>
+			<a class="usP export" href="javascript:downloadxls();" title="导出Excel"></a>
+		</div>
+		</form>
+		<div class="bill_panel">
+			<div class="bill_tool">
+				<div class="right">
+					#parse('WEB-INF/include/pageUtil.vm')
+				</div>
+				<div class="left">
+					#parse("WEB-INF/pages/common/goback.vm")
+				</div>
+			</div>
+			<table class="isTable" width="100%">
+					<colgroup>
+						</colgroup>
+						<thead>
+							<tr>
+								<th><label>序号</label></th>
+								<th>单号</th>
+								<th>日期</th>
+								#if($VmUtils.isBlank($!{params.placeId}))
+								<th>场馆</th>
+								#end
+								<th>结算票数</th>                
+								<th>结算金额</th>                
+								<th>退票数量</th>                
+								<th>退票金额</th>                
+							</tr>
+						</thead>
+						<tbody>
+					#set($appendCount=0)	
+					#set($allOrder=0)
+					#set($allOrderAmount=0)
+					#set($allRefund=0)
+					#set($allRefundmount=0)
+					#set($allAdjust=0)
+					#set($allAdjustAmount=0)
+					#foreach($ck in ${cks})
+						#set($place=$!{pm.get(${ck.configId})})
+						
+						#set($orderTotal=$!{ck.orderTotalNumber})
+						#set($orderTotalAmount=$!{ck.orderTotalAmount})
+						#set($refundTotal=$!{ck.refundTotalNumber})
+						#set($refundTotalAmount=$!{ck.refundTotalAmount})
+						#set($adjustTotal=$!{ck.adjustTotalNumber})
+						#set($adjustTotalAmount=$!{ck.adjustTotalAmount})
+						#set($adjustReason=$!{ck.adjustReason})
+						#set($adjustReason=$!{ck.adjustReason})
+						
+						#set($allOrder=$allOrder + $orderTotal)
+						#set($allOrderAmount= $allOrderAmount + $orderTotalAmount)
+						#set($allRefund= $allRefund + $refundTotal)
+						#set($allRefundmount= $allRefundmount + $refundTotalAmount)
+						#set($allAdjust= $allAdjust + $adjustTotal)
+						#set($allAdjustAmount= $allAdjustAmount + $adjustTotalAmount)
+					<tr>
+						<td>
+							$!{foreach.count}
+						</td>
+						<td>
+							<a href="${basePath}merchant/checkBill/queryCheckBillDetails.xhtml?checkBillId=$!{ck.recordId}&placeId=$!{params.placeId}">$!{ck.recordId}</a>							
+						</td>
+						<td>
+							 $!DateUtil.format($!{ck.start}, 'yyyy-MM-dd')		
+						</td>
+						<td>
+							$orderTotal							
+						</td>
+						<td>
+							$!CurrencyFmt.format($orderTotalAmount)							
+						</td>
+						<td>
+							$refundTotal
+							#* <a href='${basePath}platform/gewaorder/querySimpleOrders.xhtml?tradeNos=$!{aggre.get("refundNos")}&t=r'>$refundTotal</a> *#							
+						</td>
+						<td>
+							$!CurrencyFmt.format($refundTotalAmount)							
+						</td>
+						#set($appendCount=$!{foreach.count})
+				</tr>
+				#end
+				#set($updateOrderCount=0)
+				#set($updateOrderAmount=0)
+				#if($ads && $ads.size() > 0)
+					#foreach($ad in ${ads})
+						#set($updateOrderCount=$!{ad.adjustNumber}+$updateOrderCount)
+						#set($updateOrderAmount=$!{ad.amount}+$updateOrderAmount)
+					#end
+				<tr>
+					#set($appendCount=$appendCount+1)
+					<td>$appendCount</td>
+					<td>调整</td>
+					<td></td>
+					<td>$updateOrderCount</td>
+					<td>$!CurrencyFmt.format($updateOrderAmount)</td>
+					<td colspan="2"><a href="javascript:loadAdjustList();">查看详情</a></td>
+				</tr>
+				#end
+				#set($prn=0)
+				#set($pra=0)
+				#if($settle && ($settle.previousRefundNumber != 0 || $settle.previousRefundAmount != 0))
+				<tr>
+					<td>往期差异</td>
+					<td colspan="2"></td>
+					#set($prn=$settle.previousRefundNumber)
+					#set($pra=$settle.previousRefundAmount)
+					<td>$prn</td>
+					<td>$pra</td>
+					<td colspan="4"></td>
+				</tr>
+				#end
+				<tr>
+					#set($col=2)
+					#if($VmUtils.isBlank($!{params.placeId}))
+						#set($col=3)
+					#end
+					
+					<td>合计</td><td colspan="$col"></td>
+					#set($allOrder=$updateOrderCount + $allOrder)
+					#set($allOrder=$allOrder - $prn)
+					<td>$allOrder</td>
+					#set($allOrderAmount=$allOrderAmount + $updateOrderAmount)
+					#set($allOrderAmount=$allOrderAmount - $pra)
+					<td>$!CurrencyFmt.format($allOrderAmount)</td>
+					<td>$allRefund</td>
+					<td>$!CurrencyFmt.format($allRefundmount)</td>
+				</tr>
+				</tbody>
+			</table>
+			<div class="bill_tool mt10">
+				<div class="bill_toolExe">
+					请选择您要查询对账单数据的影院。
+				</div>
+			</div>
+			<div class="nitice_info">
+				<b>什么是日对账明细？</b>
+				<p>2、	日对账明细，是统计的基本单位，一个结算单对应多个或一个日对账明细，按照与影院约定的结算时间点（如：00:00到00:00），以一天为单位的订单汇总数据。日对账明细数据为未等待确认状态时，由于退票会发生变化。</p>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="wrapper" style="display:none; height: 350px;overflow:hidden;position: relative;">
+	#if($ads && $ads.size() > 0)
+	<table class="isTable" width="100%" id="wrapped">
+		<thead>
+			<tr>
+				<th><label>调整数量</label></th>
+				<th> 调整金额</th>
+				<th> 调整原因</th>
+				<th> 调整备注</th>
+			</tr>
+		</thead>
+		#foreach($ad in ${ads})
+			<tr>
+				<td>$!{ad.adjustNumber}</td>
+				<td>$!{ad.amount}</td>
+				<td>$VmUtils.displayEnums("AdjustReasonEnums" , $!{ad.reason})</td>
+				<td>$!{ad.comments}</td>
+			</tr>
+		#end
+	</table>
+	#end
+</div>
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	//isCreateOption();
+	document.getElements('tbody tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	autoCountHeight();
+});
+var downloadxls=function(){
+	if(document.forms[0]){
+		$("isXls").value="downloadxls";
+		document.forms[0].submit();
+		$("isXls").value="";
+	}else{
+		var a=document.location.href;
+		a=a+"&isXls=download";
+		document.location.href=a;
+	}
+};
+function autoCountHeight(flag){
+	var id = parent.document.getElementById('coverForm');
+	if(id){
+		id.style.height = window.innerHeight+'px';
+	}
+	if(flag)return;
+	document.addEvent('resize',function(){
+		autoCountHeight(true);
+	});
+}
+function loadAdjustList(){
+	gewa.util.maskContent('','wrapper','调整列表',800,'wrapper','','','','','',function(){
+		new ScrollerBar("wrapper",{wrapped:"wrapped"});
+	});
+}
+</script>
+</body>
+</html>

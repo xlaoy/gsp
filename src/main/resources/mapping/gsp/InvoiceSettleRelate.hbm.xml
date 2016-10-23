@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.InvoiceSettleRelate" table="invoice_settlerelate" schema="gsp">
+    
+       <id name="recordid" type="long">
+            <column name="recordid"  />
+            <generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_autorecon</param>
+			</generator>
+       </id>
+       
+       <property name="invoicecode"		column="invoicecode"	type="string" />
+       <property name="settleid"		column="settleid"	type="long" />
+       <property name="placeid"		column="placeid"	type="string" />
+       <property name="vendercode"		column="vendercode"	type="string" />
+        
+    </class>
+</hibernate-mapping>

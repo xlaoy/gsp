@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>通道费结算</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+		
+		 /*input css*/  
+        .vendor_input{  
+            position: absolute;  
+            width: 170px;  
+            height: 16px;  
+            left: 101px;  
+            top: 11px;  
+            border-bottom: 0px;  
+            border-right: 0px;  
+            border-left: 0px;  
+            border-top: 0px;  
+        }
+        body {
+		    margin: 0px;  
+		}
+       .auto_hidden {
+		    width:204px;
+		    border: 1px solid #333;
+		    position:absolute;
+		    display:none;
+		}
+		.auto_show {
+		    width:204px;
+		    border: 1px solid #333;
+		    
+		    position:absolute;
+		    z-index:9999; /* 设置对象的层叠顺序 */
+		    display:block;
+		}
+		.auto_onmouseover{
+		    color:#fff;
+		    background-color:highlight;
+		    width:100%;
+		}
+		.auto_onmouseout{
+		    color:#000;
+		    width:100%;
+		    background-color:#fff;
+		}   
+	</style>
+	</head>
+	<body id="_body">
+		<div class="inner">
+			
+				<div class="mod_hd tabs_gary" id="settleStatusId">
+<!-- 					<a href="${basePath}platform/channelsettle/loadChannelConfigPage.xhtml">供应商配置管理</a>
+					<a href="${basePath}platform/channelsettle/loadUnVerifiedConfig.xhtml">通道费配置审核</a>				 -->
+					<a href="${basePath}platform/channelsettle/queryChannelSettlebills.xhtml"   class="select">通道费结算单</a>
+					<a href="${basePath}platform/channelsettle/queryCheckBillBySettleId.xhtml">通道费对账单</a>
+				</div>
+		
+		<div class="mode_search">
+			<form action="${basePath}platform/channelsettle/queryChannelSettlebills.xhtml" autocomplete="off">
+				供应商名称：
+				<input type="text" style="width:300px;height:20px;font-size:14pt;" id="o" onkeyup="javascript:ajaxLoadVendor1(this.value,event);" value="$!{config.vendorName}">
+    			<input type="hidden" id="vendorId" name="vendorId" value="$!{config.recordId}">
+					 时间从：<input style="width:150px;" class="text" name="start" id="start" value="$!{params.start}" 
+												onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'end\')||\'2020-10-01\'}'})"/>
+					至
+						 <input style="width:150px;" class="text" name="end" id="end" value="$!{params.end}" 
+									onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'start\')}',maxDate:'2020-10-01'})"/>
+				请款状态：
+				<select id="reqMoneyStatus" name="reqMoneyStatus" class="text" style="width:8%;">
+					<option value="">全部</option>
+					<option value="Y" #if($VmUtils.eq($!params.reqMoneyStatus,"Y")) selected="selected" #end>已请款</option>
+					<option value="N" #if($VmUtils.eq($!params.reqMoneyStatus,"N")) selected="selected" #end>未请款</option>
+				</select>
+				<a href="javascript:document.forms[0].submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+			</form>
+		</div>
+		<div class="auto_hidden" id="auto"><!--自动完成 DIV--></div>
+		<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th class="sortable"><span class="carat">编号</span></th>
+					<th class="sortable"><span class="carat">供应商名称</span></th>
+					<th class="sortable"><span class="carat">供应商编号</span></th>
+					<th class="sortable"><span class="carat">结算周期</span></th>
+					<th class="sortable"><span class="carat">结算票数</span></th>
+					<th class="sortable"><span class="carat">结算金额</span></th>
+					<th class="sortable"><span class="carat">退票数量</span></th>
+					<th class="sortable"><span class="carat">退票金额</span></th>
+					<th class="sortable"><span class="carat">详细</span></th>
+					<th class="sortable"><span class="carat">请款状态</span></th>
+					<th class="sortable"><span class="carat">结算状态</span></th>
+					<th class="sortable"><span class="carat">操作</span></th>
+				</tr>
+			</thead>
+		 
+			<tbody>
+				 #if($sblist && $sblist.size() > 0)
+				 	#foreach($sb in $sblist)			
+						<tr>
+						  <td style="width:30px;"><span>$!{sb.recordId}</span></td>
+						  <td style="width:80px;">
+					         <span>
+					          $!configMap.get($sb.relateId).vendorName
+					         </span>
+					        </td>
+					        <td style="width:100px;"><span>$!configMap.get($sb.relateId).vendorCode</span></td>
+					        <td style="width:150px;"><span>[ $!DateUtil.formatTimestamp($!{sb.startTime}) -&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $!DateUtil.formatTimestamp($!{sb.endTime}) )</span></td>
+					        <td><span>$!{sb.orderTotalNumber}</span></td>
+					        <td><span>$!{sb.orderTotalAmount}</span></td>
+					        <td><span>$!{sb.refundTotalNumber}</span></td>
+					        <td><span>$!{sb.refundTotalAmount}</span></td>
+						    <td>
+						    	<span>
+						    		<a href="${basePath}platform/channelsettle/queryOrderDetailForChannel.xhtml?settleBillId=$!{sb.recordId}">订单明细</a>
+						    		<a href="${basePath}platform/channelsettle/queryCheckBillBySettleId.xhtml?settleId=$!{sb.recordId}">日账单明细</a>
+						    	</span>
+						    </td>
+						    <td>
+						    	<span>
+								#if($VmUtils.eq($!{sb.reqMoneyStatus},'Y'))
+									已请款(
+										<a href="${basePath}platform/settlement/gotoQueryReqMoney.xhtml?recordId=$!{s.recordId}">查看</a>
+										&nbsp;&nbsp;
+										<a href="${basePath}platform/settlement/printReqMoney.xhtml?recordId=$!{s.recordId}" target="_blank">打印</a>
+									)
+								#else
+									未请款
+									#if($VmUtils.eq("WAITINGPAY",$!{sb.status}) || $VmUtils.eq("SETTLED",$!{s.status}))
+									(<a href="javascript:reqMoney('$!{sb.recordId}');">申请请款</a>)
+									#end
+								#end
+								</span>
+							</td>
+						    <td><span>$!{VmUtils.displayEnums("CheckBillStatusEnums",$!{sb.status})}</span></td>
+					        <td><span>
+								#if($VmUtils.eq("MERCHANTCONFIRMED",$!{sb.status}))
+									<a href="javascript:gewaReadjust('$!{sb.recordId}')">重新调整</a>
+									<a href="javascript:confirmPay('$!{sb.recordId}')">提交付款</a>
+								#end
+								
+								#if( $VmUtils.eq("READJUST",$!{sb.status}) )
+									<a href="javascript:showAdjustPop('$!{sb.recordId}')">调整</a>
+								#end
+								
+								#if($VmUtils.eq("WAITINGPAY",$!{sb.status}))
+									<a href="javascript:paySettle('$!{sb.recordId}')">付款到商家</a>
+								#end
+								#if($VmUtils.eq("SETTLED",$!{sb.status}))
+		       						<a href="javascript:rePaySettle('$!{sb.recordId}')">重新支付</a>
+		      					#end
+						</span></td>
+						</tr>
+					#end
+				 #end
+			</tbody>
+			<tfoot>
+			    <tr>
+				     <td colspan="14">
+				    	 #parse('WEB-INF/include/pageUtil.vm')
+				     </td>
+			    </tr>
+		   </tfoot>
+		</table>
+	</div>
+	#if(!$sblist || $sblist.size() == 0)
+		<div class="ui_warning" align="right">查询范围内无数据</div>
+	#end
+	</div>
+	</body>	
+<script type="text/javascript">
+function submitByEnter(){
+    if(event.keyCode == 13){
+     document.forms[0].submit();
+    }
+}
+function ajaxLoadVendor(inputValue){
+	var url = "${basePath}platform/channelsettle/ajaxLoadVendor.xhtml";
+		var values = {"inputValue":inputValue};
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask();
+			if(result.success == true){
+				var retval = result.retval;
+				var obj=document.getElementById('vendorId'); 
+				obj.options.length=0;
+				var jsonObj=eval(retval);
+				obj.options.add(new Option('请选择供应商',''));
+				for(var i=0;i < jsonObj.length;i++){ 
+	                 obj.options.add(new Option(jsonObj[i].vendorName,jsonObj[i].recordId)); 
+	             } 
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+	});
+}
+
+function loadAdjustList(recordId){
+	var url = "${basePath}platform/adjust/loadAdjustList.xhtml";
+	var values = {"settleId":recordId}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('adListcommMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','adListcommMark','调整列表',800,'adListcommMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+function tomerchant(recordId){
+	gewa.util.issure('','确认提交到商户审核？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		var url = "${basePath}platform/settlement/tomerchant.xhtml";
+		var values = {"recordId":recordId};
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(mid);
+			if(result.success == true){
+				gewaUtil.alert("成功！", function(){window.location.reload()});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+function paySettle(recordId){
+	gewa.util.issure('','是否线上付款？','格瓦拉提示你',420,'iskyes',function(){
+		gewa.util.issure('','确认线上付款到商户吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+			var url = "${basePath}platform/settlement/paySettle.xhtml";
+			var values = {"recordId":recordId, "isOnline": true};
+			GewaraUtil.sendRequest(url, values, function(result){
+				GewaraUtil.unmask();
+				if(result.success == true){
+					gewaUtil.alert("成功！", function(){window.location.reload()});
+				}else{
+					gewaUtil.alert(result.msg);
+				}
+			});
+			gewa.util.container['keys'].dispose('keys');
+			gewa.util.container['iskyes'].dispose('iskyes');
+		});
+	},'是',function(){
+		gewa.util.issure('','确认线下付款到商户吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+			var url = "${basePath}platform/settlement/paySettle.xhtml";
+			var values = {"recordId":recordId, "isOnline": false};
+			GewaraUtil.sendRequest(url, values, function(result){
+				GewaraUtil.unmask();
+				if(result.success == true){
+					gewaUtil.alert("成功！", function(){window.location.reload()});
+				}else{
+					gewaUtil.alert(result.msg);
+				}
+			});
+			gewa.util.container['keys'].dispose('keys');
+			gewa.util.container['iskyes'].dispose('iskyes');
+		});
+		
+		
+		gewa.util.container['iskyes'].dispose('iskyes');
+		
+	},'','否')
+}
+function gewaReadjust(recordId){
+	gewa.util.issure('','确认要重新调整吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+		var url = "${basePath}platform/settlement/gewaReadjust.xhtml";
+		var values = {"recordId":recordId};
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask();
+			if(result.success == true){
+				gewaUtil.alert("成功！", function(){window.location.reload()});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+function confirmPay(recordId){
+	console.info(recordId);
+	gewa.util.issure('','确认提交付款吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+		var url = "${basePath}platform/settlement/confirmPay.xhtml";
+		var values = {"recordId":recordId};
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask();
+			if(result.success == true){
+				gewaUtil.alert("成功！", function(){window.location.reload()});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+
+var cancelCommentMarks = function(){
+	gewa.util.container['commMark'].dispose('commMark');
+}
+var cancelAdjustMarks = function(){
+	gewa.util.container['adjustMark'].dispose('adjustMark');
+}
+var downloadxls=function(){
+	if(document.forms[0]){
+		$("isXls").value="downloadxls";
+		document.forms[0].submit();
+		$("isXls").value="";
+	}else{
+		var a=document.location.href;
+		a=a+"&isXls=download";
+		document.location.href=a;
+	}
+};
+function loadPricedPlayItem(settleId){
+	var url = '${basePath}platform/settlement/queryPricedPlayItem.xhtml';
+	var values = {"settlementId":settleId}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('commMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','commMark','异价场次',850,'commMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+function showAdjustPop(relateId){
+	$('relateId').value= relateId;
+	gewa.util.maskContent('','adjustMark','',360,'adjustMark');
+}
+function addAdjust(){
+	var tag = "SETTLEBILL";
+	var relateId = $('relateId').value;
+	var number = $('number').value;
+	var amount = $('amount').value;
+	var comments = $('comments').value;
+	var reason = $('reason').value;
+	
+	if (relateId == '' || number == '' || amount == '' || comments == '' || reason ==''){
+		gewaUtil.alert("请输入完整的调整信息.");
+		return;
+	}
+	
+	var url = "${basePath}platform/adjust/saveAdjustment.xhtml";
+	var values = {"tag":tag, "relateId":relateId, "adjustNumber":number, "amount":amount , "reason": reason, "comments":comments}
+	
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask();
+		if(result.success == true){
+			gewaUtil.alert("成功！", function(){cancelAdjustMarks(); window.location.reload()});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	}); 
+}
+function selectAll(){
+	document.getElements('input[type=checkbox][name=settleIds]').each(function(item){
+		item.checked = !item.checked;
+	})
+}
+
+function rePaySettle(recordId){
+	gewa.util.issure('','确认重新付款吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+		var url = "${basePath}platform/settlement/rePaySettle.xhtml";
+		var values = {"recordId":recordId};
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask();
+			if(result.success == true){
+				gewaUtil.alert("重新支付成功！");
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+
+var $ = function (id) {
+    return "string" == typeof id ? document.getElementById(id) : id;
+}
+var Bind = function(object, fun) {
+    return function() {
+        return fun.apply(object, arguments);
+    }
+}
+
+function AutoComplete(obj,autoObj,arr,arrcode){
+    this.obj=$(obj);        //输入框
+    this.autoObj=$(autoObj);//DIV的根节点
+    this.value_arr=arr;        //不要包含重复值
+    this.value_arr_code=arrcode;
+    this.index=-1;          //当前选中的DIV的索引
+    this.search_value="";   //保存当前搜索的字符
+}
+AutoComplete.prototype={
+    //初始化DIV的位置
+    init: function(){
+        this.autoObj.style.left = this.obj.offsetLeft + "px";
+        this.autoObj.style.top  = this.obj.offsetTop  + this.obj.offsetHeight +90 + "px";
+        this.autoObj.style.width= this.obj.offsetWidth - 2 + "px";//减去边框的长度2px   
+    },
+    //删除自动完成需要的所有DIV
+    deleteDIV: function(){
+        while(this.autoObj.hasChildNodes()){
+            this.autoObj.removeChild(this.autoObj.firstChild);
+        }
+        this.autoObj.className="auto_hidden";
+    },
+    //设置值
+    setValue: function(_this){
+        return function(){
+            _this.obj.value=this.seq;
+            _this.autoObj.className="auto_hidden";
+        }       
+    },
+    //模拟鼠标移动至DIV时，DIV高亮
+    autoOnmouseover: function(_this,_div_index){
+        return function(){
+            _this.index=_div_index;
+            var length = _this.autoObj.children.length;
+            for(var j=0;j<length;j++){
+                if(j!=_this.index ){       
+                    _this.autoObj.childNodes[j].className='auto_onmouseout';
+                }else{
+                    _this.autoObj.childNodes[j].className='auto_onmouseover';
+                }
+            }
+        }
+    },
+    //更改classname
+    changeClassname: function(length){
+        for(var i=0;i<length;i++){
+            if(i!=this.index ){       
+                this.autoObj.childNodes[i].className='auto_onmouseout';
+            }else{
+                this.autoObj.childNodes[i].className='auto_onmouseover';
+                this.obj.value=this.autoObj.childNodes[i].seq;
+            }
+        }
+    }
+    ,
+    //响应键盘
+    pressKey: function(event){
+        var length = this.autoObj.children.length;
+        //光标键"↓"
+        if(event.keyCode==40){
+            ++this.index;
+            if(this.index>length){
+                this.index=0;
+            }else if(this.index==length){
+                this.obj.value=this.search_value;
+            }
+            this.changeClassname(length);
+        }
+        //光标键"↑"
+        else if(event.keyCode==38){
+            this.index--;
+            if(this.index<-1){
+                this.index=length - 1;
+            }else if(this.index==-1){
+                this.obj.value=this.search_value;
+            }
+            this.changeClassname(length);
+        }
+        //回车键
+        else if(event.keyCode==13){
+            document.getElementById("vendorId").value=this.value_arr_code[this.index];
+        	var v = document.getElementById("vendorId").value;
+        	if(v.length != 0 && v!='undefined'){
+        		document.forms[0].submit();
+        		return ;
+        	}
+            this.autoObj.className="auto_hidden";
+            this.index=-1;
+        }else{
+        	document.getElementById("vendorId").value='';
+            this.index=-1;
+        }
+    },
+    //程序入口
+    start: function(event){
+        if(event.keyCode!=13&&event.keyCode!=38&&event.keyCode!=40){
+            this.init();
+            this.deleteDIV();
+            this.search_value=this.obj.value;
+            var valueArr=this.value_arr;
+            var valueArrCode=this.value_arr_code;
+//	            valueArr.sort();
+            if(this.obj.value.replace(/(^\s*)|(\s*$)/g,'')==""){ return; }//值为空，退出
+            try{ var reg = new RegExp("(" + this.obj.value + ")","i");}
+            catch (e){ return; }
+            var div_index=0;//记录创建的DIV的索引
+            for(var i=0;i<valueArr.length;i++){
+                if(reg.test(valueArr[i])){
+                    var div = document.createElement("div");
+                    div.className="auto_onmouseout";
+                    div.seq=valueArr[i];
+                    div.onclick=this.setValue(this);
+                    div.onmouseover=this.autoOnmouseover(this,div_index);
+                    div.innerHTML=valueArr[i].replace(reg,"<strong>$1</strong>");//搜索到的字符粗体显示
+                    this.autoObj.appendChild(div);
+                    this.autoObj.className="auto_show";
+                    div_index++;
+                }
+            }
+        }
+        this.pressKey(event);
+        window.onresize=Bind(this,function(){this.init();});
+    }
+}
+
+var autoComplete;
+function ajaxLoadVendor1(inputValue,event){
+	if(event.keyCode!=13&&event.keyCode!=38&&event.keyCode!=40){
+		var url = "${basePath}platform/channelsettle/ajaxLoadVendor.xhtml";
+		var values = {"inputValue":inputValue};
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask();
+			if(result.success == true){
+				var retval = result.retval;
+ 				var jsonObj=eval(retval);
+				var arr = new Array();
+				var arrcode = new Array();
+				for(var i=0;i < jsonObj.length;i++){ 
+					arr[i] = jsonObj[i].vendorName;
+					arrcode[i] = jsonObj[i].recordId;
+	             } 
+   				autoComplete=new AutoComplete('o','auto',arr,arrcode);
+   				autoComplete.start(event);
+			}});
+	}else{
+		autoComplete.start(event);
+	}
+}
+
+
+/********请款开始******/
+function reqMoney(recordIds){
+	gewa.util.issure('','确认要请款吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+		var url = "${basePath}platform/settlement/reqMoney.xhtml";
+		var values = {"recordIds":recordIds};
+		GewaraUtil.mask('',"T" + Date.now());
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask();
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){window.location.reload()});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+		gewa.util.container['iskyes'].dispose('iskyes');
+	});
+}
+
+function getNextElement(node){    
+    if(node.nextSibling.nodeType == 1){    //判断下一个节点类型为1则是“元素”节点   
+        return node.nextSibling;    
+    }    
+    if(node.nextSibling.nodeType == 3){      //判断下一个节点类型为3则是“文本”节点  ，回调自身函数  
+        return getNextElement(node.nextSibling);    
+    }    
+    return null;
+}
+/********请款结束******/
+
+</script>
+</html>

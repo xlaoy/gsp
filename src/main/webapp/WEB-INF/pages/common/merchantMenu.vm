@@ -1,0 +1,12 @@
+<div class="left">
+	<h1 class="left">影院结算平台</h1>
+	<span style="float:left;display: inline-block;font-size:12px;margin:1px 0 0 -7px;">公测版</span>
+	<ul class="left ml30">
+		<li #if($!isFinalStatement)class="select"#end><a href="${absPath}${basePath}merchant/settlement/settlementbills.xhtml" title="结算单">结算单</a></li>
+		<li #if($!iSstatementOfAccount)class="select"#end><a href="${absPath}${basePath}merchant/checkBill/checkbills.xhtml" title="日对账明细">日对账明细</a></li>
+		<li #if($!isFilmPlay)class="select"#end><a href="${absPath}${basePath}merchant/gewaorder/queryPlayItemAggre.xhtml" title="场次明细">场次明细</a></li>
+		<li #if($!isOrderDetail)class="select"#end><a href="${absPath}${basePath}merchant/gewaorder/queryGewarOrder.xhtml" title="订单明细">订单明细</a></li>
+		<li #if($!isPayMoney)class="select"#end><a href="${absPath}${basePath}merchant/settlement/queryPayBills.xhtml" title="收款单">收款单</a></li>
+	</ul>
+</div>
+<a href="${basePath}help.html"  class="right" style="font-size: 16px;">结算帮助</a>

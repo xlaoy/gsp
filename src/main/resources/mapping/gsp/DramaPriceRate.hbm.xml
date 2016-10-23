@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.drama.DramaPriceRate" table="drama_pricerate" schema="gsp">
+    
+       <id name="recordid" type="long">
+            <column name="recordid"  />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_drama</param>
+			</generator>
+       </id>
+       
+       <property name="configid"		column="configid"	type="long" />
+       <property name="discount"		column="discount"	type="double" />
+       <property name="settleid"		column="settleid"	type="string" />
+       <property name="price"		column="price"	type="double" />
+       <property name="itempriceid"		column="itempriceid"	type="string" />
+       <property name="seatpriceid"		column="seatpriceid"	type="string" />
+       <property name="disrecordid"		column="disrecordid"	type="string" />
+       <property name="status"		column="status"	type="string" />
+       <property name="disticket"		column="disticket"	type="string" />
+       <property name="gspupdatetime"		column="gspupdatetime"	type="timestamp" />
+		        
+    </class>
+</hibernate-mapping>

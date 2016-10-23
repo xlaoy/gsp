@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>场次明细</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/iscroll.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/core.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+	<script type="text/javascript">
+	</script>
+</head>
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryPlayItem")
+	#parse('WEB-INF/pages/nvaig/playitemnvaig.vm')
+	<div class="mode_search">
+		<form action="${basePath}platform/gewaorder/queryPlayItem.xhtml" method="post" id="playitemform">
+			<h2>查询条件</h2><br>
+			场馆：
+			<input type="hidden" name="placeId" id="placeId" value="$!{params.placeId}"/>
+			<input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}" style="width: 250px;"/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			场次时间：
+			<input style="width:150px;" class="text" name="start" id="start" value="$!{params.start}" 
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'end\')||\'2020-10-01\'}'})"/>至
+			<input style="width:150px;" class="text" name="end" id="end" value="$!{params.end}" 
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'start\')}',maxDate:'2020-10-01'})"/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="javascript:submitByEnter();" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="hidden" name="isXls" id="isXls"/>
+			<a href="javascript:void(0);" class="button minBt whiteBt" onclick="downloadxls();">导出EXCEL</a>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			#parse("WEB-INF/pages/common/goback.vm")
+		</form>
+	</div>
+	
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th width="8%" class="sortable"><span>场次ID</span><span class="carat"></span></th>
+					<th width="12%" class="sortable"><span>放映时间</span><span class="carat"></span></th>
+					<th class="sortable"><span>电影名称</span><span class="carat"></span></th>
+					<th width="8%" class="sortable"><span>结算票数</span><span class="carat"></span></th>
+					<th width="8%" class="sortable"><span>结算金额</span><span class="carat"></span></th>
+					<th width="8%" class="sortable"><span>优惠票数</span><span class="carat"></span></th>
+					<th width="8%" class="sortable"><span>优惠金额</span><span class="carat"></span></th>
+					<th width="8%" class="sortable"><span>优惠比例</span><span class="carat"></span></th>
+					<th width="12%" class="sortable"><span>关联结算单号</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($pvo in $pvolist)
+				<tr>
+					<td >
+						<a href="${basePath}platform/gewaorder/queryGewarOrder.xhtml?playId=$!{pvo.playid}&placeId=$!{placeId}">$!{pvo.playid}</a>
+					</td>
+					<td>$!DateUtil.formatTimestamp($!{pvo.playtime})</td>
+					<td>$!{pvo.movieName}</td>
+					<td>$!{pvo.num}</td>
+					<td>$!CurrencyFmt.format($!{pvo.amount})</td>
+					<td>$!{pvo.disnum}</td>
+					<td>$!CurrencyFmt.format($!{pvo.discount})</td>
+					<td>$!CurrencyFmt.format($!{pvo.disrate})%</td>
+					<td>
+						#foreach($sid in $!{pvo.settleid})
+							<a href="javascript:loadSettleDeatil('$!{sid}');">$!{sid}</a>&nbsp;&nbsp;
+						#end
+					</td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="3">
+						合计
+					</td>
+					<td>$!{totalnum}</td>
+					<td>$!CurrencyFmt.format($!{totalamount})</td>
+					<td>$!{distotalnum}</td>
+					<td>$!CurrencyFmt.format($!{distotalamount})</td>
+					<td>$!CurrencyFmt.format($!{distotalrate})%</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td colspan="9">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	
+</div>
+
+<div id="detailMark" style="display:none; height: 450px;overflow-y:auto;">
+</div>
+
+<script type="text/javascript">
+function submitByEnter(){
+	var placeid = $("placeId").value;
+    if(placeid == null || placeid == "") {
+    	gewaUtil.alert("影院不能为空！");
+    	return;
+    }
+    var start = $("start").value;
+    if(start == null || start == "") {
+    	gewaUtil.alert("开始时间不能为空！");
+    	return;
+    }
+    var end = $("end").value;
+    if(end == null || end == "") {
+    	gewaUtil.alert("结束时间不能为空！");
+    	return;
+    }
+    $("playitemform").submit();
+}
+
+window.addEvent('domready',function(){
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	$$('.tips').amTips();
+	completer = new Autocompleter.Local($("placeFirstLetter"), parent.pdata, {
+		'delay': 100,
+		'maxChoices': 10,
+		'minLength':0,
+		'requestid':'placeId',
+		'filter': function() {
+			var vl = this.queryValue;
+			var values = vl.trim().split(/ +/);
+			return this.tokens.filter(function(token){
+				var result = values.every(function(v){
+					var reg = new RegExp(v.escapeRegExp(),'i');
+					return reg.test(token.pinyin) || reg.test(token.name);
+				});
+				return result;
+			});
+		},
+		'injectChoice': function(choice){
+			parent.myGenChoice(this,choice);
+		}
+	});
+});
+
+var downloadxls=function(){
+	$("isXls").value="downloadxls";
+	submitByEnter();
+	$("isXls").value="";
+};
+
+//查看详情
+function loadSettleDeatil(settleId){
+	var url = '${basePath}platform/settlement/settleMore.xhtml';
+	var values = {"recordId":settleId}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('detailMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','detailMark','结算单' + settleId ,850,'detailMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+	<link rel="stylesheet" type="text/css" href="${staticPath}component/css/default.css" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/iscroll.js?v=0000000"></script>
+<script type="text/javascript" src="${staticPath}scripts/core.js?v=0000000"></script>
+<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+</head>
+<body style="">
+	#if ($!params.isXls != "downloadxls")
+	<form action="${basePath}platform/queryTradeNoAndPass.xhtml" id="execForm" method="post">
+		<textarea rows="10" cols="200" name="passes">$!params.passes</textarea><br />
+		<input type="hidden" name="isXls" id="isXls" />
+		<input type="submit" onclick="" value="执行"/>
+		<a href="javascript:downloadxls();" class="button whiterBt" ><span style="width:70px;">导出Excel</span></a>
+	</form>
+	#end
+	<table class="table">
+		#if($arrayList && $arrayList.size !=0)
+			<tr>
+				<td></td>
+				<td>HFH确认码</td>
+				<td>订单号</td>
+			</tr>
+			#foreach($e in $arrayList)
+				<tr #if(!$map.get($!e)) style="background: red;"  #end>
+				<td>$foreach.count</td>
+				<td>$e</td>
+				<td #if ($!params.isXls eq "downloadxls") style="vnd.ms-excel.numberformat:@" #end>$!map.get($!e) </td>
+				</tr>
+			#end
+		#end
+		<tr></tr>
+	</table>
+	<script type="text/javascript">
+	var downloadxls=function(){
+		if(document.forms[0]){
+			$("isXls").value="downloadxls";
+			document.forms[0].submit();
+			$("isXls").value="";
+		}else{
+			var a=document.location.href;
+			a=a+"&isXls=download";
+			document.location.href=a;
+		}
+	};
+	</script>
+</body>
+</html>

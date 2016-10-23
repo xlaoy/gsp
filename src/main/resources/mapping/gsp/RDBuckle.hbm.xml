@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.RDBuckle" table="rd_buckle" schema="gsp">
+    
+       <id name="recordId" type="long">
+            <column name="record_id"  />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_req_money</param>
+			</generator>
+       </id>
+       
+       <property name="relateId"		column="related_id"		type="long" />
+       <property name="placeId"			column="place_id"		type="string" />
+       <property name="placeName"		column="place_name"		type="string" />
+       <property name="special"			column="special"		type="string" />
+       <property name="cycle"			column="cycle"			type="string" />
+       <property name="confirmTime"		column="confirm_time"	type="timestamp" />
+       <property name="buckleBefore"	column="buckle_before"	type="java.lang.Double" />
+       <property name="buckleAmount"	column="buckle_amount"	type="java.lang.Double" />
+       <property name="buckleAfter"		column="buckle_after"	type="java.lang.Double" />
+       <property name="buckleTime"		column="buckle_time"	type="timestamp" />
+       <property name="vendorCode"		column="vendor_code"	type="string" />
+       <property name="vendorName"		column="vendor_name"	type="string" />
+        
+    </class>
+</hibernate-mapping>

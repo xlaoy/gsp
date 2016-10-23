@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+	<!-- <bean id="keeperService" class="com.gewara.untrans.monitor.impl.ZookeeperServiceImpl">
+		<property name="zookeeperQuorum" value="${zookeeper.quorum}"/>
+	</bean> -->
+	
+	<bean id="keeperService" class="com.gewara.untrans.monitor.impl.ZookeeperServiceImpl">
+	    <constructor-arg ref="curatorConnectionFactroy"/>
+	</bean>
+	<bean id="curatorConnectionFactroy" class="com.gewara.untrans.monitor.impl.CuratorConnectionFactroyImpl">
+	    <property name="zookeeperQuorum" value="${zookeeper.quorum}"/>
+	</bean>
+	
+	<bean id="gewaMultipartResolver"
+		class="com.gewara.web.support.GewaMultipartResolver">
+		<property name="maxUploadSize" value="16777216" /><!-- 16M -->
+		<property name="defaultEncoding" value="GBK"/>
+		<property name="maxInMemorySize" value="40960"/>
+	</bean>
+	
+	<bean id="webContainerMonitorAgent" class="com.gewara.support.magent.WebContainerMonitorAgent"/>
+	<bean id="dataReportAgent" class="com.gewara.support.magent.DataReportAgent">
+		<property name="threadDumpDir" value="/opt/lamp/weblog/dump" />
+		<!-- <property name="extDataReportList">
+			<list>
+				<bean class="com.gewara.mongo.support.MongoDataReport" />
+			</list>
+		</property> -->
+		<property name="monitorService" ref="monitorService" />
+	</bean>
+	<bean id="attackTestService" class="com.gewara.untrans.impl.AttackTestServiceImpl" />
+	<bean id="attackTestFilter" class="com.gewara.web.filter.AttackTestFilter" />
+	
+</beans>

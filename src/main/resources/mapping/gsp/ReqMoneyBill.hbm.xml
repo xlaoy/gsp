@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 31, 2013 2:18:24 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.ReqMoneyBill" table="req_money_bill" schema="gsp" optimistic-lock="version">
+   		<id name="recordId" type="long" column="record_id">
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_req_money</param>
+			</generator>
+		</id>
+		<property name="vendorType" column="vendor_type" type="java.lang.String"/>
+		<property name="vendorId" column="vendor_id" type="java.lang.Long"></property>
+		<property name="vendorName" column="vendor_name" type="java.lang.String"/>
+		<property name="vendorCode" column="vendor_code" type="java.lang.String"/>
+		<property name="minTime" column="min_time" type="java.sql.Timestamp"/>
+		<property name="maxTime" column="max_time" type="java.sql.Timestamp"/>
+		<property name="payTime" column="pay_time" type="java.util.Date"/>
+		<property name="ticketAmount" column="ticket_amount" type="java.lang.Double"/>
+		<property name="goodsAmount" column="goods_amount" type="java.lang.Double"/>
+		<property name="channelAmount" column="channel_amount" type="java.lang.Double"/>
+		<property name="totalAmount" column="total_amount" type="java.lang.Double"/>
+		<property name="version" column="version" type="java.lang.Integer"/>
+		<property name="relateSettleId" column="relate_settle_id" type="java.lang.String"/>
+		<property name="payUserId" column="pay_user_id" type="java.lang.Long"></property>
+    </class>
+</hibernate-mapping>

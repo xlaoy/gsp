@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+    
+    <dubbo:application name="GSP" />
+    <dubbo:consumer check="false" />
+   	<dubbo:registry protocol="zookeeper" address="${zookeeper.quorum}"  client="curator" file="/home/apache/.dubbo/gsp.cache" />
+    <dubbo:reference id="commonVoService" interface="com.gewara.api.service.common.CommonVoService" version="1.5"/>
+    <dubbo:reference id="gmailService" interface="com.gewara.api.gmail.service.GmailService" />
+	
+	<dubbo:reference id="supplierInfoService" interface="com.gewara.drama.dubbo.SupplierInfoVoService" version="1.1"/>
+	
+</beans>

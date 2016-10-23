@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.gewara.model.gsp.SettlementBillSnapshoot" table="settlement_bill_snapshoot">
+		<id name="recordId" type="long">
+	          <column name="record_id" precision="65535" scale="65531" />
+					<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_settlement_bill</param>
+			</generator>
+	       </id>
+        <property name="settlementBillId" type="long">
+            <column name="settlement_bill_id" />
+        </property>
+        <property name="orderTotalNumber" type="java.lang.Double">
+            <column name="order_total_number"/>
+        </property>
+        <property name="orderTotalAmount" type="java.lang.Double">
+            <column name="order_total_amount"/>
+        </property>
+        <property name="snapVersion" type="string">
+            <column name="snap_version"/>
+        </property>
+	</class>
+</hibernate-mapping>

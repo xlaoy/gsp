@@ -1,0 +1,7 @@
+CREATE OR REPLACE VIEW view_manualbuyitem4gsp AS
+select b.RECORDID, b.PLACEID, b.QUANTITY, b.TOTALFEE, b.DISFEE, b.ADDTIME, b.PLAYTIME, b.tipid, b.DISID, b.ORDERID, b.dpid as playid, 
+case when d.quantity is null then 0
+     when d.quantity = 0 then 0
+     else b.quantity / d.quantity
+     end as taopiaonum
+from ManualBuyItem b left outer join disquantity d on b.disid = d.recordid

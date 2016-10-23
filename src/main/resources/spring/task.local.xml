@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:aop="http://www.springframework.org/schema/aop"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+	<bean id="jobLockService" class="com.gewara.job.JobLockService">
+		<property name="jobJdbcTemplate" ref="localJobjdbcTemplate"/>
+	</bean>
+
+	<bean id="jobDetail" class="org.quartz.impl.JobDetailImpl">
+		<property name="jobClass" value="com.gewara.job.GewaJob" />
+		<property name="name" value="jobDetail"/>
+		<property name="durability" value="true"/>
+	</bean>
+	
+	<bean id = "channelSettleJob" class ="com.gewara.job.impl.ChannelSettleJob"/>
+	
+	<!--通道费对账单数据每日填充-->
+	<!-- <bean id = "generateChannelCheckBillTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="generateChannelCheckBill" />
+		<property name="jobService" ref="channelSettleJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 /3 * ? * *</value>
+		</property>
+	</bean> -->
+	
+	<!--通道费结算单数据填充-->
+	<bean id = "generateChannelSettleBillTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="generateChannelSettleBill" />
+		<property name="jobService" ref="channelSettleJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 /2 * ? * *</value>
+		</property>
+	</bean>
+	
+	<!--通道费数据聚合-->
+	<bean id = "doChannelSettleFillingTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="doChannelSettleFilling" />
+		<property name="jobService" ref="channelSettleJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 30 6,10,15,20 ? * *</value>
+		</property>
+	</bean>
+	
+	<bean id = "goodsSettleJob" class ="com.gewara.job.impl.GoodsSettleJob"/>
+	
+	<!--卖品对账单数据每日填充-->
+	<!-- <bean id = "generateGoodsCheckBillTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="generateGoodsCheckBill" />
+		<property name="jobService" ref="goodsSettleJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 /30 * ? * *</value>
+		</property>
+	</bean> -->
+	
+	<!--卖品结算单数据每日填充-->
+	<bean id = "generateGoodsSettleBillTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="generateGoodsSettleBill" />
+		<property name="jobService" ref="goodsSettleJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 15 * ? * *</value>
+		</property>
+	</bean>
+	
+	<!--卖品数据聚合-->
+	<bean id = "doGoodsSettleFillingTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="doGoodsSettleFilling" />
+		<property name="jobService" ref="goodsSettleJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 0 3,6,12,19 ? * *</value>
+		</property>
+	</bean>
+	<!--卖品订单打票时间同步-->
+	<bean id = "updateGoodsTakeTimeTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="updateGoodsTakeTime" />
+		<property name="jobService" ref="goodsSettleJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 0/5 * * * ?</value>
+		</property>
+	</bean>
+	
+	
+	
+	<bean id="dataExtractionJob" class="com.gewara.job.impl.DataExtractionJob" />
+	<!-- 同步订单 -->
+	<bean id="syncOrderJobTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="syncOrder" />
+		<property name="jobService" ref="dataExtractionJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 1/31 3 ? * *</value>
+		</property>
+	</bean>
+	
+	<!-- 同步卖品订单 -->
+	<bean id="syncGoodsOrderJobTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="syncGoodsOrder" />
+		<property name="jobService" ref="dataExtractionJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 15 10 * * ? *</value>
+		</property>
+	</bean>
+	
+	<!-- 同步场馆 -->
+	<bean id="syncPlaceJobTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="syncPlace" />
+		<property name="jobService" ref="dataExtractionJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 3/33 3 ? * *</value>
+		</property>
+	</bean>
+	<!-- 同步修改价格后的场次 -->
+	<bean id="syncPricedPlayItemJobTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="syncPlayItemPrice" />
+		<property name="jobService" ref="dataExtractionJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 4/34 3 ? * *</value>
+		</property>
+	</bean>
+	<!-- 同步结算配置 -->
+	<bean id="syncSettleConfigJobTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="syncSettleConfig" />
+		<property name="jobService" ref="dataExtractionJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 /1 * * * ?</value>
+		</property>
+	</bean>
+
+	<!-- 通道结算配置 -->
+	<bean id="syncChannelConfigJobTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="syncChannleConfig" />
+		<property name="jobService" ref="dataExtractionJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+<!-- 			<value>0 0/30 * * * ?</value> -->
+			<value>0 /2 * * * ?</value>
+		</property>
+	</bean>
+		
+	<bean id="billsGenerateJob" class="com.gewara.job.impl.BillsJob" />
+	<!-- 对账单生成 -->
+	<!-- <bean id="checkBillGenerateTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="generateCheckBill" />
+		<property name="jobService" ref="billsGenerateJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 0/1 * ? * *</value>
+		</property>
+	</bean> -->
+	<!-- 结算单生成 -->
+	<bean id="settlementBillGenerateTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="generateSettlementBill" />
+		<property name="jobService" ref="billsGenerateJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 0/2 * ? * *</value>
+		</property>
+	</bean>
+	<!-- 固化结算单-->
+	<bean id="autoTomerchantTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="autoTomerchant" />
+		<property name="jobService" ref="billsGenerateJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 56 * ? * *</value>
+		</property>
+	</bean>
+	<!-- 上传应付单-->
+	<bean id="uploadBillTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="uploadBill" />
+		<property name="jobService" ref="billsGenerateJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 1/3 * ? * *</value>
+		</property>
+	</bean>
+	
+	
+	<bean id="miscJob" class="com.gewara.job.impl.MiscJob" />
+	<!-- 其他定时任务 -->
+	<bean id="miscTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="validateNumber" />
+		<property name="jobService" ref="miscJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 0 10 ? * *</value>
+		</property>
+	</bean>
+	
+	<!-- 万达订单明细 -->
+	<bean id="wandaOrderJob" class="com.gewara.job.impl.WandaOrderJob"/>
+	
+	<bean id="wandaOrderTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="doWandaOrderJob" />
+		<property name="jobService" ref="wandaOrderJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<!--每月三号 -->
+			<value>0 15 10 3 * ?</value>
+		</property>
+	</bean>
+	
+	<!-- 同步异价订单 -->
+	<bean id="sysDiffPriceOrderJobTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="sysDiffPriceOrder" />
+		<property name="jobService" ref="dataExtractionJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 1/31 3 ? * *</value>
+		</property>
+	</bean>
+	
+	<bean id = "baoChangJob" class ="com.gewara.job.impl.BaoChangJob"/>
+	
+	<!--  同步包场列表 -->
+	<bean id="sysBaoChangJobTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="sysBaoChang" />
+		<property name="jobService" ref="baoChangJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 1/50 3 ? * *</value>
+		</property>
+	</bean>
+	
+	<!-- 包场计算 (每天5点执行一次)-->
+	<bean id="baochangFullingTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="bcCalculate" />
+		<property name="jobService" ref="baoChangJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 15 5 ? * *</value>
+		</property>
+	</bean>
+	
+	<!-- 包场计算 (每月4号7点执行一次)-->
+	<bean id="bcSettleBillTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="bcSettleBill" />
+		<property name="jobService" ref="baoChangJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 15 7 4 * ?</value>
+		</property>
+	</bean>
+	
+	<bean id = "rongDuanJob" class ="com.gewara.job.impl.RongDuanJob"/>
+	
+	<bean id="everyDayCollectionTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="everyDayCollection" />
+		<property name="jobService" ref="rongDuanJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 30 4 ? * *</value>
+		</property>
+	</bean>
+	
+	<bean id="rongduanCollectionTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="rongduanCollection" />
+		<property name="jobService" ref="rongDuanJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 0 9,14 ? * *</value>
+		</property>
+	</bean>
+	
+	<bean id = "WPJob" class ="com.gewara.job.impl.WPJob"/>
+	
+	<bean id="WPJobTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="autoTomerchant" />
+		<property name="jobService" ref="WPJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 30 3 4 * ?</value>
+		</property>
+	</bean>
+	
+	<bean id="wpMonthFullJobTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="wpMonthFull" />
+		<property name="jobService" ref="WPJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 30 8 4 * ?</value>
+		</property>
+	</bean>
+	
+	<bean id="sysPointCardOrderJobTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="sysPointCardOrder" />
+		<property name="jobService" ref="WPJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 25 2 * * ?</value>
+		</property>
+	</bean>
+	
+	<bean id="createPointCardBillJobTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="createPointCardBill" />
+		<property name="jobService" ref="WPJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 45 2 4 * ?</value>
+		</property>
+	</bean>
+	
+	<bean id="calculatePointCardBillobTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="calculatePointCardBill" />
+		<property name="jobService" ref="WPJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 10 5 4 * ?</value>
+		</property>
+	</bean>
+	
+	<!-- 演出job -->
+	<bean id = "dramaJob" class ="com.gewara.job.impl.DramaJob"/>
+	
+	<!-- 同步演出项目 -->
+	<bean id="syncDramaTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="syncDrama" />
+		<property name="jobService" ref="dramaJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 0 1 * * ?</value>
+		</property>
+	</bean>
+	
+	<!-- 同步演出配置 -->
+	<bean id="syncDramaConfigTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="syncDramaConfig" />
+		<property name="jobService" ref="dramaJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 10 3 * * ?</value>
+		</property>
+	</bean>
+	
+	<!-- 同步演出供应商信息 -->
+	<bean id="syncDramaSupplierTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="syncDramaSupplier" />
+		<property name="jobService" ref="dramaJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 20 1 * * ?</value>
+		</property>
+	</bean>
+	
+	<!-- 同步演出场馆信息 -->
+	<bean id="syncDramaPlaceTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="syncDramaPlace" />
+		<property name="jobService" ref="dramaJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 30 1 * * ?</value>
+		</property>
+	</bean>
+	
+	<!-- 同步演出场次信息 -->
+	<bean id="syncDramaPlayItemTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="syncDramaPlayItem" />
+		<property name="jobService" ref="dramaJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 40 1 * * ?</value>
+		</property>
+	</bean>
+	
+	<!-- 同步演出订单 -->
+	<bean id="syncDramaOrderTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="syncDramaOrder" />
+		<property name="jobService" ref="dramaJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 0 4 * * ?</value>
+		</property>
+	</bean>
+	
+	<!-- 生成结算单据 -->
+	<bean id="generateDramaBillTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="generateDramaBill" />
+		<property name="jobService" ref="dramaJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 0 6,12,18 * * ?</value>
+		</property>
+	</bean>
+	
+	<!-- 计算单据 -->
+	<bean id="calculateBillTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="calculateBill" />
+		<property name="jobService" ref="dramaJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 0 7 * * ?</value>
+		</property>
+	</bean>
+	
+	<!-- 计算计提成本单据 -->
+	<bean id="calculateJitiBillTrigger" class="com.gewara.job.GewaJobTrigger">
+		<property name="targetMethod" value="calculateJitiBill" />
+		<property name="jobService" ref="dramaJob" />
+		<property name="jobDetail" ref="jobDetail"/>
+		<property name="cronExpression">
+			<value>0 30 12 4 * ?</value>
+		</property>
+	</bean>
+	
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="applicationContextSchedulerContextKey" value="SCHEDULERCONTEXTKEY"/>
+		<property name="triggers">
+			<list>
+				<ref bean="wandaOrderTrigger"/>
+<!-- 				<ref bean="syncSettleConfigJobTrigger"/> -->
+<!-- 				<ref bean="syncChannelConfigJobTrigger"/> -->
+<!-- 				<ref bean="settlementBillGenerateTrigger"/> -->
+<!-- 				<ref bean="uploadBillTrigger"/> -->
+<!-- 				<ref bean="autoTomerchantTrigger"/> -->
+<!-- 				<ref bean="checkBillGenerateTrigger"/> -->
+<!-- 				<ref bean="syncOrderJobTrigger"/> -->
+<!-- 				<ref bean="syncRefundJobTrigger"/> -->
+<!-- 				<ref bean="syncPlaceJobTrigger"/> -->
+<!-- 				<ref bean="syncPricedPlayItemJobTrigger"/> -->
+<!-- 				<ref bean="miscTrigger"/> -->
+<!-- 				<ref bean="generateChannelCheckBillTrigger"/> -->
+<!-- 				<ref bean="generateChannelSettleBillTrigger"/> -->
+<!-- 				<ref bean="doChannelSettleFillingTrigger"/> -->
+<!-- 				<ref bean="generateGoodsCheckBillTrigger"/> -->
+<!-- 				<ref bean="generateGoodsSettleBillTrigger"/> -->
+<!-- 				<ref bean="doGoodsSettleFillingTrigger"/> -->
+<!-- 				<ref bean="updateGoodsTakeTimeTrigger"/> -->
+<!-- 				<ref bean="syncGoodsOrderJobTrigger"/> -->
+<!-- 				<ref bean="sysDiffPriceOrderJobTrigger"/> -->
+<!-- 				<ref bean="sysBaoChangJobTrigger"/> -->
+<!-- 				<ref bean="baochangFullingTrigger"/> -->
+<!--				<ref bean="everyDayCollectionTrigger"/> -->
+<!--				<ref bean="rongduanCollectionTrigger"/> -->
+<!--				<ref bean="WPJobTrigger"/> -->
+<!--				<ref bean="wpMonthFullJobTrigger"/> -->
+<!-- 					<ref bean="syncDramaTrigger"/>
+					<ref bean="syncDramaConfigTrigger"/>
+					<ref bean="syncDramaSupplierTrigger"/>
+					<ref bean="syncDramaPlaceTrigger"/>
+					<ref bean="syncDramaOrderTrigger"/>
+					<ref bean="generateDramaBillTrigger"/>
+					<ref bean="calculateBillTrigger"/>
+					<ref bean="calculateJitiBillTrigger"/> 
+					<ref bean="syncDramaPlaceTrigger"/>
+					<ref bean="bcSettleBillTrigger"/>-->
+			</list>
+		</property>
+	</bean> 
+</beans>

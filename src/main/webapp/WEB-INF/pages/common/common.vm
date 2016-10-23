@@ -1,0 +1,64 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="language" content="es" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/sportClient.css?v=$VmUtils.jsVersion" />
+<script type="text/javascript" src="${staticPath}scripts/mootools.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/tips.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/scrollerbar.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+<script type="text/javascript">
+function closebatch(obj){
+	gewa.util.container[obj].dispose(obj);
+}
+var pdata = $!{session.getAttribute("pdata")};
+function myGenChoice(_this, choice) {
+	var a = new Element('a', {'href': 'javascript:void(0)','html':choice.name,'rel':choice.recordId});
+	var el = new Element('li').adopt(a);
+	el.inputValue = choice.name;
+	_this.addChoiceEvents(el).injectInside(_this.choices);
+}
+function isCreateOption(){
+	if(pdata.length > 10){
+		new Element('input',{type:'hidden',name:'placeId',id:'placeId',value:'$!{params.placeId}'}).inject('placeName');
+		var input = new Element('input',{type:'text',name:'placeFirstLetter',id:'placeFirstLetter',value:'$!{params.placeFirstLetter}','class':'text'}).inject('placeName');
+		new Autocompleter.Local(input, pdata, {
+			'delay': 100,
+			'maxChoices': 10,
+			'minLength':0,
+			'requestid':'placeId',
+			'filter': function() {
+				var vl = this.queryValue;
+				var values = vl.trim().split(/ +/);
+				return this.tokens.filter(function(token){
+					var result = values.every(function(v){
+						var reg = new RegExp(v.escapeRegExp(),'i');
+						return reg.test(token.pinyin) || reg.test(token.name);
+					});
+					return result;
+				});
+			},
+			'injectChoice': function(choice){
+				myGenChoice(this,choice);
+			}
+		});
+	}else{
+		var select = new Element('select',{name:'placeId',id:'placeId'}).inject('placeName');
+		var option = new Option('全部','');
+		select.add(option);
+		gewara.util.addOptions(select,pdata,'recordId','name');
+		#if(${params.placeId})
+			select.value = '${params.placeId}';
+		#end
+		#if(${placeId})
+			select.value = '${placeId}';
+		#end
+	}
+	var pvalue = '';
+	#if($!{params.placeId})
+		pvalue = $!{params.placeId}
+	#end
+	$('placeId').value= pvalue;
+}
+</script>

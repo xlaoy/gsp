@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 31, 2013 2:18:24 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.PricedPlayItem" table="priced_play_item" schema="gsp">
+       <id name="playId" type="long">
+            <column name="play_id"  />
+            <generator class="assigned" />
+        </id>
+        <property name="actualPrice" type="double">
+            <column name="actual_price" />
+        </property>
+        <property name="movieName" type="string">
+            <column name="movie_name" />
+        </property>
+        <property name="roomName" type="string">
+            <column name="room_name" />
+        </property>
+        <property name="cinemaId" type="long">
+            <column name="cinema_id" />
+        </property>
+        <property name="updateTime" type="timestamp">
+            <column name="update_time" />
+        </property>
+        <property name="playTime" type="timestamp">
+            <column name="play_time" />
+        </property>
+    </class>
+</hibernate-mapping>

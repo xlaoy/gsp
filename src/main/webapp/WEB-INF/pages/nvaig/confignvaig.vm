@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<div class="mod_hd tabs_gary">
+	<a href="${basePath}platform/settleconfig/settleconfigs.xhtml" #if($VmUtils.eq($!nvg,'settleconfigs')) class="select" #end>影票结算配置</a>
+	<a href="${basePath}platform/channelsettle/loadChannelConfigPage.xhtml" #if($VmUtils.eq($!nvg,'loadChannelConfigPage')) class="select" #end>通道费结算配置</a>
+	<a href="${basePath}vouch/yongyou/gewaUserMapU8.xhtml" #if($VmUtils.eq($!nvg,'gewaUserMapU8')) class="select" #end>U8用户配置</a>
+	<a href="${basePath}platform/sysdata/querySysData.xhtml" #if($VmUtils.eq($!nvg,'querySysData')) class="select" #end>系统数据管理</a>
+</div>

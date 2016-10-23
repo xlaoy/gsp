@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+
+<body id="_body">
+<div class="inner">
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th style="width:20%;">id</th>
+					<th style="width:20%;">价格</th>
+					<th style="width:20%;">扣率</th>
+					<th style="width:20%;">是否套票</th>
+					<th>状态</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($pr in ${prlist})
+					<tr>
+						<td>$!{pr.recordid}</td>
+						<td>$!CurrencyFmt.format($pr.price)</td>
+						<td>$!CurrencyFmt.format($pr.discount)%</td>
+						<td>
+							#if($VmUtils.eq($!{pr.disticket},"Y"))
+								是
+							#elseif($VmUtils.eq($!{pr.disticket},"N"))
+								否
+							#end	
+						</td>
+						<td>
+							#if($VmUtils.eq($!{pr.status},"AVAILABLE"))
+								可用
+							#elseif($VmUtils.eq($!{pr.status},"EXPIRED"))
+								不可用
+							#end	
+						</td>
+					</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+</div>
+
+</body>
+</html>

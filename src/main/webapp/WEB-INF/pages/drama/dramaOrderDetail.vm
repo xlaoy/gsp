@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html style="background: #fff;">
+<head>
+<title>演出</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+<style type="text/css">
+.detailtable{width: 100%;}
+.detailtable td{height: 40px; line-height: 40px;}
+.s{background:#f0f0f0;}
+</style>
+</head>
+
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryDramaOrder")
+	#parse('WEB-INF/pages/nvaig/dramadatanvaig.vm')
+	
+	<div class="mode_search">
+		<form action="${basePath}platform/drama/queryDramaOrder.xhtml" method="post" id="orderForm">
+				<h2>查询条件</h2><br>
+				<div>
+					订单来源：
+					<select id="orderform" name="orderform" class="text" style="width: 100px;">
+						<option value="ONLINE" #if($VmUtils.eq($!{params.orderform},"OFFLINE")) selected="selected" #end>线上</option>
+						<option value="OFFLINE" #if($VmUtils.eq($!{params.orderform},"OFFLINE")) selected="selected" #end>线下</option>
+						<option value="PIAOWU" #if($VmUtils.eq($!{params.orderform},"PIAOWU")) selected="selected" #end>票务</option>
+					</select>
+					&nbsp;&nbsp;
+					订单号：
+					<input type="text" class="text" name="tradeno" id="tradeno" value="$!{params.tradeno}"/>
+					&nbsp;&nbsp;
+					<a href="javascript:$('orderForm').submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+				</div>
+		</form>
+	</div>
+	
+	<div class="mode_search">
+		<h2>订单详情</h2><br>
+		<table class="detailtable">
+			<tr>
+				<td style="width: 5%">订单号：</td>
+				<td style="width: 28%">$!{order.tradeno}</td>
+				<td style="width: 5%;">订单状态：</td>
+				<td style="width: 28%">
+					#if($VmUtils.eq($!{order.status},"paid_success"))
+						交易成功
+					#elseif($VmUtils.eq($!{order.status},"paid_return"))
+						退票成功
+					#elseif($VmUtils.eq($!{order.status},"checked"))
+						已批准
+					#end
+				</td>
+				<td style="width: 5%">演出项目：</td>
+				<td style="width: 28%">$!{drama.dramaname}</td>
+			</tr>
+			<tr>
+				<td style="width: 5%">支付时间：</td>
+				<td style="width: 28%">$!DateUtil.formatTimestamp($!{order.paidtime})</td>
+				<td style="width: 5%;">用户id：</td>
+				<td style="width: 28%">$!{order.memberid}</td>
+				<td style="width: 5%">用户组id：</td>
+				<td style="width: 28%">$!{order.usergroup}</td>
+			</tr>
+			<tr>
+				<td style="width: 5%">下单时间：</td>
+				<td style="width: 28%">$!DateUtil.formatTimestamp($!{order.ordertime})</td>
+				<td style="width: 5%;">更新时间：</td>
+				<td style="width: 28%">$!DateUtil.formatTimestamp($!{order.updatetime})</td>
+				<td style="width: 5%">其他费用：</td>
+				<td style="width: 28%">$!CurrencyFmt.format($!{order.otherfee})</td>
+			</tr>
+			<tr>
+				<td style="width: 5%">支付方式：</td>
+				<td style="width: 28%">
+					#if($VmUtils.eq($!{order.paymethod},"ZFB"))
+						支付宝
+					#elseif($VmUtils.eq($!{order.paymethod},"ZZ"))
+						银行转账
+					#elseif($VmUtils.eq($!{order.paymethod},"XJ"))
+						现金
+					#elseif($VmUtils.eq($!{order.paymethod},"SK"))
+						刷卡
+					#elseif($VmUtils.eq($!{order.paymethod},"GSJS"))
+						公司结算
+					#end
+				</td>
+				<td style="width: 5%;">优惠说明：</td>
+				<td style="width: 28%">$!{order.disreason}</td>
+				<td style="width: 5%">项目id：</td>
+				<td style="width: 28%">$!{order.dramaid}</td>
+			</tr>
+			<tr>
+				<td style="width: 5%">用户名：</td>
+				<td style="width: 28%">$!{order.username}</td>
+				<td style="width: 5%;"></td>
+				<td style="width: 28%"></td>
+				<td style="width: 5%"></td>
+				<td style="width: 28%"></td>
+			</tr>
+		</table>
+	</div>
+	
+	#if(!$VmUtils.eq($!{discountlist},"null"))
+		<div class="mode_search">
+			<h2>优惠信息</h2><br>
+			<table class="tableGear" id="tableGear">
+				<thead>
+					<tr>
+						<th style="width:20%;">recordid</th>
+						<th style="width:20%;">tag</th>
+						<th style="width:20%;">卡券类型</th>
+						<th style="width:20%;">销售类型</th>
+						<th style="width:20%;">优惠金额</th>
+					</tr>
+				</thead>
+				<tbody>
+					#foreach($discount in ${discountlist})
+						<tr>
+							<td>$!{discount.recordid}</td>
+							<td>$!{discount.tag}</td>
+							<td>$!{discount.cardtype}</td>
+							<td>$!{discount.soldtype}</td>
+							<td>$!CurrencyFmt.format($!{discount.amount})</td>
+						</tr>
+					#end
+				</tbody>
+			</table>
+		</div>
+	#end
+	
+	#if(!$VmUtils.eq($!{refund},"null"))
+		<div class="mode_search">
+			<h2>退单详情</h2><br>
+			<table class="detailtable">
+				<tr>
+					<td style="width: 5%">退单时间：</td>
+					<td style="width: 28%">$!DateUtil.formatTimestamp($!{refund.refundtime})</td>
+					<td style="width: 5%;">退退类型：</td>
+					<td style="width: 28%">
+						#if($VmUtils.eq($!{refund.refundtype},"full"))
+							全额退款
+						#elseif($VmUtils.eq($!{refund.refundtype},"part"))
+							部分退款
+						#elseif($VmUtils.eq($!{refund.refundtype},"supplement"))
+							调价退款
+						#elseif($VmUtils.eq($!{refund.refundtype},"gewara"))
+							格瓦拉退款
+						#end
+					</td>
+					<td style="width: 5%">是否要结算：</td>
+					<td style="width: 28%">
+						#if($VmUtils.eq($!{refund.issettle},"N"))
+							不结算
+						#else
+							结算
+						#end
+					</td>
+				</tr>
+			</table>
+		</div>
+	#end
+	
+	
+	<div class="mode_search">
+		<h2>订单条目</h2><br>
+		<div class="tableGear clear">
+			<table class="tableGear" id="tableGear">
+				<thead>
+					<tr>
+						<th style="width:7%;">recordid</th>
+						<th>演出场馆</th>
+						<th style="width:7%;">票数</th>
+						<th style="width:7%;">售额</th>
+						<th style="width:7%;">套票套数</th>
+						<th style="width:7%;">价格账单</th>
+						<th style="width:7%;">结算单</th>
+						<th style="width:7%;">是否退票</th>
+						<th style="width:7%;">退票价格账单</th>
+						<th style="width:7%;">退票结算单</th>
+					</tr>
+				</thead>
+				<tbody>
+					#foreach($item in ${itemlist})
+						#set($amount = $!{item.totalfee}-$!{item.disfee})
+						<tr>
+							<td>$!{item.recordid}</td>
+							<td>$!{place.name}</td>
+							<td>$!{item.quantity}</td>
+							<td>$!CurrencyFmt.format($!amount)</td>
+							<td>$!{item.taopiaonum}</td>
+							<td>$!{item.pricebillid}</td>
+							<td>$!{pricebillmap.get($!{item.pricebillid}).settlebillid}</td>
+							<td>
+								#if($VmUtils.eq($!{item.hasrefund},"Y"))
+									是
+								#else
+									否
+								#end
+							</td>
+							<td>$!{item.refundpricebillid}</td>
+							<td>$!{pricebillmap.get($!{item.refundpricebillid}).settlebillid}</td>
+						</tr>
+					#end
+				</tbody>
+			</table>
+		</div>
+	</div>
+	
+</div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+});
+
+</script>
+</body>
+</html>

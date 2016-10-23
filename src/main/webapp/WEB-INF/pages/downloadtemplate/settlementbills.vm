@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>结算单</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<table border="1">
+		<thead>
+			<tr>
+				<td width="200" height="32" valign="middle">结算单号</td>
+				<td width="200" height="32" valign="middle">结算类型</td>
+				<td width="200" height="32" valign="middle">场馆</td>
+				<td width="310" height="32" valign="middle">结算周期</td>
+				<td width="80" valign="middle">结算票数</td>
+				<td width="80" valign="middle">结算金额</td>
+				<td width="80" valign="middle">退款数量</td>
+				<td width="80" valign="middle">退款金额</td>
+				<td width="80" valign="middle">调整数量</td>
+				<td width="80" valign="middle">调整金额</td>
+				<td width="80" valign="middle">特价扣减</td>
+				<td width="80" valign="middle">GW开票金额</td>
+				<td width="80" valign="middle">请款状态</td>
+			</tr>
+		</thead>
+		<tbody>
+			#if($sb && $sb.size() > 0)
+			#foreach($s in ${sb})
+			<tr>
+				<td width="80" height="26" valign="middle">
+					$!{s.recordId}
+				</td>
+				<td>$!billTypeMap.get($!{s.tag})
+					#if($VmUtils.eq($!s.tag,'TICKET'))
+						#if($VmUtils.eq($!s.playType,'ZL'))
+							<br/>直连
+						#elseif($VmUtils.eq($!s.playType,'XN'))
+							<br/>虚拟
+						#elseif($VmUtils.eq($!s.playType,'GW'))
+							<br/>格瓦票务
+						#elseif($VmUtils.eq($!s.playType,'BC'))
+							<br/>包场
+						#end
+						#if($VmUtils.eq($!s.special,'HEPING_OUTER'))
+							<br/>大光明巨幕
+						#elseif($VmUtils.eq($!s.special,'WANDA_ACTIVITY'))
+							<br/>万达活动场
+						#elseif($VmUtils.eq($!s.special,'WANDA_NOT_ACTIVITY'))
+							<br/>万达非活动场
+						#end
+					#elseif($VmUtils.eq($!s.tag,'CHANNEL'))
+						#if($VmUtils.eq($!channelCfgMap.get($s.relateId).vendorType,'CINEMA'))
+							<br/>单家影院
+						#elseif($VmUtils.eq($!channelCfgMap.get($s.relateId).vendorType,'SYS'))
+							<br/>系统方
+						#elseif($VmUtils.eq($!channelCfgMap.get($s.relateId).vendorType,'THEATRES'))
+							<br/>院线方
+						#end
+					#else
+						#if($VmUtils.eq($!s.playType,'BC'))
+							<br/>包场
+						#end
+					#end
+				</td>
+				<td height="26" valign="middle">
+					#set($place=$pm.get($!{s.configId}))
+					$!{place.name}
+				</td>
+				<td height="26" valign="middle">
+					[ $!DateUtil.formatTimestamp($!{s.startTime}) -&nbsp;&nbsp;
+					 $!DateUtil.formatTimestamp($!{s.endTime}) )
+				</td>
+				
+				<td width="80" height="26" valign="middle">
+					$!{s.orderTotalNumber}
+					
+				</td>
+				<td width="80" height="26" valign="middle">
+					$!CurrencyFmt.format($!{s.orderTotalAmount})
+					
+				</td>
+				<td width="80" height="26" valign="middle">
+					$!{s.refundTotalNumber}
+					
+				</td>
+				<td width="80" height="26" valign="middle">
+					$!CurrencyFmt.format($!{s.refundTotalAmount})
+					
+				</td>
+				
+				<td width="80" height="26" valign="middle">
+					$!{s.adjustTotalNumber}
+					
+				</td>
+				<td width="80" height="26" valign="middle">
+					$!CurrencyFmt.format($!{s.adjustTotalAmount})
+				</td>
+				
+				<td width="80" height="26" valign="middle">
+					$!CurrencyFmt.format($!extendBillMap.get($!{s.recordId}).placeallowance)
+				</td>
+				
+				<td>
+					$!CurrencyFmt.format($!extendBillMap.get($!{s.recordId}).billingamount)
+				</td>
+				<td width="80" height="26" valign="middle">
+					#if($VmUtils.eq($!{s.reqMoneyStatus},'Y'))
+						已请款
+					#else
+						未请款
+					#end
+				</td>
+			</tr>
+			#end
+			#else
+			<tr>
+				<td valign="middle">合计</td>
+				<td width="80" height="26" valign="middle">0</td>
+				<td width="80" height="26" valign="middle">0</td>
+				<td width="80" height="26" valign="middle">0</td>
+				<td width="80" height="26" valign="middle">0</td>
+				<td width="80" height="26" valign="middle">0</td>
+				<td width="80" height="26" valign="middle">0</td>
+				<td width="80" height="26" valign="middle">0</td>
+			</tr>
+			#end
+		</tbody>
+	</table>
+</body>
+</html>

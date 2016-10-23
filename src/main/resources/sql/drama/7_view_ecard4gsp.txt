@@ -1,0 +1,7 @@
+create or replace view view_ecard4gsp as
+select di.recordid, di.orderid, di.amount, eb.sold_Type as soldtype, eb.cardtype, di.tag
+from discount_item di, eleccard_batch eb
+where di.tag = 'ecard'
+and eb.sold_type = 'M'
+and eb.cardtype in ('A', 'B', 'C', 'D')
+and di.batchid = eb.recordid;

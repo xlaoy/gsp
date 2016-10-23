@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title id="titleid">结算系统</title>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+	</head>
+</head>
+<body id="_body">
+<form action="${basePath}reflect.xhtml">
+	bean: <input type="text" name="beanName" />
+	method:<input type="text" name="methodName" />
+	<input value="执行" type="submit" />
+</form>
+<form action="${basePath}syncData.xhtml">
+	<input style="width:100px;" class="text" name="start" id="start" value="$!{params.start}" 
+		onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" />至
+	<input style="width:100px;" class="text" name="end" id="end" value="$!{params.end}" 
+		onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" />
+	<input value="执行" type="submit" />
+</form>
+
+<iframe id="submitIframe" name="submitIframe"></iframe>
+<div id="commMark">
+	<form method="post" target="submitIframe" style="margin: 0px;padding: 0px" action="${basePath}testUpFile.xhtml"
+					enctype="multipart/form-data" id="uploadForm">
+		<div>
+			<a href="">上传Excel数据</a>
+			<input type="file" name="file" id="file" onkeyup="this.value='';" size="38" />
+			<span>请上传一份具有参考依据的Excel报表数据</span>
+		</div>
+		<div style="font-size: 16px;color: #999;">申请描述</div>
+		<textarea rows="3" cols="45" name="comments" id="comments" style="border: 0px;border: 1px solid #ccc;outline: none;"></textarea>
+		<input type="hidden" name="recordId" id ="123123"/> 
+		<input type="hidden" name="aplaceId" id ="123123123"/> 
+		<input type="submit" value="测试提交"></input>
+	</form>
+</div>
+</body>
+</html>

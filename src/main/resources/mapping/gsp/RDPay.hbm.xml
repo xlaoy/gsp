@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.RDPay" table="rd_pay" schema="gsp">
+    
+       <id name="recordId" type="long">
+            <column name="record_id"  />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_req_money</param>
+			</generator>
+       </id>
+       
+       <property name="vendorCode"	column="vendor_code"	type="string" />
+       <property name="vendorName"	column="vendor_name"	type="string" />
+       <property name="payBefore"	column="pay_before"		type="java.lang.Double" />
+       <property name="payAmount"	column="pay_amount"		type="java.lang.Double" />
+       <property name="payAfter"	column="pay_after"		type="java.lang.Double" />
+       <property name="payTime"		column="pay_time"		type="timestamp" />
+       <property name="optUser"		column="opt_user"		type="string" />
+       <property name="payWay"		column="pay_way"		type="string" />
+       <property name="payContent"	column="pay_content"	type="string" />
+       <property name="reqMoneyId"	column="req_money_id"	type="string" />
+        
+    </class>
+</hibernate-mapping>

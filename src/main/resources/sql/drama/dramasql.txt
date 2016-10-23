@@ -1,0 +1,323 @@
+--创建序列
+CREATE SEQUENCE "gsp"."seq_drama"
+ INCREMENT 1
+ MINVALUE 1000
+ MAXVALUE 99999999999999999
+ START 1000
+ CACHE 1;
+ALTER TABLE "gsp"."seq_drama" OWNER TO "gsp";
+
+
+
+--创建序列
+CREATE SEQUENCE "gsp"."seq_drama_bill"
+ INCREMENT 1
+ MINVALUE 1000
+ MAXVALUE 999999999999999999
+ START 9502
+ CACHE 1;
+
+ALTER TABLE "gsp"."seq_drama_bill" OWNER TO "gsp";
+
+--drama
+CREATE TABLE "gsp"."drama" (
+"recordid" int4 NOT NULL,
+"dramaname" varchar(1000) COLLATE "default",
+"pretype" varchar(10) COLLATE "default",
+"addtime" timestamp(6),
+"gspupdatetime" timestamp(6),
+CONSTRAINT "drama_pkey" PRIMARY KEY ("recordid")
+);
+ALTER TABLE "gsp"."drama" OWNER TO "gsp";
+
+
+--drama_basedata
+CREATE TABLE "gsp"."drama_basedata" (
+"recordid" int4 NOT NULL,
+"code" varchar(100) COLLATE "default",
+"name" varchar(500) COLLATE "default",
+"type" varchar(50) COLLATE "default",
+"special" text COLLATE "default",
+"updatetime" timestamp(6),
+"gspupdatetime" timestamp(6),
+CONSTRAINT "drama_basedata_pkey" PRIMARY KEY ("recordid")
+);
+ALTER TABLE "gsp"."drama_basedata" OWNER TO "gsp";
+
+--drama_config
+CREATE TABLE "gsp"."drama_config" (
+"recordid" int4 NOT NULL,
+"dramaid" int4 NOT NULL,
+"settlebase" varchar(20) COLLATE "default",
+"settlecycle" varchar(20) COLLATE "default",
+"status" varchar(20) COLLATE "default",
+"addtime" timestamp(6),
+"starttime" timestamp(6),
+"endtime" timestamp(6),
+"pretype" varchar(10) COLLATE "default",
+"gspupdatetime" timestamp(6),
+"suppliercode" varchar(50) COLLATE "default",
+"lastendtime" timestamp(6),
+"lastjitiendtime" timestamp(6),
+"canjiti" varchar(10) COLLATE "default",
+"dramaversionid" int4,
+"distype" varchar(50) COLLATE "default",
+CONSTRAINT "drama_config_pkey" PRIMARY KEY ("recordid")
+);
+ALTER TABLE "gsp"."drama_config" OWNER TO "gsp";
+
+
+--drama_discountitem
+CREATE TABLE "gsp"."drama_discountitem" (
+"recordid" int4 NOT NULL,
+"relatedid" varchar(50) COLLATE "default",
+"cardtype" varchar(20) COLLATE "default",
+"soldtype" varchar(20) COLLATE "default",
+"amount" numeric(10,2),
+"gspupdatetime" timestamp(6),
+"tag" varchar(20) COLLATE "default",
+CONSTRAINT "drama_discountitem_pkey" PRIMARY KEY ("recordid")
+);
+ALTER TABLE "gsp"."drama_discountitem" OWNER TO "gsp";
+
+
+--drama_jitibill
+CREATE TABLE "gsp"."drama_jitibill" (
+"recordid" int4 NOT NULL,
+"dramaid" int4,
+"suppliercode" varchar(50) COLLATE "default",
+"pretype" varchar(20) COLLATE "default",
+"starttime" timestamp(6),
+"endtime" timestamp(6),
+"ticketamount" numeric(10,2),
+"refundamount" numeric(10,2),
+"settleamount" numeric(10,2),
+"payamount" numeric(10,2),
+"profitamount" numeric(10,2),
+"gspupdatetime" timestamp(6),
+"configid" int4,
+"madisamount" numeric(10,2),
+"mbddisamount" numeric(10,2),
+"butieamount" numeric(10,2),
+CONSTRAINT "drama_jitibill_pkey" PRIMARY KEY ("recordid")
+);
+ALTER TABLE "gsp"."drama_jitibill" OWNER TO "gsp";
+
+
+--drama_orderoffline
+CREATE TABLE "gsp"."drama_orderoffline" (
+"tradeno" varchar(50) COLLATE "default" NOT NULL,
+"status" varchar(20) COLLATE "default",
+"dramaid" int4,
+"paymethod" varchar(20) COLLATE "default",
+"ordertime" timestamp(6),
+"updatetime" timestamp(6),
+"otherfee" numeric(10,2),
+"gspupdatetime" timestamp(6),
+"paidtime" timestamp(6),
+"username" varchar(500) COLLATE "default",
+CONSTRAINT "drama_orderoffline_pkey" PRIMARY KEY ("tradeno")
+);
+ALTER TABLE "gsp"."drama_orderoffline" OWNER TO "gsp";
+
+
+--drama_orderoffline_item
+CREATE TABLE "gsp"."drama_orderoffline_item" (
+"recordid" int4 NOT NULL,
+"tradeno" varchar(50) COLLATE "default",
+"quantity" int4,
+"totalfee" numeric(10,2),
+"tipid" int4,
+"disid" int4,
+"gspupdatetime" timestamp(6),
+"placeid" int4,
+"disfee" numeric(10,2),
+"taopiaonum" int4,
+"playid" int4,
+"playtime" timestamp(6),
+"pricebillid" int4,
+"hasrefund" varchar(10) COLLATE "default",
+CONSTRAINT "drama_orderoffline_item_pkey" PRIMARY KEY ("recordid")
+);
+ALTER TABLE "gsp"."drama_orderoffline_item" OWNER TO "gsp";
+
+
+--drama_orderonline
+CREATE TABLE "gsp"."drama_orderonline" (
+"tradeno" varchar(50) COLLATE "default" NOT NULL,
+"status" varchar(20) COLLATE "default",
+"dramaid" int4,
+"paidtime" timestamp(6),
+"memberid" int4,
+"ordertime" timestamp(6),
+"updatetime" timestamp(6),
+"otherfee" numeric(10,2),
+"gspupdatetime" timestamp(6),
+"disreason" text COLLATE "default",
+CONSTRAINT "drama_order_pkey" PRIMARY KEY ("tradeno")
+);
+ALTER TABLE "gsp"."drama_orderonline" OWNER TO "gsp";
+
+
+
+--drama_orderonline_item
+CREATE TABLE "gsp"."drama_orderonline_item" (
+"recordid" int4 NOT NULL,
+"tradeno" varchar(50) COLLATE "default",
+"quantity" int4,
+"totalfee" numeric(10,2),
+"tipid" int4,
+"disid" int4,
+"gspupdatetime" timestamp(6),
+"placeid" int4,
+"taopiaonum" int4,
+"disfee" numeric(10,2),
+"playid" int4,
+"playtime" timestamp(6),
+"pricebillid" int4,
+"hasrefund" varchar(10) COLLATE "default",
+CONSTRAINT "drama_orderonline_item_pkey" PRIMARY KEY ("recordid")
+);
+ALTER TABLE "gsp"."drama_orderonline_item" OWNER TO "gsp";
+
+
+
+--drama_playitem
+CREATE TABLE "gsp"."drama_playitem" (
+"recordid" int4 NOT NULL,
+"dpid" int4,
+"dramaid" int4,
+"playtime" timestamp(6),
+"gspupdatetime" timestamp(6),
+CONSTRAINT "drama_playitem_pkey" PRIMARY KEY ("recordid")
+);
+ALTER TABLE "gsp"."drama_playitem" OWNER TO "gsp";
+
+
+
+--drama_pricebill
+CREATE TABLE "gsp"."drama_pricebill" (
+"recordid" int4 NOT NULL,
+"price" numeric(10,2),
+"ticketnum" int4,
+"ticketamount" numeric(10,2),
+"refundnum" int4,
+"refundamount" numeric(10,2),
+"rate" varchar(20) COLLATE "default",
+"settleamount" numeric(10,2),
+"payamount" numeric(10,2),
+"settlebillid" int4,
+"pricerateid" int4,
+"placeid" int4,
+"disticket" varchar(20) COLLATE "default",
+"gspupdatetime" timestamp(6),
+"madisamount" numeric(10,2),
+"taopiaonum" int4,
+CONSTRAINT "drama_pricebill_pkey" PRIMARY KEY ("recordid")
+);
+ALTER TABLE "gsp"."drama_pricebill" OWNER TO "gsp";
+
+
+
+--drama_pricerate
+CREATE TABLE "gsp"."drama_pricerate" (
+"recordid" int4 NOT NULL,
+"configid" int4,
+"price" numeric(10,2),
+"itempriceid" text COLLATE "default",
+"settleid" text COLLATE "default",
+"discount" numeric(10,2),
+"distype" varchar(20) COLLATE "default",
+"gspupdatetime" timestamp(6),
+"seatpriceid" text COLLATE "default",
+"status" varchar(20) COLLATE "default",
+"disrecordid" text COLLATE "default",
+"disticket" varchar(10) COLLATE "default",
+CONSTRAINT "drama_pricerate_pkey" PRIMARY KEY ("recordid")
+);
+ALTER TABLE "gsp"."drama_pricerate" OWNER TO "gsp";
+
+
+
+--drama_refundoffline
+CREATE TABLE "gsp"."drama_refundoffline" (
+"tradeno" varchar(50) COLLATE "default" NOT NULL,
+"dramaid" int4,
+"refundtime" timestamp(6),
+"ordertime" timestamp(6),
+"gspupdatetime" timestamp(6),
+CONSTRAINT "drama_refundoffline_pkey" PRIMARY KEY ("tradeno")
+);
+ALTER TABLE "gsp"."drama_refundoffline" OWNER TO "gsp";
+
+
+--drama_refundonline
+CREATE TABLE "gsp"."drama_refundonline" (
+"tradeno" varchar(50) COLLATE "default" NOT NULL,
+"dramaid" int4,
+"refundtime" timestamp(6),
+"ordertime" timestamp(6),
+"gspupdatetime" timestamp(6),
+"refundtype" varchar(50) COLLATE "default",
+"issettle" varchar(20) COLLATE "default",
+CONSTRAINT "drama_refund_pkey" PRIMARY KEY ("tradeno")
+);
+ALTER TABLE "gsp"."drama_refundonline" OWNER TO "gsp";
+
+
+--drama_settlebill
+CREATE TABLE "gsp"."drama_settlebill" (
+"recordid" int4 NOT NULL,
+"dramaid" int4,
+"suppliercode" varchar(50) COLLATE "default",
+"starttime" timestamp(6),
+"endtime" timestamp(6),
+"ticketnum" int4,
+"ticketamount" numeric(10,2),
+"refundnum" int4,
+"refundamount" numeric(10,2),
+"settleamount" numeric(10,2),
+"madisamount" numeric(10,2),
+"payamount" numeric(10,2),
+"status" varchar(50) COLLATE "default",
+"reqmoney" varchar(10) COLLATE "default",
+"configid" int4,
+"pretype" varchar(20) COLLATE "default",
+"adjustnum" int4,
+"adjustamount" numeric(10,2),
+"gspupdatetime" timestamp(6),
+"adjustdesc" text COLLATE "default",
+"lastbill" varchar(10) COLLATE "default",
+"syspayamount" numeric(10,2),
+"mbddisamount" numeric(10,2),
+"butieamount" numeric(10,2),
+CONSTRAINT "drama_settlebill_pkey" PRIMARY KEY ("recordid")
+);
+ALTER TABLE "gsp"."drama_settlebill" OWNER TO "gsp";
+
+
+--drama_version
+CREATE TABLE "gsp"."drama_version" (
+"recordid" int4 NOT NULL,
+"dramaid" int4,
+"starttime" timestamp(6),
+"endtime" timestamp(6),
+"updatetime" timestamp(6),
+"gspupdatetime" timestamp(6),
+CONSTRAINT "drama_version_pkey" PRIMARY KEY ("recordid")
+);
+ALTER TABLE "gsp"."drama_version" OWNER TO "gsp";
+
+
+
+
+--插入数据
+INSERT INTO gsp.sync_mark ("tag", "last_execute_time", "modify_time") VALUES ('syncDramaConfig', '2016-03-01 00:00:00', '2016-05-10 01:10:04.592');
+INSERT INTO gsp.sync_mark ("tag", "last_execute_time", "modify_time") VALUES ('syncDramaSupplier', '2015-01-01 00:00:00', '2016-05-17 01:20:01.503');
+INSERT INTO gsp.sync_mark ("tag", "last_execute_time", "modify_time") VALUES ('syncDramaPlace', '2015-01-01 00:00:00', '2016-05-17 01:30:00.046');
+INSERT INTO gsp.sync_mark ("tag", "last_execute_time", "modify_time") VALUES ('syncDramaOnlineOrder', '2016-04-01 00:00:00', '2016-05-17 04:00:05.231');
+INSERT INTO gsp.sync_mark ("tag", "last_execute_time", "modify_time") VALUES ('syncDrama', '2016-03-01 00:00:00', '2016-05-09 13:34:52.204');
+INSERT INTO gsp.sync_mark ("tag", "last_execute_time", "modify_time") VALUES ('syncDramaPlayItem', '2016-03-01 00:00:00', '2016-05-09 17:14:15.422');
+INSERT INTO gsp.sync_mark ("tag", "last_execute_time", "modify_time") VALUES ('syncDramaOnlineRefund', '2016-04-01 00:00:00', '2016-05-17 04:00:05.733');
+INSERT INTO gsp.sync_mark ("tag", "last_execute_time", "modify_time") VALUES ('syncDramaOfflineOrder', '2016-04-01 00:00:00', '2016-05-17 04:00:05.884');
+INSERT INTO gsp.sync_mark ("tag", "last_execute_time", "modify_time") VALUES ('syncDramaOfflineRefund', '2016-04-01 00:00:00', '2016-05-17 04:00:05.912');

@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<div class="mod_hd tabs_gary">
+	<a href="${basePath}platform/mergepay/queryMergePay.xhtml" #if($VmUtils.eq($!nvg,'queryMergePay')) class="select" #end>合并付款</a>
+	<a href="${basePath}platform/mergepay/querySubmitPay.xhtml" #if($VmUtils.eq($!nvg,'querySubmitPay')) class="select" #end>已提交合并付款</a>
+</div>

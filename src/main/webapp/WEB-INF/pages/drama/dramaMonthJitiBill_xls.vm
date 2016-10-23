@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+	
+	<table border="1">
+		<thead>
+			<tr>
+				<th>单号</th>
+				<th>项目版本</th>
+				<th>项目id</th>
+				<th>项目名称</th>
+				<th>项目属性</th>
+				<th>项目组织</th>
+				<th>供应商编号</th>
+				<th>供应商名称</th>
+				<th>单据周期</th>
+				<th>项目周期</th>
+				<th>票面金额</th>
+				<th>退票金额</th>
+				<th>结算金额</th>
+				<th>商户兑换券</th>
+				<th>商户抵值券</th>
+				<th>场馆补贴</th>
+				<th>毛利润</th>
+			</tr>
+		</thead>
+		<tbody>
+			#foreach($bill in ${jitiList})
+			<tr>
+				<td style="vnd.ms-excel.numberformat:@">$!{bill.recordid}</td>
+				<td style="vnd.ms-excel.numberformat:@">$!{configmap.get($!{bill.configid}).dramaversionid}</td>
+				<td style="vnd.ms-excel.numberformat:@">$!{bill.dramaid}</td>
+				<td>$!{dramamap.get($!{bill.dramaid}).dramaname}</td>
+				<td>
+					#if($VmUtils.eq($!{dramamap.get($!{bill.dramaid}).pretype},"M"))
+						非代售
+					#elseif($VmUtils.eq($!{dramamap.get($!{bill.dramaid}).pretype},"E"))
+						代售
+					#end
+				</td>
+				<td>
+					#if($VmUtils.eq($!{dramamap.get($!{bill.dramaid}).origin},"GW"))
+						格瓦拉
+					#elseif($VmUtils.eq($!{dramamap.get($!{bill.dramaid}).origin},"WG"))
+						微格娱乐
+					#else
+						$!{dramamap.get($!{bill.dramaid}).origin}
+					#end
+				</td>
+				<td style="vnd.ms-excel.numberformat:@">$!{bill.suppliercode}</td>
+				<td>$!{suppliermap.get($!{bill.suppliercode}).name}</td>
+				<td style="vnd.ms-excel.numberformat:@">
+					[ $!DateUtil.formatTimestamp($!{bill.starttime}) - $!DateUtil.formatTimestamp($!{bill.endtime}) )
+				</td>
+				<td style="vnd.ms-excel.numberformat:@">
+					[ $!DateUtil.formatTimestamp($!{configmap.get($!{bill.configid}).starttime}) - $!DateUtil.formatTimestamp($!{configmap.get($!{bill.configid}).endtime}) )
+				</td>
+				<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{bill.ticketamount})</td>
+				<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{bill.refundamount})</td>
+				<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{bill.settleamount})</td>
+				<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{bill.madisamount})</td>
+				<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{bill.mbddisamount})</td>
+				<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{bill.butieamount})</td>
+				<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{bill.profitamount})</td>
+			</tr>
+			#end
+		</tbody>
+	</table>
+	
+</body>
+</html>

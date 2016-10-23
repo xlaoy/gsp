@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+#parse('WEB-INF/pages/common/common.vm')
+#parse('WEB-INF/pages/common/edaStyle.vm')
+<script type="text/javascript" src="${staticPath}scripts/scrollerbar.js?v=00000"></script>
+<style type="text/css">
+.invotab {height: 35px; border-bottom: 1px solid #C1C1C1; margin-bottom: 20px; font-size: 15px; line-height: 35px; list-style: none;}
+.invotab li a{color: white;}
+.invotab li a:HOVER{color: black;}
+.invotab li {float: left; width: 120px; background: #E1E1E1; text-align: center; display: block;}
+.invotab .select {color: white; background: #EB6120;}
+</style>
+</head>
+<body id="_body">
+#set($isFinalStatement=true)
+#parse('WEB-INF/pages/common/merchantMenu_eda.vm')
+<div class="bodyBox" style="position:relative;z-index:1;">
+	
+	<div class="mlr30 mt20">
+	
+		<ul class="invotab">
+			<li ><a href="javascript:history.back();" class="back">返回</a>
+			<li ><a href="${basePath}merchant/gewaorder/querySettleOrderDetails.xhtml?settleBillId=$!{params.settleBillId}&placeId=$!{params.placeId}" >出票订单</a></li>
+			<li><a href="${basePath}merchant/gewaorder/querySettleRefundmentDetails.xhtml?settleBillId=$!{params.settleBillId}&placeId=$!{params.placeId}">退票订单</a></li>
+			<li><a href="${basePath}merchant/gewaorder/querySettlePreviousDetails.xhtml?settleBillId=$!{params.settleBillId}&placeId=$!{params.placeId}" >往期差异订单</a></li>
+			<li class="select"><a href="${basePath}merchant/gewaorder/querySettleAdjust.xhtml?settleBillId=$!{params.settleBillId}&placeId=$!{params.placeId}" >调整</a></li>
+		</ul>
+		
+	#if($ads && $ads.size() > 0)
+	<div class="bill_panel">
+		<table class="isTable" id="tableGear" width="100%">
+			<thead>
+				<tr>
+					<th class="sortable"><span>调整数量</span><span class="carat"></span></th>
+					<th class="sortable"><span>调整金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>调整申请人</span><span class="carat"></span></th>
+					<th class="sortable"><span>调整原因</span><span class="carat"></span></th>
+					<th class="sortable"><span>调整备注</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($ad in ${ads})
+				<tr>
+				<td><span>
+						$!{ad.adjustNumber}
+						</span>
+					</td>
+					<td ><span>
+						$!{ad.amount}
+						</span>
+					</td>
+					
+					<td><span>
+						$!{ad.operator}
+						</span>
+					</td>
+					<td ><span>
+						$VmUtils.displayEnums("AdjustReasonEnums" , $!{ad.reason})
+						</span>
+					</td>
+					<td ><span>
+						$!{ad.comments}
+						</span>
+					</td>
+				</tr>
+			#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="12">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	#else
+	<div class="ui_warning">查询条件范围内，没有数据。</div>
+	#end
+	</div>
+</div>
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	#if($ads && $ads.size() > 0)
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	#end
+});
+</script>
+</body>
+</html>

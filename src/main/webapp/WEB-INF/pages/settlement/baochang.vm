@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>影院包场列表</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+</head>
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryBaoChang")
+	#parse('WEB-INF/pages/nvaig/settlenvaig.vm')
+	
+	<div class="mode_search">
+		<form action="${basePath}platform/baochang/queryBaoChang.xhtml" method="post" id="baochangform">
+				<h2>查询条件</h2>
+				<div>
+					场次id：
+					<input type="text" class="text" name="recordId" id="recordId" value="$!{params.recordId}"/>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					影院名称：
+					<input type="hidden" name="placeId" id="placeId" value="$!{params.placeId}"/>
+					<input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}"/>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					电影名称：
+					<input type="text" class="text" name="filmName" id="filmName" value="$!{params.filmName}" />
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					影票结算单号：
+					<input type="text" class="text" name="settleId" id="settleId" value="$!{params.settleId}" />
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					卖品结算单号：
+					<input type="text" class="text" name="goodsSettleId" id="goodsSettleId" value="$!{params.goodsSettleId}" />
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<br><br>
+					状态：
+					<select id="status" name="status" class="text" >
+						<option value="">全部</option>
+						<option value="NOPAY" #if($VmUtils.eq($!params.status,"NOPAY")) selected="selected" #end>未付款</option>
+						<option value="YESPAY" #if($VmUtils.eq($!params.status,"YESPAY")) selected="selected" #end>已付款</option>
+						<option value="SELLET" #if($VmUtils.eq($!params.status,"SELLET")) selected="selected" #end>已结算</option>
+						<option value="PASS" #if($VmUtils.eq($!params.status,"PASS")) selected="selected" #end>已过期</option>
+					</select>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					预付类型：
+					<select id="prePay" name="prePay" class="text" >
+						<option value="">全部</option>
+						<option value="Y" #if($VmUtils.eq($!params.prePay,"Y")) selected="selected" #end>预付</option>
+						<option value="N" #if($VmUtils.eq($!params.prePay,"N")) selected="selected" #end>月结</option>
+					</select>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					放映期间：
+					<input style="width:150px;" class="text" name="startTime" id="startTime" value="$!{params.startTime}" 
+											onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'endTime\')||\'2020-10-01 00:00:00\'}'})"/>至
+					<input style="width:150px;" class="text" name="endTime" id="endTime" value="$!{params.endTime}" 
+											onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'startTime\')}',maxDate:'2020-10-01 00:00:00'})"/>
+					<br/><br/>
+					<a href="javascript:document.forms[0].submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+					&nbsp;&nbsp;
+					<input type="hidden" name="isXls" id="isXls"/>
+					<a href="javascript:void(0);" class="button minBt whiteBt" onclick="downloadxls();">导出EXCEL</a>
+					&nbsp;&nbsp;
+					<!-- <a href="javascript:void(0);" class="button minBt whiteBt" onclick="batchPrePay();">批量预付款</a>
+					&nbsp;&nbsp;
+					<a href="javascript:void(0);" class="button minBt whiteBt" onclick="batchPrePay();">批量请款</a>
+					&nbsp;&nbsp; -->
+					#parse("WEB-INF/pages/common/goback.vm")
+				</div>
+		</form>
+	</div>
+	
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th width="4%"><span>场次id</span></th>
+					<th><span>影院名称</span></th>
+					<th width="5%"><span>包场类型</span></th>
+					<th><span>电影名称</span></th>
+					<th width="5%"><span>放映时间</span></th>
+					<th width="5%"><span>影票数量</span></th>
+					<th width="5%"><span>影票成本</span></th>
+					<th width="5%"><span>卖品数量</span></th>
+					<th width="5%"><span>卖品成本</span></th>
+					<th width="5%"><span>是否预付</span></th>
+					<!-- <th width="5%"><span>预付金额</span></th> -->
+					<th width="5%"><span>总成本</span></th>
+					<th width="5%"><span>影票完成率</span></th>
+					<th width="5%"><span>包场补差</span></th>
+					<th width="5%"><span>关联结算单号</span></th>
+					<th width="4%"><!-- <input type="checkbox" onclick="selectreqAll()"/> --><span>请款</span></th>
+					<th width="4%"><!-- <input type="checkbox" onclick="selectAll()"/> --><span>结算</span></th>
+				</tr>
+			</thead>
+			#if($bcList && $bcList.size() > 0)
+			<tbody>
+				#foreach($bc in ${bcList})
+				<tr>
+					<td ><span>
+						<a href="${basePath}platform/gewaorder/queryGewarOrder.xhtml?playId=$!{bc.playId}&placeId=$!{bc.placeId}">$!{bc.playId}</a>
+					</span></td>
+					<td ><span>
+						$!placeMap.get($!{bc.placeId}).name
+					</span></td>
+					<td ><span>
+						[ #if($VmUtils.eq($!bc.playType,'ZL'))
+							直连
+						#elseif($VmUtils.eq($!bc.playType,'XN')) 
+							虚拟
+						#elseif($VmUtils.eq($!bc.playType,'GW')) 
+							格瓦票务
+						#end
+						]
+						<br/>
+						[ #if($VmUtils.eq($!bc.bcType,'user'))
+							用户包场
+						#elseif($VmUtils.eq($!bc.bcType,'gewa')) 
+							格瓦包场
+						#end
+						]
+					</span></td>
+					
+					<td ><span>$!{bc.filmName}</span></td>
+					<td ><span>$!DateUtil.formatTimestamp($!{bc.playTime})</span></td>
+					<td ><span>$!{bc.bcNum}</span></td>
+					<td ><span>$!CurrencyFmt.format($!{bc.bcAmount})</span></td>
+					<td ><span>$!{bc.goodsNum}</span></td>
+					<td ><span>$!CurrencyFmt.format($!{bc.goodsAmount})</span></td>
+					<td ><span>
+						#if($VmUtils.eq($!bc.prePay,'Y'))
+							预付
+						#elseif($VmUtils.eq($!bc.prePay,'N'))
+							月结
+						#end
+					</span></td>
+					<!-- <td ><span >$!CurrencyFmt.format($!{bc.preAmount})</span></td> -->
+					<td ><span >$!CurrencyFmt.format($!{bc.costAmount})</span></td>
+					<td ><span #if($!{bc.successRate} == 100) 
+								style="color: #075F0A;  font-weight: bold;" 
+							   #elseif($!{bc.successRate} < 100)
+							   	style="color: #D88406;  font-weight: bold;" 
+							   #else
+							   	style="color: #E80404;  font-weight: bold;" 
+							   #end >
+							   $!CurrencyFmt.format($!{bc.successRate})%
+					</span></td>
+					<td ><span #if(($!{bc.successRate} == 100) && $!{bc.buchaAmount} > 0)
+								style="color: #E80404;  font-weight: bold;" 
+								#end >$!CurrencyFmt.format($!{bc.buchaAmount})</span></td>
+					<td >
+						<span><a href="javascript:loadSettleDeatil('$!{bc.settleId}');">$!{bc.settleId}</a></span><br>
+						<span><a href="javascript:loadSettleDeatil('$!{bc.goodsSettleId}');">$!{bc.goodsSettleId}</a></span>
+					</td>
+					<td ><span>
+						#if($VmUtils.eq($!bc.reqbillStatus,'Y'))
+							已请款
+							<br><a href="${basePath}platform/baochang/printBcReqMoney.xhtml?recordId=$!{bc.recordId}" target="_blank">打印</a>
+						#else
+							未请款
+							#if($VmUtils.eq($!bc.reqbillStatus,'N') && $VmUtils.eq($!bc.prePay,'Y'))
+									<br>
+									<!-- <input type="checkbox" name="needReqs" value="$!{bc.recordId}"/> -->
+									<a href="javascript:void(0);" onclick="bcReqMoney($!{bc.recordId});">请款</a>
+							#end
+						#end
+					</span></td>
+					<td ><span>
+						<a href="javascript:loadBaochangDeatil('$!{bc.recordId}');">详情</a><br>
+						#if($VmUtils.eq($!bc.status,'NOPAY'))
+							未付款
+						#elseif($VmUtils.eq($!bc.status,'YESPAY'))
+							已付款
+						#elseif($VmUtils.eq($!bc.status,'SELLET'))
+							已结算
+						#elseif($VmUtils.eq($!bc.status,'PASS'))
+							已过期
+						#end
+						
+						#if($VmUtils.eq($!bc.status,'NOPAY'))
+							<br>
+							<!-- <input type="checkbox" name="recordIds" value="$!{bc.recordId}"/> -->
+							<a href="javascript:void(0);" onclick="prePay($!{bc.recordId});">付款</a>
+						#else
+							#if($VmUtils.eq($!optUser,'jacker.cheng'))
+								#if($VmUtils.eq($!bc.status,'YESPAY'))
+								<br><a href="javascript:void(0);" onclick="rePayBaochang($!{bc.recordId});">重新预付款</a>
+								#end
+							#end
+						#end
+					</span></td>
+				</tr>
+				#end
+			</tbody>
+			#end
+		</table>
+	</div>
+	<div class="ui_warning">
+		#parse('WEB-INF/include/pageUtil.vm')
+	</div>
+	
+</div>
+
+<div id="detailMark" style="display:none; height: 450px;overflow-y:auto;">
+</div>
+<div id="bcdetailMark" style="display:none; height: 450px;overflow-y:auto;">
+</div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	#if($bcList && $bcList.size() > 0)
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	#end
+	$$('.tips').amTips();
+	completer = new Autocompleter.Local($("placeFirstLetter"), parent.pdata, {
+		'delay': 100,
+		'maxChoices': 10,
+		'minLength':0,
+		'requestid':'placeId',
+		'filter': function() {
+			var vl = this.queryValue;
+			var values = vl.trim().split(/ +/);
+			return this.tokens.filter(function(token){
+				var result = values.every(function(v){
+					var reg = new RegExp(v.escapeRegExp(),'i');
+					return reg.test(token.pinyin) || reg.test(token.name);
+				});
+				return result;
+			});
+		},
+		'injectChoice': function(choice){
+			parent.myGenChoice(this,choice);
+		}
+	});
+	lockMenu();
+});
+
+function lockMenu(){
+	var menus = parent.document.getElements('#navleftid a');
+	if(menus)menus.filter(function(link){
+			link.removeClass('select');
+			return link.get('href').indexOf(document.location.pathname) >= 0;
+		}).addClass('select');
+}
+
+function selectAll(){
+	document.getElements('input[type=checkbox][name=recordIds]').each(function(item){
+		item.checked = !item.checked;
+	})
+}
+
+function downloadxls(){
+	if(document.forms[0]){
+		$("isXls").value="downloadxls";
+		document.forms[0].submit();
+		$("isXls").value="";
+	}else{
+		var a=document.location.href;
+		a=a+"&isXls=download";
+		document.location.href=a;
+	}
+};
+
+/* function batchPrePay() {
+	var recordIds = "";
+	document.getElements('input[type=checkbox][name=recordIds]').each(function(item){
+		if (item.checked == true){
+			if (!recordIds == ""){
+				recordIds = recordIds + ",";
+			}
+			recordIds = recordIds + item.value;
+		}
+	});
+	if(recordIds == ""){
+		gewaUtil.alert("请选择需要批量预付款的单据！");
+		return;
+	}
+	prePay(recordIds)
+} */
+
+function prePay(recordIds) {
+	/* gewa.util.issure('','确认要包场单据预付款吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+		var url = "${basePath}platform/baochang/prePay.xhtml";
+		var values = {"recordIds":recordIds};
+		var t = "T" + Date.now();
+		GewaraUtil.mask('',t);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(t);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){$('baochangform').submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	}); */
+	gewa.util.issure('','是否线上付款？','格瓦拉提示你',420,'iskyes',function(){
+		gewa.util.container['iskyes'].dispose('iskyes');
+		gewa.util.issure('','确认线上付款到商户吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+			var url = "${basePath}platform/baochang/prePay.xhtml";
+			var values = {"recordIds":recordIds, "type":"online"};
+			var mid = "T" + Date.now();
+			GewaraUtil.mask('',mid);
+			GewaraUtil.sendRequest(url, values, function(result){
+				GewaraUtil.unmask(mid);
+				if(result.success == true){
+					gewaUtil.alert("线上付款成功！", function(){$('baochangform').submit();});
+				}else{
+					hasPay = false;
+					gewaUtil.alert(result.msg);
+				}
+			});
+			gewa.util.container['keys'].dispose('keys');
+		});
+	},'是',function(){
+		gewa.util.container['iskyes'].dispose('iskyes');
+		gewa.util.issure('','确认线下付款到商户吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+			var url = "${basePath}platform/baochang/prePay.xhtml";
+			var values = {"recordIds":recordIds, "type":"offline"};
+			var mid = "T" + Date.now();
+			GewaraUtil.mask('',mid);
+			GewaraUtil.sendRequest(url, values, function(result){
+				GewaraUtil.unmask(mid);
+				if(result.success == true){
+					gewaUtil.alert("线下付款成功！", function(){$('baochangform').submit();});
+				}else{
+					gewaUtil.alert(result.msg);
+				}
+			});
+			gewa.util.container['keys'].dispose('keys');
+		});
+	},'','否')
+}
+
+function rePayBaochang(recordId) {
+	gewa.util.issure('','确认要包场单据重新预付款吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+		var url = "${basePath}platform/baochang/rePayBaochang.xhtml";
+		var values = {"recordId":recordId};
+		var t = "T" + Date.now();
+		GewaraUtil.mask('',t);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(t);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){$('baochangform').submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+
+function bcReqMoney(recordId) {
+	gewa.util.issure('','确认要请款吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+		var url = "${basePath}platform/baochang/bcReqMoney.xhtml";
+		var values = {"recordIds":recordId};
+		var t = "T" + Date.now();
+		GewaraUtil.mask('',t);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(t);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){$('baochangform').submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+//查看详情
+function loadSettleDeatil(settleId){
+	var url = '${basePath}platform/settlement/settleMore.xhtml';
+	var values = {"recordId":settleId}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('detailMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','detailMark','结算单' + settleId ,850,'detailMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+function loadBaochangDeatil(recordid){
+	var url = '${basePath}platform/baochang/queryBaoChangDetail.xhtml';
+	var values = {"recordid":recordid}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('bcdetailMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','bcdetailMark','包场详情' + recordid ,850,'bcdetailMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+</script>
+
+</body>
+</html>

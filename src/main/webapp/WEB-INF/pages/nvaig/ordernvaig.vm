@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<div class="mod_hd tabs_gary">
+	<a href="${basePath}platform/gewaorder/queryGewarOrder.xhtml" #if($VmUtils.eq($!nvg,'queryGewarOrder')) class="select" #end>影院订单</a>
+	<a href="${basePath}platform/gewaorder/queryGewarOrderByTrandeno.xhtml" #if($VmUtils.eq($!nvg,'queryGewarOrderByTrandeno')) class="select" #end>订单查询</a>
+	<a href="${basePath}platform/gewaorder/exportGewarOrder.xhtml" #if($VmUtils.eq($!nvg,'exportGewarOrder')) class="select" #end>订单导出</a>
+</div>

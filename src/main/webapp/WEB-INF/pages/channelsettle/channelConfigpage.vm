@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>通道费结算</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/iscroll.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/core.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<script type="text/javascript" src="${basePath}js/autoComplete.js"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+		.vendor_input{  
+           position: absolute;  
+           width: 170px;  
+           height: 16px;  
+           left: 101px;  
+           top: 11px;  
+           border: 0px;  
+       }
+       body {
+		    margin: 0px;
+		}
+       .auto_hidden {
+		    width:204px;
+		    border: 1px solid #333;
+		    position:absolute;
+		    display:none;
+		}
+		.auto_show {
+		    width:204px;
+		    border: 1px solid #333;
+		    
+		    position:absolute;
+		    z-index:9999; /* 设置对象的层叠顺序 */
+		    display:block;
+		}
+		.auto_onmouseover{
+		    color:#fff;
+		    background-color:highlight;
+		    width:100%;
+		}
+		.auto_onmouseout{
+		    color:#000;
+		    width:100%;
+		    background-color:#fff;
+		}
+		/*.autocompleter-choices{z-index:10000!important;}*/
+	</style>
+</head>
+<body id="_body">
+	<div class="inner">
+		#set($nvg="loadChannelConfigPage")
+		#parse('WEB-INF/pages/nvaig/confignvaig.vm')
+		<div class="mode_search">
+			<form action="${basePath}platform/channelsettle/loadChannelConfigPage.xhtml" id="cconfigform">
+				供应商名称：
+	   			<input type="hidden"  id="vendorId" name="vendorId" value="$!{config.recordId}">
+	   			<input type="text" class="text" style="width: 350px;" id="o"  value="$!{config.vendorName}" autocomplete="off">
+	   			&nbsp;&nbsp;&nbsp;&nbsp;
+	   			影院：
+				<input type="hidden" name="placeId" id="placeId" value="$!{params.placeId}"/>
+				<input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}" style="width: 350px;"/>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				供应商类型：
+				<select id="vendorType" name="vendorType" class="text" style="width: 100px;">
+					<option value="">全部</option>
+					<option value="SYS"  #if($VmUtils.eq($!{params.vendorType},"SYS")) selected="selected" #end>系统方</option>
+					<option value="THEATRES"  #if($VmUtils.eq($!{params.vendorType},"THEATRES")) selected="selected" #end>院线</option>
+					<option value="CINEMA"  #if($VmUtils.eq($!{params.vendorType},"CINEMA")) selected="selected" #end>影院</option>
+				</select>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<a href="javascript:querysubmit();" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<a href="${basePath}platform/channelsettle/addChannelSettleConfig.xhtml" class="button minBt whiteBt"><span>新增配置</span></a>
+			</form>
+		</div>
+	<table class="tableGear" id="tableGear">
+		<thead>
+			<tr>
+				<th style="width: 5%;"><span class="carat">编号</span></th>
+				<th><span class="carat">供应商名称</span></th>
+				<th style="width: 7%;"><span class="carat">供应商编号</span></th>
+				<th style="width: 7%;"><span class="carat">类型</span></th>
+				<th style="width: 7%;"><span class="carat">结算周期</span></th>
+				<th style="width: 7%;"><span class="carat">结算时限</span></th>
+				<th style="width: 7%;"><span class="carat">关联系统</span></th>
+				<th style="width: 7%;"><span class="carat">结算方式</span></th>
+				<th style="width: 7%;"><span class="carat">退票是否结算</span></th>
+				<th style="width: 7%;"><span class="carat">首次结算日期</span></th>
+				<th style="width: 7%;"><span class="carat">状态</span></th>
+				<th style="width: 7%;"><span class="carat">操作</span></th>
+			</tr>
+		</thead>
+		<tbody>
+			 #if($clist && $clist.size() > 0)
+			 	#foreach($config in $clist)			
+					<tr>
+					  <td><span>$!{config.recordId}</span></td>
+					  <td><span>$!{config.vendorName}</span></td>
+					  <td><span>$!{config.vendorCode}</span></td>
+					  <td><span>
+					  	#if($VmUtils.eq($!{config.vendorType},'SYS'))
+				  			系统方
+				  		#elseif($VmUtils.eq($!{config.vendorType},'THEATRES'))
+				  			院线
+				  		#elseif($VmUtils.eq($!{config.vendorType},'CINEMA'))
+				  			影院
+				  		#end
+					  	</span></td>
+					  <td>
+					  	<span>
+					  		#if($!{config.settleCycle}=='MONTH')
+					  			按月结算
+					  		#else
+					  			每$!{config.settleDays}结算一次
+					  		#end
+					  	</span>
+					  </td>
+					  <td><span>
+					  	#if($VmUtils.eq($!{config.settletime},'ORDERTIME'))
+				  			下单时间<br>
+				  		#elseif($VmUtils.eq($!{config.settletime},'USETIME'))
+				  			消费时间<br>
+				  		#else
+				  		#end
+					  	$!{config.timecut}
+					  	</span></td>
+					  <td><span>$!{config.syscode}</span></td>
+					  <td>
+					  	<span>
+					  		#if($!{config.settleMoney})
+					  			每票结算$!{config.settleMoney}元<br>
+					  		#end
+					  		#if($!{config.orderPercent})
+					  			按订单$!{config.orderPercent}%结算
+					  		#end
+					  	</span>
+					  </td>
+					  <td>
+					  	<span>
+					  		#if($!{config.isSettleRefund}=='Y')
+					  			是
+					  		#else
+					  			否
+					  		#end
+					  	</span>
+					  </td>
+					  <td><span>$!DateUtil.formatDate($!{config.firstSettleDate})</span></td>
+					  <td>
+					  	<span>
+					  	#if($config)
+					  		#if("Y" eq $!{config.status})
+								#if("Y" eq $!{config.verifyStatus})
+									已审核
+								#elseif("N" eq $!{config.verifyStatus})
+									未审核
+								#end
+							#elseif("N" eq $!{config.verifyStatus})
+								已废弃
+							#end
+						#end
+					  	</span>
+					  </td>
+					  <td>
+					  	#if("Y" eq $!{config.status})
+					  	<span>
+					  		<a href="javascript:deleteChannelSettleConfig('$!{config.recordId}')">删除</a>
+					  		&nbsp;&nbsp;&nbsp;&nbsp;
+					  		<a href="${basePath}platform/channelsettle/loadChannelConfigById.xhtml?recordId=$!{config.recordId}">修改</a>
+					  		<br><a href="javascript:viewCinemaDetails('$!{config.recordId}')">关联影院明细</a>
+					  		<br><a href="${basePath}platform/channelsettle/exportCinemaDetails.xhtml?recordId=$!{config.recordId}">导出关联影院</a>
+					  		<br><a href="${basePath}platform/settlement/settlementbills.xhtml?vendorId=$!{config.recordId}&billType=CHANNEL">查看结算单</a>
+					  	</span>
+					  	#end
+					  </td>
+					</tr>
+				#end
+			 #end
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="12">
+				#parse('WEB-INF/include/pageUtil.vm')
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+<div id="commMark" style="display:none; height: 420px; overflow-y:auto;"></div>
+<div id="addMark" style="display:none; height: 500px; overflow-y:auto"></div>
+<input type="hidden" name="recordId" id="recordId">
+<div id="auto"></div>
+</div>
+</body>	
+<script type="text/javascript">
+
+window.addEvent('domready',function(){
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	completer = new Autocompleter.Local($("placeFirstLetter"), parent.pdata, {
+		'delay': 100,
+		'maxChoices': 10,
+		'minLength':0,
+		'requestid':'placeId',
+		'filter': function() {
+			var vl = this.queryValue;
+			var values = vl.trim().split(/ +/);
+			return this.tokens.filter(function(token){
+				var result = values.every(function(v){
+					var reg = new RegExp(v.escapeRegExp(),'i');
+					return reg.test(token.pinyin) || reg.test(token.name);
+				});
+				return result;
+			});
+		},
+		'injectChoice': function(choice){
+			parent.myGenChoice(this,choice);
+		}
+	});
+	lockMenu();
+});
+
+function querysubmit() {
+	var placeFirstLetter = $("placeFirstLetter").value;
+	if(placeFirstLetter == null || placeFirstLetter == "") {
+		$("placeId").value = "";
+	}
+    var cvendorName = $("o").value;
+	if(cvendorName == null || cvendorName == "") {
+		$("vendorId").value = "";
+	}
+	$('cconfigform').submit();
+}
+
+function viewCinemaDetails(recordId){
+	var url = '${basePath}platform/channelsettle/viewCinemaDetails.xhtml';
+	var values = {"recordId":recordId}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('commMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','commMark','关联影院明细',350,'commMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');	
+}
+
+function checkVendorNameRepeat(){
+	var vendorCode = $("vendorCode").value;
+	var recordId = $("recordId").value;
+	var values = {"vendorCode":vendorCode,"recordId":recordId};
+	var url = '${basePath}/platform/channelsettle/checkVendorNameIsRepeat.xhtml';
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask();
+		if(result.success == false){
+			gewaUtil.alert(result.msg,function(){
+				document.getElementById("vendorCode").focus();					
+			});
+		}
+	});
+}
+
+function cancelCommentMarks(){
+	gewa.util.container['commMark'].dispose('commMark');
+}
+
+
+function deleteChannelSettleConfig(recordId){
+	gewa.util.issure('','确认要删除通道费结算配置吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+			var url = "${basePath}platform/channelsettle/deleteChannelSettleConfig.xhtml";
+			var values = {"recordId":recordId};
+			GewaraUtil.sendRequest(url, values, function(result){
+				GewaraUtil.unmask();
+				if(result.success == true){
+					gewaUtil.alert("删除成功！",function(){
+					$('cconfigform').submit();			
+					});
+				}else{
+					gewaUtil.alert(result.msg);
+				}
+			});
+			gewa.util.container['keys'].dispose('keys');
+		});
+}
+
+
+//通道费供应商下来查询
+new mSift('vendorsel').Create({
+	"url": "${basePath}platform/channelsettle/ajaxLoadVendor.xhtml",
+	"prama": function() {
+		var pdata = {
+				"inputValue": document.getElementById('o').value,
+			};
+		return pdata;
+	},
+	"codeObj": document.getElementById('vendorId'),
+	"nameObj": document.getElementById('o'),
+	"returnCode": function(date) {
+		return date.recordId;
+	},
+	"returnName":function(date) {
+		return date.vendorName;
+	}
+});
+
+</script>
+</html>

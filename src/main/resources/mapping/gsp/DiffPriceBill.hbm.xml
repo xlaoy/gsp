@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.gewara.model.gsp.DiffPriceBill" table="diff_price_bill">
+	
+		<id name="checkBillId" type="long">
+            <column name="check_bill_id" length="32" />
+            <generator class="assigned" />
+        </id>
+        
+        <property name="settleBillId" column="settlt_bill_id" type="long" />
+        <property name="start" column="start_time" type="timestamp" />
+        <property name="end" column="end_time" type="timestamp" />
+        <property name="diffOrderNum" column="diff_order_number" type="long" />
+        <property name="diffRefundNum" column="diff_refund_number" type="long" />
+        <property name="diffAmount" column="diff_amount" type="java.lang.Double" />
+        <property name="desc" column="descm" type="string" />
+        
+	</class>
+</hibernate-mapping>

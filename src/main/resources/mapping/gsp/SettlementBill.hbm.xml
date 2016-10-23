@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 31, 2013 2:18:24 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.SettlementBill" table="settlement_bill" schema="gsp">
+   		   <id name="recordId" type="long">
+	          <column name="record_id" precision="65535" scale="65531" />
+					<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_settlement_bill</param>
+			</generator>
+	       </id>
+            <property name="startTime" type="timestamp">
+                <column name="start_time" />
+            </property>
+            <property name="endTime" type="timestamp">
+                <column name="end_time" />
+            </property>
+             <property name="tag" type="string">
+                <column name="tag" length="10" />
+            </property>
+             <property name="configId" type="string">
+                <column name="config_id" length="10" />
+            </property>
+            <property name="relateId" type="long">
+                <column name="relate_id" />
+            </property>
+            <property name="orderTotalNumber" type="java.lang.Double">
+                <column name="order_total_number" />
+            </property>
+            <property name="orderTotalAmount" type="java.lang.Double">
+                <column name="order_total_amount" />
+            </property>
+            <property name="refundTotalNumber" type="java.lang.Double">
+                <column name="refund_total_number" />
+            </property>
+            <property name="refundTotalAmount" type="java.lang.Double">
+                <column name="refund_total_amount" />
+            </property>
+            <property name="unrefundTotalNumber" type="java.lang.Double">
+	            <column name="unrefund_total_number" />
+	        </property>
+	        <property name="unrefundTotalAmount" type="java.lang.Double">
+	            <column name="unrefund_total_amount" />
+	        </property>
+            
+            <property name="adjustTotalNumber" type="java.lang.Double">
+                <column name="adjust_total_number" />
+            </property>
+            <property name="adjustTotalAmount" type="java.lang.Double">
+                <column name="adjust_total_amount" />
+            </property>
+            <property name="previousRefundAmount" type="java.lang.Double">
+                <column name="previous_refund_amount" />
+            </property>
+            <property name="previousRefundNumber" type="java.lang.Double">
+                <column name="previous_refund_number" />
+            </property>
+            <property name="status" type="string">
+                <column name="status" length="10" />
+            </property>
+            <property name="updateTime" type="timestamp">
+                <column name="update_time" />
+            </property>
+            <property name="lastOperator" type="string">
+                <column name="last_operator" length="25" />
+            </property>
+            <property name="applySettleNumber" column="apply_settle_number" type="java.lang.Double"/>
+            <property name="applySettleAmount" column="apply_settle_amount" type="java.lang.Double"/>
+            
+            
+            <property name="diffPriceNumber" column="diff_price_number" type="java.lang.Double"/>
+            <property name="diffPriceAmount" column="diff_price_amount" type="java.lang.Double"/>
+            <property name="succTicketNumber" column="succ_ticket_number" type="java.lang.Double"/>
+            <property name="succTicketAmount" column="succ_ticket_amount" type="java.lang.Double"/>
+            
+            <property name="reqMoneyStatus" column="reqmoney_status" type="string"/>
+            <property name="special" column="special" type="string"/>
+            
+             <property name="playType" column="play_type" type="string"/>
+             <property name="hasJizhang" column="has_jizhang" type="string"/>
+            
+    </class>
+</hibernate-mapping>

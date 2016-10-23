@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>审核管理</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/iscroll.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/core.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+	
+</head>
+<body id="_body">
+<div class="inner">
+	<div class="mod_hd tabs_gary" id="settleStatusId">
+		<a href="${basePath}platform/settlement/queryconfirmedSettleBill.xhtml" >已提交结算单</a>
+		<a href="${basePath}platform/settlement/queryAdjustSettlement.xhtml" >申请调整商家汇总</a>
+		<a href="${basePath}platform/adjust/queryAllAdjustment.xhtml">调整申请汇总</a>
+		<a href="${basePath}platform/settlement/exportSettlementBills.xhtml">结算单导出</a>
+		<a href="${basePath}platform/settlement/exportChannelBaseData.xhtml"  class="select">通道费计提基础导出</a>
+		<a href="${basePath}platform/reqmoneybill/reqmoneybill.xhtml">请款单</a>
+		<a href="${basePath}platform/mergepay/querySubmitPay.xhtml">已提交合并付款</a>
+	</div>
+	<div class="mode_search">
+		<form action="${basePath}platform/settlement/exportChannelBaseData.xhtml" method="post"">
+				<h2>查询条件</h2>
+				<div>
+					订单时间：
+					<input style="width:150px;" class="text" name="start" id="startTime" value="$!{params.startTime}" 
+											onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'endTime\')||\'2020-10-01 00:00:00\'}'})"/>至
+					<input style="width:150px;" class="text" name="end" id="endTime" value="$!{params.endTime}" 
+											onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'startTime\')}',maxDate:'2020-10-01 00:00:00'})"/>
+					<a href="javascript:document.forms[0].submit()" class="button minBt whiteBt"><span>导出</span></a>
+				</div>
+		</form>
+	</div>
+</div>	
+</body>
+</html>

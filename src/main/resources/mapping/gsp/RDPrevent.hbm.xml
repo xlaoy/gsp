@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.RDPrevent" table="rd_prevent" schema="gsp">
+    
+       <id name="vendorCode" type="string">
+            <column name="vendor_code" length="100" />
+            <generator class="assigned" />
+       </id>
+        
+       <property name="vendorName"			column="vendor_name"			type="java.lang.String" />
+       <property name="totalAmount"			column="total_amount"			type="java.lang.Double" />
+       <property name="canUseAmount"		column="canuse_amount"			type="java.lang.Double" />
+       <property name="waitingPayAmount"	column="waitingpay_amount"		type="java.lang.Double" />
+       <property name="waitingPayRelation"	column="waitingpay_relation"	type="java.lang.String" />
+       <property name="uncountAmount"		column="uncount_amount"			type="java.lang.Double" />
+       <property name="uncountRelation"		column="uncount_relation"		type="java.lang.String" />
+       <property name="surplusAmount"		column="surplus_amount"			type="java.lang.Double" />
+       <property name="waringAmount"		column="waring_amount"			type="java.lang.Double" />
+       <property name="status"				column="status"					type="java.lang.String" />
+       <property name="startTime"			column="start_time"				type="timestamp" />
+       <property name="endTime"				column="end_time"				type="timestamp" />
+       <property name="updateTime"				column="update_time"				type="timestamp" />
+       <property name="vendorFullName"			column="vendor_fullname"			type="java.lang.String" />
+        
+    </class>
+</hibernate-mapping>

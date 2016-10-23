@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+	<link rel="stylesheet" type="text/css" href="${basePath}component/css/default.css" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+</head>
+<body style="margin:0;padding:0;">
+	<div style="width:1050px;margin:0 auto;">
+	<form action="${basePath}admin/sysmgr/execQuery.xhtml" method="post" target="targetdata">
+		<p>
+		数据源：<select name="source">
+			<option value="">GSP</option>
+			<option value="SHVIEW">SHVIEW</option>
+		</select>
+		<input type="checkbox" name="queryAll" value="true" />包含全部记录 &nbsp;<input type="checkbox" name="contentType" value="xls" />下载Excel
+		<input type="submit" value="执行"/>
+		</p>
+		<p><textarea rows="5" cols="100" name="sql"></textarea></p>
+	</form>
+	</div>
+	<iframe name="targetdata" id="targetdata" style="width: 100%; height: 610px;border: 0;"></iframe>
+</body>
+</html>

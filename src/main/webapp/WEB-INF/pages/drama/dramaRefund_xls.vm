@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+	<div>
+		<table border="1">
+			<thead>
+				<tr>
+					<th>演出名称</th>
+					<th>订单号</th>
+					<th>下单时间</th>
+					<th>退单时间</th>
+					<th>退单类型</th>
+					<th>订单来源</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($refund in ${onlinerefundlist})
+					<tr>
+						<td>$!{drama.dramaname}</td>
+						<td style="vnd.ms-excel.numberformat:@">$!{refund.tradeno}</td>
+						<td style="vnd.ms-excel.numberformat:@">$!DateUtil.formatTimestamp($!{refund.ordertime})</td>
+						<td style="vnd.ms-excel.numberformat:@">$!DateUtil.formatTimestamp($!{refund.refundtime})</td>
+						<td>
+							#if($VmUtils.eq($!{refund.refundtype},"full"))
+								全额退款
+							#elseif($VmUtils.eq($!{refund.refundtype},"part"))
+								部分退款
+							#elseif($VmUtils.eq($!{refund.refundtype},"supplement"))
+								调价退款
+							#elseif($VmUtils.eq($!{refund.refundtype},"gewara"))
+								格瓦拉退款
+							#end
+						</td>
+						<td>线上</td>
+					</tr>
+				#end
+				#foreach($refund in ${offlinerefundlist})
+					<tr>
+						<td>$!{drama.dramaname}</td>
+						<td style="vnd.ms-excel.numberformat:@">$!{refund.tradeno}</td>
+						<td style="vnd.ms-excel.numberformat:@">$!DateUtil.formatTimestamp($!{refund.ordertime})</td>
+						<td style="vnd.ms-excel.numberformat:@">$!DateUtil.formatTimestamp($!{refund.refundtime})</td>
+						<td></td>
+						<td>线下</td>
+					</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

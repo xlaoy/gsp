@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<b:beans xmlns="http://camel.apache.org/schema/spring"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:b="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+	<camelContext id="camel">
+		<!-- <route > <from uri="activemq:queue:doReconciliationQueue"/> <to uri="bean:reconciliationJmsConsumer?method=receivedReconciliationMsg"/> 
+			</route> <route> <from uri="activemq:queue:doSettleBillResolvingQueue"/> 
+			<to uri="bean:reconciliationJmsConsumer?method=receviedSettleBillUploadFinishedMsg"/> 
+			</route> -->
+		<route>
+			<from uri="activemq:queue:goodsQupiaoQueue" />
+			<to uri="bean:jmsGoodsTakeTimeConsumer?method=updateGoodsOrderTakeTime" />
+		</route>
+	</camelContext>
+	<camelContext id="camelBackup" autoStartup="true">
+		<route>
+			<from uri="activemqBack:queue:goodsQupiaoQueue" />
+			<to uri="bean:jmsGoodsTakeTimeConsumer?method=updateGoodsOrderTakeTime" />
+		</route>
+	</camelContext>
+	<b:bean id="activemq" class="org.apache.camel.component.jms.JmsComponent">
+		<b:property name="connectionFactory" ref="jmsFactoryMaster" />
+	</b:bean>
+	<b:bean id="jmsFactoryMaster" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+		<b:property name="connectionFactory">
+			<b:bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<b:property name="sendTimeout" value="10000" />
+				<b:property name="clientIDPrefix">
+					<util:constant static-field="com.gewara.Config.DEPLOYID" />
+				</b:property>
+				<b:property name="connectionIDPrefix">
+					<util:constant static-field="com.gewara.Config.DEPLOYID" />
+				</b:property>
+				<b:property name="brokerURL">
+					<b:value>${jms.brokeUrlMaster}</b:value>
+				</b:property>
+			</b:bean>
+		</b:property>
+	</b:bean>
+	<b:bean id="jmsFactoryBack" class="org.apache.activemq.pool.PooledConnectionFactory"
+		destroy-method="stop">
+		<b:property name="connectionFactory">
+			<b:bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<b:property name="sendTimeout" value="10000" />
+				<b:property name="clientIDPrefix">
+					<util:constant static-field="com.gewara.Config.DEPLOYID" />
+				</b:property>
+				<b:property name="connectionIDPrefix">
+					<util:constant static-field="com.gewara.Config.DEPLOYID" />
+				</b:property>
+				<b:property name="brokerURL">
+					<b:value>${jms.brokeUrlBack}</b:value>
+				</b:property>
+			</b:bean>
+		</b:property>
+	</b:bean>
+	<b:bean id="activemqBack" class="org.apache.camel.component.jms.JmsComponent">
+		<b:property name="connectionFactory" ref="jmsFactoryBack" />
+	</b:bean>
+	<b:bean id="jmsGoodsTakeTimeConsumer" class="com.gewara.jms.JmsGoodsTakeTimeConsumer" />
+</b:beans>

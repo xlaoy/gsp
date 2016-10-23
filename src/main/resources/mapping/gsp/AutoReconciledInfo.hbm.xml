@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.AutoReconciledInfo" table="autoreconciledinfo" schema="gsp">
+   		<id name="recordId" type="long" column="record_id">
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_autorecon</param>
+			</generator>
+		</id>
+		<property name="settlementId" column="settlement_id" type="long"/>
+		<property name="fileName" column="file_name" type="string"/>
+		<property name="filePath" column="file_path" type="string"/>
+		<property name="openType" column="open_type" type="string"/>
+		<property name="status" column="status" type="string"/>
+		<property name="placeId" column="place_id" type="string"/>
+		<property name="remark" column="remark" type="string"/>
+		<property name="uploadTime" column="upload_time" type="timestamp"/>
+		<property name="uploadUser" column="upload_user" type="string"/>
+		<property name="updateTime" column="update_time" type="timestamp"/>
+		<property name="updateUser" column="update_user" type="string"/>
+		<property name="gewaOrderNumber" column="gewa_ordernumber" type="java.lang.Double"/>
+		<property name="GewaOrderAmount" column="gewa_orderamount" type="java.lang.Double"/>
+		<property name="merchantOrderNumber" column="merchant_ordernumber" type="java.lang.Double"/>
+		<property name="merchantOrderAmount" column="merchant_orderamount" type="java.lang.Double"/>
+    </class>
+</hibernate-mapping>

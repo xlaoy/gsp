@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.drama.DramaDiscountItem" table="drama_discountitem" schema="gsp">
+    
+       <id name="recordid" type="long">
+            <column name="recordid"  />
+            <generator class="assigned" />
+       </id>
+       
+       <property name="tag"		column="tag"	type="string" />
+       <property name="relatedid"		column="relatedid"	type="string" />
+       <property name="cardtype"		column="cardtype"	type="string" />
+       <property name="soldtype"		column="soldtype"	type="string" />
+       <property name="amount"		column="amount"	type="double" />
+       <property name="gspupdatetime"		column="gspupdatetime"	type="timestamp" />
+        
+    </class>
+</hibernate-mapping>

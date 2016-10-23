@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>审核管理</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/iscroll.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/core.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+	
+</head>
+<body id="_body">
+<div class="inner">
+	#set($nvg="reqmoneybill")
+	#parse('WEB-INF/pages/nvaig/gathernvaig.vm')
+
+	<div class="mode_search">
+		<form action="${basePath}platform/reqmoneybill/reqmoneybill.xhtml" method="post" id="reqmoneyform">
+				<h2>查询条件</h2>
+				<div>
+					影院名称:<input type="hidden" name="placeId" id="placeId" value="$!{params.placeId}"/>
+					      <input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}"/>
+					      
+					系统方/院线<input type="text" class="text" name="vendorName" value="$!{params.vendorName}">
+					付款时间：
+					<input style="width:150px;" class="text" name="startTime" id="startTime" value="$!{params.startTime}" 
+											onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'endTime\')||\'2020-10-01 00:00:00\'}'})"/>至
+					<input style="width:150px;" class="text" name="endTime" id="endTime" value="$!{params.endTime}" 
+											onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'startTime\')}',maxDate:'2020-10-01 00:00:00'})"/>
+                    <input type="hidden" name="isXls" id="isXls" />											
+					<a href="javascript:$('reqmoneyform').submit();" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+					<a href="javascript:downloadXls();"  class="button minBt whiteBt">导&nbsp;&nbsp;出</a>
+				</div>
+		</form>
+	</div>
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th class="sortable"><span>请款流水号</span><span class="carat"></span></th>
+					<th class="sortable"><span>供应商/场馆</span><span class="carat"></span></th>
+					<th class="sortable"><span>账套编号</span><span class="carat"></span></th>
+					<th class="sortable"><span>影票金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>卖品金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>通道费金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>请款总金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>关联结算单</span><span class="carat"></span></th>
+					<th class="sortable"><span>操作</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				#if($reqBills && $reqBills.size() > 0)
+				#foreach($rb in ${reqBills})
+					<tr>
+						<td>
+							$!rb.recordId
+						</td>
+						<td>
+							$!rb.vendorName
+							#if(-2 == $!rb.vendorId) 
+								[大光明巨幕]
+							#end
+						</td>
+						<td>
+							$!rb.vendorCode
+						</td>
+						<td>
+							$!rb.ticketAmount
+						</td>
+						<td>
+							$!rb.goodsAmount
+						</td>
+						<td>
+							$!rb.channelAmount
+						</td>
+						<td>
+							$!rb.totalAmount
+						</td>
+						<td>
+							$!rb.relateSettleId
+						</td>
+						<td>
+							<a href="${basePath}platform/reqmoneybill/showReqMoneybill.xhtml?recordId=$!rb.recordId" target="_blank">打印</a>
+							&nbsp;&nbsp;&nbsp;&nbsp;
+							<a href="javascript:deleteReqMoneybill($!rb.recordId)">删除</a>
+						</td>
+					</tr>
+				#end
+				#end
+			</tbody>
+		    <tfoot>
+				<tr>
+					<td colspan="9">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>	
+	<script type="text/javascript">
+		window.addEvent('domready',function(){
+			#if($r && $r.size() > 0)
+			new TableGear('tableGear');
+			$('tableGear').getElements('tr').addEvents({
+				"mouseover":function(){
+					this.addClass('s')
+				},
+				"mouseout":function(){
+					this.removeClass('s')
+				}
+			});
+			#end
+			$$('.tips').amTips();
+			completer = new Autocompleter.Local($("placeFirstLetter"), parent.pdata, {
+				'delay': 100,
+				'maxChoices': 10,
+				'minLength':0,
+				'requestid':'placeId',
+				'filter': function() {
+					var vl = this.queryValue;
+					var values = vl.trim().split(/ +/);
+					return this.tokens.filter(function(token){
+						var result = values.every(function(v){
+							var reg = new RegExp(v.escapeRegExp(),'i');
+							return reg.test(token.pinyin) || reg.test(token.name);
+						});
+						return result;
+					});
+				},
+				'injectChoice': function(choice){
+					parent.myGenChoice(this,choice);
+				}
+			});
+			lockMenu();
+		})
+		
+		function downloadXls(){
+			if(document.forms[0]){
+				$("isXls").value="downloadxls";
+				document.forms[0].submit();
+				$("isXls").value="";
+			}else{
+				var a=document.location.href;
+				a=a+"&isXls=download";
+				document.location.href=a;
+			}
+		}
+		
+		//删除请款单
+		function deleteReqMoneybill(recordId) {
+			gewa.util.issure('','确认要删除请款单吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+				var url = "${basePath}platform/reqmoneybill/deleteReqMoneybill.xhtml";
+				var values = {"recordId":recordId};
+				GewaraUtil.mask('',"T" + Date.now());
+				GewaraUtil.sendRequest(url, values, function(result){
+					GewaraUtil.unmask();
+					if(result.success == true){
+						gewaUtil.alert("删除成功！", function(){$('reqmoneyform').submit();});
+					}else{
+						gewaUtil.alert(result.msg);
+					}
+				});
+				gewa.util.container['keys'].dispose('keys');
+				gewa.util.container['iskyes'].dispose('iskyes');
+			});
+		}
+</script>
+</body>
+</html>

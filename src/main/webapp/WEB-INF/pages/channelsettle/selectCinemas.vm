@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>订单明细</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+</head>
+	<body class="_body">
+		<div>
+			<dl class="mode_search clear">
+			<dd>
+				<dt>场馆：</dt>
+				<input type="hidden" name="placeId" id="placeId"value="$!{params.placeId}" /> 
+				<input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}" />
+			</dd>
+			</dl>
+			<form id="selectCinemaForm">
+			 #if($places && $places.size() > 0)
+			 	#set($i=0)
+			 	#foreach($p in $places)
+			 		#set($i=$i + 1)
+			 		<input type="checkbox" name="${p.relateId}" value="${p.recordId}-${p.name}">${p.name}&nbsp;&nbsp;&nbsp;&nbsp;
+			 		#if($i ge 5)
+			 			<br>
+			 		#set($i=0)
+			 		#end
+			 	#end
+			 #end
+			 </form>
+		 </div>
+		<a href="javascript:addSeleteCinema()" class="button bigBt redBt"><span>确定</span></a>
+		<a href="javascript:cancelCommentMarks()" class="button bigBt redBt"><span>取消</span></a>
+	</body>
+</html>

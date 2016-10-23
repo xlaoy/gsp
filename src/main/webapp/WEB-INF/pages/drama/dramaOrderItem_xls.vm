@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+	<div>
+		<table border="1">
+			<thead>
+				<tr>
+					<th>演出名称</th>
+					<th>订单号</th>
+					<th>订单状态</th>
+					<th>下单时间</th>
+					<th>付款时间</th>
+					<th>用户id</th>
+					<th>用户名</th>
+					<th>用户组</th>
+					<th>票面价格</th>
+					<th>出票数量</th>
+					<th>出票金额</th>
+					<th>套票套数</th>
+					<th>是否退票</th>
+					<th>订单来源</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($order in ${orderList})
+					<tr>
+						<td>$!{drama.dramaname}</td>
+						<td style="vnd.ms-excel.numberformat:@">$!{order.get("tradeno")}</td>
+						<td>
+							#if($VmUtils.eq($!{order.get("status")},"paid_success"))
+								交易成功
+							#elseif($VmUtils.eq($!{order.get("status")},"paid_return"))
+								退票成功
+							#elseif($VmUtils.eq($!{order.get("status")},"checked"))
+								已批准
+							#end
+						</td>
+						<td style="vnd.ms-excel.numberformat:@">$!DateUtil.formatTimestamp($!{order.get("ordertime")})</td>
+						<td style="vnd.ms-excel.numberformat:@">$!DateUtil.formatTimestamp($!{order.get("paidtime")})</td>
+						<td style="vnd.ms-excel.numberformat:@">$!{order.get("memberid")}</td>
+						<td>$!{order.get("username")}</td>
+						<td style="vnd.ms-excel.numberformat:@">$!{order.get("usergroup")}</td>
+						<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!pricebill.price)</td>
+						<td style="vnd.ms-excel.numberformat:@">$!{order.get("quantity")}</td>
+						<td style="vnd.ms-excel.numberformat:@">$!{order.get("totalfee")}</td>
+						<td style="vnd.ms-excel.numberformat:@">$!{order.get("taopiaonum")}</td>
+						<td>
+							#if($VmUtils.eq($!{order.get("hasrefund")},"Y"))
+								是
+							#else
+								否
+							#end
+						</td>
+						<td>
+							#if($VmUtils.eq($!{order.get("orderfrom")},"ONLINE"))
+								线上
+							#elseif($VmUtils.eq($!{order.get("orderfrom")},"OFFLINE"))
+								线下
+							#elseif($VmUtils.eq($!{order.get("orderfrom")},"PIAOWU"))
+								票务
+							#end
+						</td>
+					</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

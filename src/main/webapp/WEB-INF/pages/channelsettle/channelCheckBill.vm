@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>通道费结算</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+        .vendor_input{  
+            position: absolute;  
+            width: 170px;  
+            height: 16px;  
+            left: 101px;  
+            top: 11px;  
+            border-bottom: 0px;  
+            border-right: 0px;  
+            border-left: 0px;  
+            border-top: 0px;  
+        } 
+       body {
+		    margin: 0px;
+		  
+		}
+       .auto_hidden {
+		    width:204px;
+		    border: 1px solid #333;
+		    position:absolute;
+		    display:none;
+		}
+		.auto_show {
+		    width:204px;
+		    border: 1px solid #333;
+		    
+		    position:absolute;
+		    z-index:9999; /* 设置对象的层叠顺序 */
+		    display:block;
+		}
+		.auto_onmouseover{
+		    color:#fff;
+		    background-color:highlight;
+		    width:100%;
+		}
+		.auto_onmouseout{
+		    color:#000;
+		    width:100%;
+		    background-color:#fff;
+		}   
+	</style>
+	</head>
+	<body id="_body">
+		<div class="inner">
+			
+				<div class="mod_hd tabs_gary" id="settleStatusId">
+					<!-- <a href="${basePath}platform/channelsettle/loadChannelConfigPage.xhtml">供应商配置管理</a>
+					<a href="${basePath}platform/channelsettle/loadUnVerifiedConfig.xhtml">通道费配置审核</a> -->
+					<a href="${basePath}platform/channelsettle/queryChannelSettlebills.xhtml">通道费结算单</a>
+					<a href="${basePath}platform/channelsettle/queryCheckBillBySettleId.xhtml"  class="select">通道费对账单</a>
+				</div>
+		
+		<div class="mode_search">
+			<form action="${basePath}platform/channelsettle/queryCheckBillBySettleId.xhtml" autocomplete="off">
+				供应商名称：
+				<input type="text" style="width:300px;height:20px;font-size:14pt;" id="o" onkeyup="javascript:ajaxLoadVendor1(this.value,event);" value="$!{config.vendorName}">
+    			<input type="hidden" id="vendorId" name="vendorId" value="$!{config.recordId}">
+				<a href="javascript:document.forms[0].submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+			</form>
+		</div>		
+		<div class="auto_hidden" id="auto"><!--自动完成 DIV--></div>
+		<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th class="sortable"><span>编号</span><span class="carat"></span></th>
+					<th class="sortable"><span>对账单编号</span><span class="carat"></span></th>
+					<th class="sortable"><span>对账周期</span><span class="carat"></span></th>
+					<th class="sortable"><span>供应商名称</span><span class="carat"></span></th>
+					<th class="sortable"><span>供应商编码</span><span class="carat"></span></th>
+					<th class="sortable"><span>结算数量</span><span class="carat"></span></th>
+					<th class="sortable"><span>结算金额</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+		 
+			<tbody>
+				 #if($channelSettleCheckBills && $channelSettleCheckBills.size() > 0)
+				 	#foreach($gbill in $channelSettleCheckBills)			
+						<tr>
+						  <td style="width:30px;"><span>$!{foreach.count}</span></td>
+						  <td style="width:80px;">
+						  	<span>
+						  		$!{gbill.recordId}
+						  	</span>
+						  </td>
+						  <td style="width:160px;"><span>【$!DateUtil.formatTimestamp($!{gbill.start})至$!DateUtil.formatTimestamp($!{gbill.end})】</span></td>
+						  <td style="width:80px;">
+						  	<span>
+						  		$!{configMap.get($gbill.relateId).vendorName}
+						  	</span>
+						  </td>
+						  <td style="width:80px;">
+						  	<span>
+						  		$!{configMap.get($gbill.relateId).vendorCode}
+						  	</span>
+						  </td>
+						  <td style="width:60px;"><span>$!{gbill.orderTotalNumber}</span></td>
+						  <td style="width:60px;"><span>$!{gbill.orderTotalAmount}</span></td>
+						</tr>
+					#end
+				 #end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="7">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	#if(!$channelSettleCheckBills || $channelSettleCheckBills.size() == 0)
+		<div class="ui_warning" align="right">查询条件范围内没有数据，请修改查询条件</div>
+	#end
+	</div>
+</body>	
+<script type="text/javascript">
+function ajaxLoadVendor(inputValue){
+	var url = "${basePath}platform/channelsettle/ajaxLoadVendor.xhtml";
+		var values = {"inputValue":inputValue};
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask();
+			if(result.success == true){
+				var retval = result.retval;
+				var obj=document.getElementById('vendorId'); 
+				obj.options.length=0;
+				var jsonObj=eval(retval);
+				obj.options.add(new Option('请选择供应商',''));
+				for(var i=0;i < jsonObj.length;i++){ 
+	                 obj.options.add(new Option(jsonObj[i].vendorName,jsonObj[i].recordId)); 
+	             } 
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+	});
+}
+var $ = function (id) {
+    return "string" == typeof id ? document.getElementById(id) : id;
+}
+var Bind = function(object, fun) {
+    return function() {
+        return fun.apply(object, arguments);
+    }
+}
+
+function AutoComplete(obj,autoObj,arr,arrcode){
+    this.obj=$(obj);        //输入框
+    this.autoObj=$(autoObj);//DIV的根节点
+    this.value_arr=arr;        //不要包含重复值
+    this.value_arr_code=arrcode;
+    this.index=-1;          //当前选中的DIV的索引
+    this.search_value="";   //保存当前搜索的字符
+}
+AutoComplete.prototype={
+    //初始化DIV的位置
+    init: function(){
+        this.autoObj.style.left = this.obj.offsetLeft + "px";
+        this.autoObj.style.top  = this.obj.offsetTop  + this.obj.offsetHeight +95 + "px";
+        this.autoObj.style.width= this.obj.offsetWidth - 2 + "px";//减去边框的长度2px   
+    },
+    //删除自动完成需要的所有DIV
+    deleteDIV: function(){
+        while(this.autoObj.hasChildNodes()){
+            this.autoObj.removeChild(this.autoObj.firstChild);
+        }
+        this.autoObj.className="auto_hidden";
+    },
+    //设置值
+    setValue: function(_this){
+        return function(){
+            _this.obj.value=this.seq;
+            _this.autoObj.className="auto_hidden";
+        }       
+    },
+    //模拟鼠标移动至DIV时，DIV高亮
+    autoOnmouseover: function(_this,_div_index){
+        return function(){
+            _this.index=_div_index;
+            var length = _this.autoObj.children.length;
+            for(var j=0;j<length;j++){
+                if(j!=_this.index ){       
+                    _this.autoObj.childNodes[j].className='auto_onmouseout';
+                }else{
+                    _this.autoObj.childNodes[j].className='auto_onmouseover';
+                }
+            }
+        }
+    },
+    //更改classname
+    changeClassname: function(length){
+        for(var i=0;i<length;i++){
+            if(i!=this.index ){       
+                this.autoObj.childNodes[i].className='auto_onmouseout';
+            }else{
+                this.autoObj.childNodes[i].className='auto_onmouseover';
+                this.obj.value=this.autoObj.childNodes[i].seq;
+            }
+        }
+    }
+    ,
+    //响应键盘
+    pressKey: function(event){
+        var length = this.autoObj.children.length;
+        //光标键"↓"
+        if(event.keyCode==40){
+            ++this.index;
+            if(this.index>length){
+                this.index=0;
+            }else if(this.index==length){
+                this.obj.value=this.search_value;
+            }
+            this.changeClassname(length);
+        }
+        //光标键"↑"
+        else if(event.keyCode==38){
+            this.index--;
+            if(this.index<-1){
+                this.index=length - 1;
+            }else if(this.index==-1){
+                this.obj.value=this.search_value;
+            }
+            this.changeClassname(length);
+        }
+        //回车键
+        else if(event.keyCode==13){
+            document.getElementById("vendorId").value=this.value_arr_code[this.index];
+        	var v = document.getElementById("vendorId").value;
+        	if(v.length != 0 && v!='undefined'){
+        		document.forms[0].submit();
+        		return ;
+        	}
+            this.autoObj.className="auto_hidden";
+            this.index=-1;
+        }else{
+        	document.getElementById("vendorId").value='';
+            this.index=-1;
+        }
+    },
+    //程序入口
+    start: function(event){
+        if(event.keyCode!=13&&event.keyCode!=38&&event.keyCode!=40){
+            this.init();
+            this.deleteDIV();
+            this.search_value=this.obj.value;
+            var valueArr=this.value_arr;
+            var valueArrCode=this.value_arr_code;
+//	            valueArr.sort();
+            if(this.obj.value.replace(/(^\s*)|(\s*$)/g,'')==""){ return; }//值为空，退出
+            try{ var reg = new RegExp("(" + this.obj.value + ")","i");}
+            catch (e){ return; }
+            var div_index=0;//记录创建的DIV的索引
+            for(var i=0;i<valueArr.length;i++){
+                if(reg.test(valueArr[i])){
+                    var div = document.createElement("div");
+                    div.className="auto_onmouseout";
+                    div.seq=valueArr[i];
+                    div.onclick=this.setValue(this);
+                    div.onmouseover=this.autoOnmouseover(this,div_index);
+                    div.innerHTML=valueArr[i].replace(reg,"<strong>$1</strong>");//搜索到的字符粗体显示
+                    this.autoObj.appendChild(div);
+                    this.autoObj.className="auto_show";
+                    div_index++;
+                }
+            }
+        }
+        this.pressKey(event);
+        window.onresize=Bind(this,function(){this.init();});
+    }
+}
+
+var autoComplete;
+function ajaxLoadVendor1(inputValue,event){
+	if(event.keyCode!=13&&event.keyCode!=38&&event.keyCode!=40){
+		var url = "${basePath}platform/channelsettle/ajaxLoadVendor.xhtml";
+		var values = {"inputValue":inputValue};
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask();
+			if(result.success == true){
+				var retval = result.retval;
+ 				var jsonObj=eval(retval);
+				var arr = new Array();
+				var arrcode = new Array();
+				for(var i=0;i < jsonObj.length;i++){ 
+					arr[i] = jsonObj[i].vendorName;
+					arrcode[i] = jsonObj[i].recordId;
+	             } 
+   				autoComplete=new AutoComplete('o','auto',arr,arrcode);
+   				autoComplete.start(event);
+			}});
+	}else{
+		autoComplete.start(event);
+	}
+}
+//禁用Enter键表单自动提交
+
+document.onkeydown = function(event) {
+	var target, code, tag;
+	if (!event) {
+		event = window.event; //针对ie浏览器
+		target = event.srcElement;
+		code = event.keyCode;
+		if (code == 13) {
+			tag = target.tagName;
+			if (tag == "TEXTAREA") {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	} else {
+		target = event.target; //针对遵循w3c标准的浏览器，如Firefox
+		code = event.keyCode;
+		if (code == 13) {
+			tag = target.tagName;
+			if (tag == "INPUT") {
+				return false;
+			} else {
+				return true;
+			}
+		}
+	}
+};
+</script>
+</html>

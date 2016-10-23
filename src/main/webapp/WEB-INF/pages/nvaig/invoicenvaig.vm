@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<div class="mod_hd tabs_gary">
+	<a href="${basePath}platform/invoice/queryInvoice.xhtml"  #if($VmUtils.eq($!nvg,'queryInvoice')) class="select" #end>发票查询</a>
+	<a href="${basePath}platform/invoice/queryInvoiceConfig.xhtml" #if($VmUtils.eq($!nvg,'queryInvoiceConfig')) class="select" #end>发票配置</a>
+</div>

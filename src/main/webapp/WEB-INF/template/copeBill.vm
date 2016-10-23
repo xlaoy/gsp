@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<copebill>
+	<body>
+		<cLink>$!{cb.clink}</cLink>
+		<cVouchID>$!{cb.cvouchID}</cVouchID>
+		<dVouchDate>$!{cb.dvouchDate}</dVouchDate>
+		<cDwCode>$!{cb.cdwCode}</cDwCode>
+		<cCode>$!{cb.ccode}</cCode>
+		<iAmount>$!{cb.iamount}</iAmount>
+		<cItem_Class>$!{cb.citemClass}</cItem_Class>
+		<cItemCode>$!{cb.citemCode}</cItemCode>
+		<cDigest>$!{cb.cdigest}</cDigest>
+		<cPayCode>$!{cb.cpayCode}</cPayCode>
+		<cOperator>$!{cb.coperator}</cOperator>
+		<status>$!{cb.status}</status>
+		<recordId>$!{cb.recordId}</recordId>
+		<reversalAmount>$!{cb.reversalAmount}</reversalAmount>
+	</body>
+</copebill>

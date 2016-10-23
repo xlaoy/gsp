@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>卖品对账单</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+	</head>
+	<body id="_body">
+		<div class="inner">
+			<div class="mod_hd">
+				<h2>卖品对账单</h2>
+			</div>
+				<div class="mod_hd tabs_gary" id="settleStatusId">
+					<a href="${basePath}platform/goodssettle/queryGoodsSettleBill.xhtml">卖品结算单</a>
+					<a href="${basePath}platform/goodssettle/queryGoodsCheckBill.xhtml">卖品对账单</a>
+					<a href="${basePath}platform/goodssettle/queryGoodsOrderDetails.xhtml">卖品订单明细</a>
+					<a href="${basePath}platform/goodssettle/queryUnPrintTicketOrders.xhtml">未打票卖品信息</a>
+				</div>
+			<div class="mode_search">
+				<form action="${basePath}platform/goodssettle/queryUnPrintTicketOrders.xhtml" method="post" onkeydown="javascript:submitByEnter();">
+						<h2>查询条件</h2>
+						<br><br>
+						场馆：<input type="hidden" name="placeId" id="placeId" value="$!{params.placeId}"/>
+							<input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}"/>
+					           卖品下单时间：
+					        <input style="width:100px;" class="text" name="startTime" id="startTime" value="$!DateUtil.formatTimestamp($!{params.startTime})" 
+											onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'endTime\')||\'2020-10-01\'}'})"/>至
+							<input style="width:100px;" class="text" name="endTime" id="endTime" value="$!DateUtil.formatTimestamp($!{params.endTime})" 
+											onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'startTime\')}',maxDate:'2020-10-01'})"/>
+							<a href="javascript:document.forms[0].submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+				</form>
+				<hr>
+			</div>
+		</div>
+		<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th class="sortable"><span>编号</span><span class="carat"></span></th>
+					<th class="sortable"><span>场馆</span><span class="carat"></span></th>
+					<th class="sortable"><span>下单时间</span><span class="carat"></span></th>
+					<th class="sortable"><span>未打票数量</span><span class="carat"></span></th>
+					<th class="sortable"><span>未打票金额</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+		 
+			<tbody>
+				 #if($result && $result.size() > 0)
+				 	#foreach($vo in $result)			
+						<tr>
+						  <td style="width:30px;"><span>$!{foreach.count}</span></td>
+						  <td style="width:160px;">
+						  	#set($configId=$vo.cinemaId+",TICKET")
+						  	<span>
+						  			$!pm.get($configId).name
+									$!{place.name}
+							</span>
+						  </td>
+						  <td style="width:160px;"><span>【$!DateUtil.formatTimestamp($!{vo.startTime})至$!DateUtil.formatTimestamp($!{vo.endTime})】</span></td>
+						  <td style="width:60px;"><span>$!{vo.unPrintQuantity}</span></td>
+						  <td style="width:60px;"><span>$!{vo.unPrintAmount}</span></td>
+						</tr>
+					#end
+				 #end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="5">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	#if(!$result || $result.size() == 0)
+		<div class="ui_warning" align="right">查询条件范围内没有数据，请修改查询条件</div>
+	#end
+	</body>	
+	<script type="text/javascript">
+	function submitByEnter(){
+	       if(event.keyCode == 13){
+	        document.forms[0].submit();
+	       }
+	}
+ 		window.addEvent('domready',function(){
+			#if($cks && $cks.size() > 0)
+			new TableGear('tableGear');
+			$('tableGear').getElements('tr').addEvents({
+				"mouseover":function(){
+					this.addClass('s')
+				},
+				"mouseout":function(){
+					this.removeClass('s')
+				}
+			});
+			#end
+			completer = new Autocompleter.Local($("placeFirstLetter"), parent.pdata, {
+				'delay': 100,
+				'maxChoices': 10,
+				'minLength':0,
+				'requestid':'placeId',
+				'filter': function() {
+					var vl = this.queryValue;
+					var values = vl.trim().split(/ +/);
+					return this.tokens.filter(function(token){
+						var result = values.every(function(v){
+							var reg = new RegExp(v.escapeRegExp(),'i');
+							return reg.test(token.pinyin) || reg.test(token.name);
+						});
+						return result;
+					});
+				},
+				'injectChoice': function(choice){
+					parent.myGenChoice(this,choice);
+				}
+			});
+		});
+	</script>
+</html>

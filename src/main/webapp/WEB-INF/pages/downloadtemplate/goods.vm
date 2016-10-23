@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>包场列表</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body id="_body">
+	<div>
+		<table border="1">
+			<thead>
+				<tr>
+					<th>结算单单号</th>
+					<th>影院名称</th>
+					<th>供应商名称</th>
+					<th>供应商编码</th>
+					<th>开始时间</th>
+					<th>结束时间</th>
+					<th>结算票数</th>
+					<th>结算金额</th>
+					<th>开票金额</th>
+				</tr>
+			</thead>
+			#if($jitilist && $jitilist.size() > 0)
+			<tbody>
+				#foreach($jiti in ${jitilist})
+				<tr>
+					<td style="vnd.ms-excel.numberformat:@">$!{jiti.recordid}</td>
+					<td style="vnd.ms-excel.numberformat:@">$!{jiti.placename}</td>
+					<td style="vnd.ms-excel.numberformat:@">$!{jiti.vendername}</td>
+					<td style="vnd.ms-excel.numberformat:@">$!{jiti.vendercode}</td>
+					<td style="vnd.ms-excel.numberformat:@">$!DateUtil.formatTimestamp($!{jiti.starttime})</td>
+					<td style="vnd.ms-excel.numberformat:@">$!DateUtil.formatTimestamp($!{jiti.endtime})</td>
+					<td style="vnd.ms-excel.numberformat:@">$!{jiti.num}</td>
+					<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{jiti.amount})</td>
+					<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{jiti.kpamount})</td>
+				#end
+			</tbody>
+			#end
+		</table>
+	</div>
+</body>
+</html>

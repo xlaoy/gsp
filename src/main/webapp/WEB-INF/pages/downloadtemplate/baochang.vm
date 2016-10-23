@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>包场列表</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body id="_body">
+	<div>
+		<table border="1">
+			<thead>
+				<tr>
+					<th><span>影院名称</span><span class="carat"></span></th>
+					<th><span>包场id</span><span class="carat"></span></th>
+					<th><span>包场类型</span><span class="carat"></span></th>
+					<th><span>部门名称</span><span class="carat"></span></th>
+					<th><span>场次id</span><span class="carat"></span></th>
+					<th><span>电影名称</span><span class="carat"></span></th>
+					<th><span>放映时间</span><span class="carat"></span></th>
+					<th><span>包场票数</span><span class="carat"></span></th>
+					<th><span>包场金额</span><span class="carat"></span></th>
+					<th><span>出票数量</span><span class="carat"></span></th>
+					<th><span>订单结算成本</span><span class="carat"></span></th>
+					<th><span>出票完成率</span><span class="carat"></span></th>
+					<th><span>状态</span><span class="carat"></span></th>
+					<th><span>关联结算单号</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+			#if($bcList && $bcList.size() > 0)
+			<tbody>
+				#foreach($bc in ${bcList})
+				<tr>
+					<td ><span>$!placeMap.get($!{bc.placeId}).name</span></td>
+					<td ><span>$!{bc.recordId}</span></td>
+					<td ><span>$!{bc.bcType}</span></td>
+					<td ><span>$!{bc.deptName}</span></td>
+					<td ><span>$!{bc.playId}(直连)</span></td>
+					<td ><span>$!{bc.filmName}</span></td>
+					<td ><span>$!DateUtil.formatTimestamp($!{bc.playTime})</span></td>
+					<td ><span>$!{bc.bcNum}</span></td>
+					<td ><span>$!CurrencyFmt.format($!{bc.bcAmount})</span></td>
+					<td ><span>$!{bc.successNum}</span></td>
+					<td ><span>$!CurrencyFmt.format($!{bc.successAmount})</span></td>
+					<td ><span>$!CurrencyFmt.format($!{bc.successRate})%</span></td>
+					<td ><span>
+						#if($VmUtils.eq($!bc.status,'NOPAY'))
+							未付款
+						#elseif($VmUtils.eq($!bc.status,'YESPAY'))
+							已付款
+						#elseif($VmUtils.eq($!bc.status,'SELLET'))
+							已结算
+						#elseif($VmUtils.eq($!bc.status,'PASS'))
+							已过期
+						#end
+					</span></td>
+					<td ><span>$!{bc.settleId}</span></td>
+				</tr>
+				#end
+			</tbody>
+			#end
+		</table>
+	</div>
+</body>
+</html>

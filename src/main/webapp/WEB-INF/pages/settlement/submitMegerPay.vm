@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>商家已确认结算单</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+</head>
+<body id="_body">
+<div class="inner">
+	#set($nvg="querySubmitPay")
+	#parse('WEB-INF/pages/nvaig/mergenvaig.vm')
+	
+	<div class="mode_search">
+		<form action="${basePath}platform/mergepay/querySubmitPay.xhtml" method="post" >
+				<h2>查询条件</h2>
+				<div>
+					付款供应商：
+					<select id="payVenderNo" name="payVenderNo" class="text" style="width:18%;">
+						<option value=""></option>
+						#foreach($map in ${megermap.entrySet()})
+							<option value="$!{map.key}" #if($VmUtils.eq($!payVenderNo,$!{map.key})) selected="selected" #end>$!megermap.get($!{map.key}).name</option>
+						#end
+					</select>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					操作人：<input type="text" class="text" name="optUser" id="optUser" value="$!{optUser}" />
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					关联结算单号：<input type="text" class="text" name="relateSettltIds" id="relateSettltIds" value="$!{relateSettltIds}" />
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<input type="hidden" name="flag" id="flag" value="flag" />
+					<a href="javascript:document.forms[0].submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+						#parse("WEB-INF/pages/common/goback.vm")
+				</div>
+		</form>
+	</div>
+	
+	
+	#if($mprList && $mprList.size() > 0)
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th><span>单号</span><span class="carat"></span></th>
+					<th><span>供应商编号</span><span class="carat"></span></th>
+					<th><span>供应商名称</span><span class="carat"></span></th>
+					<th><span>付款日期</span><span class="carat"></span></th>
+					<th><span>关联结算单号</span><span class="carat"></span></th>
+					<th><span>操作人</span><span class="carat"></span></th>
+					<th><span>付款金额</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($mpr in ${mprList})
+				<tr>
+					<td ><span>
+						$!{mpr.minSettltId}
+						</span>
+					</td>
+					<td ><span>
+						$!{mpr.payVernderNo}
+						</span>
+					</td>
+					<td ><span>
+						$!megermap.get($!{mpr.payVernderNo}).name
+						</span>
+					</td>
+					<td ><span>
+						 $!DateUtil.formatTimestamp($!{mpr.payTime})
+						</span>
+					</td>
+					<td ><div style="width: 500px;">$!{mpr.relateSettltIds}</div></td>
+					<td ><span>
+						$!{mpr.optUser}
+						</span>
+					</td>
+					<td ><span>
+						$!{mpr.totalAmount}
+						</span>
+					</td>
+				</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+	<div class="ui_warning">
+		#parse('WEB-INF/include/pageUtil.vm')
+	</div>
+	#else
+	<div class="ui_warning">查询条件范围内，没有数据。</div>
+	#end
+</div>
+</body>
+</html>

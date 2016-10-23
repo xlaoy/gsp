@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>卖品结算单</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+	</head>
+	<body id="_body">
+		<div class="inner">
+			<div class="mod_hd">
+				<h2>卖品结算单</h2>
+			</div>
+				<div class="mod_hd tabs_gary" id="settleStatusId">
+					<a href="${basePath}platform/goodssettle/queryGoodsSettleBill.xhtml">卖品结算单</a>
+					<a href="${basePath}platform/goodssettle/queryGoodsCheckBill.xhtml">卖品对账单</a>
+					<a href="${basePath}platform/goodssettle/queryGoodsOrderDetails.xhtml">卖品订单明细</a>
+					<a href="${basePath}platform/goodssettle/queryUnPrintTicketOrders.xhtml">未打票卖品信息</a>
+				</div>
+			<div class="mode_search">
+				<form action="${basePath}platform/goodssettle/queryGoodsSettleBill.xhtml" method="post"  onkeydown="javascript:submitByEnter();">
+						<h2>查询条件</h2>
+						<br><br>
+						场馆：<input type="hidden" name="placeId" id="placeId" value="$!{params.placeId}"/>
+							<input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}"/>
+					           结算单时间：
+					        <input style="width:100px;" class="text" name="startTime" id="startTime" value="$!{params.startTime}" 
+											onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'endTime\')||\'2020-10-01\'}'})"/>至
+							<input style="width:100px;" class="text" name="endTime" id="endTime" value="$!{params.endTime}" 
+											onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'startTime\')}',maxDate:'2020-10-01'})"/>
+							<a href="javascript:document.forms[0].submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+				</form>
+				<hr>
+			</div>
+		</div>
+		<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th class="sortable"><span class="carat">编号</span></th>
+					<th class="sortable"><span class="carat">结算单编号</span></th>
+					<th class="sortable"><span class="carat">结算单周期</span></th>
+					<th class="sortable"><span class="carat">影院名称</span></th>
+					<th class="sortable"><span class="carat">结算数量</span></th>
+					<th class="sortable"><span class="carat">结算金额</span></th>
+					<th class="sortable"><span class="carat">状态</span></th>
+					<th class="sortable"><span class="carat">详细</span></th>
+					<th class="sortable"><span class="carat">操作</span></th>
+				</tr>
+			</thead>
+		 
+			<tbody>
+				 #if($goodsSettleBills && $goodsSettleBills.size() > 0)
+				 	#foreach($sbill in $goodsSettleBills)			
+						<tr>
+						  <td style="width:30px;"><span>$!{foreach.count}</span></td>
+						  <td style="width:90px;">
+						  	<span>
+						  		<a href="${basePath}platform/goodssettle/queryGoodsOrderDetails.xhtml?billId=$!{sbill.recordId}&from=SB">
+						  			$!{sbill.recordId}
+						  		</a>
+						  	</span>
+						  </td>
+						  <td style="width:300px;"><span>【$!DateUtil.formatTimestamp($!{sbill.startTime})至$!DateUtil.formatTimestamp($!{sbill.endTime})】</span></td>
+						  <td style="width:150px;">
+						  	<span>
+						  			$!pm.get($sbill.configId).name
+									$!{place.name}
+							</span>
+						  </td>
+						  <td style="width:150px;"><span>$!{sbill.orderTotalNumber}</span></td>
+						  <td style="width:150px;"><span>$!{sbill.orderTotalAmount}</span></td>
+						  <td style="width:80px;">
+						  	<span>
+						  		$!{VmUtils.displayEnums("CheckBillStatusEnums",$!{sbill.status})}
+						  	</span>
+						  </td>
+						  <td style="width:150px;">
+						  	<span>
+						  		<a href="${basePath}platform/goodssettle/queryCheckBillBySettleId.xhtml?settleId=$!{sbill.recordId}">日账单明细</a>
+						  		<a href="${basePath}platform/goodssettle/queryUnPrintTicketOrders.xhtml?placeId=$!{sbill.configId}&startTime=$!{sbill.startTime}&endTime=$!{sbill.endTime}">未打票卖品汇总</a>
+						  	</span>
+						  </td>
+					<td><span>
+						#if($VmUtils.eq("MERCHANTCONFIRMED",$!{sbill.status}))
+							<a href="javascript:gewaReadjust('$!{sbill.recordId}')">重新调整</a>
+							<a href="javascript:confirmPay('$!{sbill.recordId}')">提交付款</a>
+						#end
+						
+						#if( $VmUtils.eq("READJUST",$!{sbill.status}) )
+							<a href="javascript:showAdjustPop('$!{sbill.recordId}')">调整</a>
+							<a href="javascript:tomerchant('$!{sbill.recordId}')">提交到商户</a>
+						#end
+						
+						#if($VmUtils.eq("WAITINGPAY",$!{sbill.status}) && $!{sbill.orderTotalAmount} > 0)
+							<a href="javascript:paySettle('$!{sbill.recordId}')">付款到商家</a>
+						#end
+											
+						#if($VmUtils.eq("SETTLED",$!{sbill.status}))
+       						<a href="javascript:rePaySettle('$!{sbill.recordId}')">重新支付</a>
+      					#end
+						</span>
+					</td>
+						</tr>
+					#end
+				 #end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="11">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	#if(!$goodsSettleBills || $goodsSettleBills.size() == 0)
+		<div class="ui_warning" align="right">查询条件范围内没有数据，请修改查询条件</div>
+	#end
+	</body>	
+	<script type="text/javascript">
+	function submitByEnter(){
+	       if(event.keyCode == 13){
+	        document.forms[0].submit();
+	       }
+	}
+
+ 		window.addEvent('domready',function(){
+			#if($cks && $cks.size() > 0)
+			new TableGear('tableGear');
+			$('tableGear').getElements('tr').addEvents({
+				"mouseover":function(){
+					this.addClass('s')
+				},
+				"mouseout":function(){
+					this.removeClass('s')
+				}
+			});
+			#end
+			completer = new Autocompleter.Local($("placeFirstLetter"), parent.pdata, {
+				'delay': 100,
+				'maxChoices': 10,
+				'minLength':0,
+				'requestid':'placeId',
+				'filter': function() {
+					var vl = this.queryValue;
+					var values = vl.trim().split(/ +/);
+					return this.tokens.filter(function(token){
+						var result = values.every(function(v){
+							var reg = new RegExp(v.escapeRegExp(),'i');
+							return reg.test(token.pinyin) || reg.test(token.name);
+						});
+						return result;
+					});
+				},
+				'injectChoice': function(choice){
+					parent.myGenChoice(this,choice);
+				}
+			});
+		});
+		
+ 		#* var downloadxls=function(){
+ 			if(document.forms[0]){
+ 				$("isXls").value="downloadxls";
+ 				document.forms[0].submit();
+ 				$("isXls").value="";
+ 			}else{
+ 				var a=document.location.href;
+ 				a=a+"&isXls=download";
+ 				document.location.href=a;
+ 			}
+ 		};*#
+ 		function loadAdjustList(recordId){
+ 			var url = "${basePath}platform/adjust/loadAdjustList.xhtml";
+ 			var values = {"settleId":recordId}
+ 			var mid = "T" + Date.now();
+ 			GewaraUtil.mask('',mid);
+ 			gewara.util.sendLoad('adListcommMark', url, values, function(){
+ 				GewaraUtil.unmask(mid);
+ 				gewa.util.maskContent('','adListcommMark','调整列表',800,'adListcommMark','','','','','',function(){
+ 				});
+ 				this(arguments[0]);
+ 			}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+ 		}
+
+ 		function tomerchant(recordId){
+ 			gewa.util.issure('','确认提交到商户审核？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+ 				var mid = "T" + Date.now();
+ 				GewaraUtil.mask('',mid);
+ 				var url = "${basePath}platform/settlement/tomerchant.xhtml";
+ 				var values = {"recordId":recordId};
+ 				GewaraUtil.sendRequest(url, values, function(result){
+ 					GewaraUtil.unmask(mid);
+ 					if(result.success == true){
+ 						gewaUtil.alert("成功！", function(){window.location.reload()});
+ 					}else{
+ 						gewaUtil.alert(result.msg);
+ 					}
+ 				});
+ 				gewa.util.container['keys'].dispose('keys');
+ 			});
+ 		}
+ 		function paySettle(recordId){
+ 			gewa.util.issure('','是否线上付款？','格瓦拉提示你',420,'iskyes',function(){
+ 				gewa.util.issure('','确认线上付款到商户吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+ 					var url = "${basePath}platform/settlement/paySettle.xhtml";
+ 					var values = {"recordId":recordId, "isOnline": true};
+ 					GewaraUtil.sendRequest(url, values, function(result){
+ 						GewaraUtil.unmask();
+ 						if(result.success == true){
+ 							gewaUtil.alert("成功！", function(){window.location.reload()});
+ 						}else{
+ 							gewaUtil.alert(result.msg);
+ 						}
+ 					});
+ 					gewa.util.container['keys'].dispose('keys');
+ 					gewa.util.container['iskyes'].dispose('iskyes');
+ 				});
+ 			},'是',function(){
+ 				gewa.util.issure('','确认线下付款到商户吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+ 					var url = "${basePath}platform/settlement/paySettle.xhtml";
+ 					var values = {"recordId":recordId, "isOnline": false};
+ 					GewaraUtil.sendRequest(url, values, function(result){
+ 						GewaraUtil.unmask();
+ 						if(result.success == true){
+ 							gewaUtil.alert("成功！", function(){window.location.reload()});
+ 						}else{
+ 							gewaUtil.alert(result.msg);
+ 						}
+ 					});
+ 					gewa.util.container['keys'].dispose('keys');
+ 					gewa.util.container['iskyes'].dispose('iskyes');
+ 				});
+ 				
+ 				
+ 				gewa.util.container['iskyes'].dispose('iskyes');
+ 				
+ 			},'','否')
+ 			
+ 			
+ 			
+ 			/*gewa.util.issure('','确认付款到商户吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+ 				var url = "${basePath}platform/settlement/paySettle.xhtml";
+ 				var values = {"recordId":recordId};
+ 				GewaraUtil.sendRequest(url, values, function(result){
+ 					GewaraUtil.unmask();
+ 					if(result.success == true){
+ 						gewaUtil.alert("成功！", function(){window.location.reload()});
+ 					}else{
+ 						gewaUtil.alert(result.msg);
+ 					}
+ 				});
+ 				gewa.util.container['keys'].dispose('keys');
+ 			}); */
+ 		}
+ 		function gewaReadjust(recordId){
+ 			gewa.util.issure('','确认要重新调整吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+ 				var url = "${basePath}platform/settlement/gewaReadjust.xhtml";
+ 				var values = {"recordId":recordId};
+ 				GewaraUtil.sendRequest(url, values, function(result){
+ 					GewaraUtil.unmask();
+ 					if(result.success == true){
+ 						gewaUtil.alert("成功！", function(){window.location.reload()});
+ 					}else{
+ 						gewaUtil.alert(result.msg);
+ 					}
+ 				});
+ 				gewa.util.container['keys'].dispose('keys');
+ 			});
+ 		}
+ 		function confirmPay(recordId){
+ 			console.info(recordId);
+ 			gewa.util.issure('','确认提交付款吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+ 				var url = "${basePath}platform/settlement/confirmPay.xhtml";
+ 				var values = {"recordId":recordId};
+ 				GewaraUtil.sendRequest(url, values, function(result){
+ 					GewaraUtil.unmask();
+ 					if(result.success == true){
+ 						gewaUtil.alert("成功！", function(){window.location.reload()});
+ 					}else{
+ 						gewaUtil.alert(result.msg);
+ 					}
+ 				});
+ 				gewa.util.container['keys'].dispose('keys');
+ 			});
+ 		}
+
+ 		var cancelCommentMarks = function(){
+ 			gewa.util.container['commMark'].dispose('commMark');
+ 		}
+ 		var cancelAdjustMarks = function(){
+ 			gewa.util.container['adjustMark'].dispose('adjustMark');
+ 		}
+ 		var downloadxls=function(){
+ 			if(document.forms[0]){
+ 				$("isXls").value="downloadxls";
+ 				document.forms[0].submit();
+ 				$("isXls").value="";
+ 			}else{
+ 				var a=document.location.href;
+ 				a=a+"&isXls=download";
+ 				document.location.href=a;
+ 			}
+ 		};
+ 		function loadPricedPlayItem(settleId){
+ 			var url = '${basePath}platform/settlement/queryPricedPlayItem.xhtml';
+ 			var values = {"settlementId":settleId}
+ 			var mid = "T" + Date.now();
+ 			GewaraUtil.mask('',mid);
+ 			gewara.util.sendLoad('commMark', url, values, function(){
+ 				GewaraUtil.unmask(mid);
+ 				gewa.util.maskContent('','commMark','异价场次',850,'commMark','','','','','',function(){
+ 				});
+ 				this(arguments[0]);
+ 			}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+ 		}
+ 		function showAdjustPop(relateId){
+ 			$('relateId').value= relateId;
+ 			gewa.util.maskContent('','adjustMark','',360,'adjustMark');
+ 		}
+ 		function addAdjust(){
+ 			var tag = "SETTLEBILL";
+ 			var relateId = $('relateId').value;
+ 			var number = $('number').value;
+ 			var amount = $('amount').value;
+ 			var comments = $('comments').value;
+ 			var reason = $('reason').value;
+ 			
+ 			if (relateId == '' || number == '' || amount == '' || comments == '' || reason ==''){
+ 				gewaUtil.alert("请输入完整的调整信息.");
+ 				return;
+ 			}
+ 			
+ 			var url = "${basePath}platform/adjust/saveAdjustment.xhtml";
+ 			var values = {"tag":tag, "relateId":relateId, "adjustNumber":number, "amount":amount , "reason": reason, "comments":comments}
+ 			
+ 			GewaraUtil.sendRequest(url, values, function(result){
+ 				GewaraUtil.unmask();
+ 				if(result.success == true){
+ 					gewaUtil.alert("成功！", function(){cancelAdjustMarks(); window.location.reload()});
+ 				}else{
+ 					gewaUtil.alert(result.msg);
+ 				}
+ 			}); 
+ 		}
+ 		function selectAll(){
+ 			document.getElements('input[type=checkbox][name=settleIds]').each(function(item){
+ 				item.checked = !item.checked;
+ 			})
+ 		}
+
+ 		function rePaySettle(recordId){
+ 			gewa.util.issure('','确认重新付款吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+ 				var url = "${basePath}platform/settlement/rePaySettle.xhtml";
+ 				var values = {"recordId":recordId};
+ 				GewaraUtil.sendRequest(url, values, function(result){
+ 					GewaraUtil.unmask();
+ 					if(result.success == true){
+ 						gewaUtil.alert("重新支付成功！");
+ 					}else{
+ 						gewaUtil.alert(result.msg);
+ 					}
+ 				});
+ 				gewa.util.container['keys'].dispose('keys');
+ 			});
+ 		}
+	</script>
+</html>

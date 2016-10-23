@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.drama.DramaOrderOnLineItem" table="drama_orderonline_item" schema="gsp">
+    
+       <id name="recordid" type="long">
+            <column name="recordid"  />
+            <generator class="assigned" />
+       </id>
+       
+       <property name="tradeno"		column="tradeno"	type="string" />
+       <property name="placeid"		column="placeid"	type="long" />
+       <property name="quantity"		column="quantity"	type="long" />
+       <property name="totalfee"		column="totalfee"	type="double" />
+       <property name="disfee"		column="disfee"	type="double" />
+       <property name="tipid"		column="tipid"	type="long" />
+       <property name="disid"		column="disid"	type="long" />
+       <property name="taopiaonum"		column="taopiaonum"	type="long" />
+       <property name="playid"		column="playid"	type="long" />
+       <property name="playtime"		column="playtime"	type="timestamp" />
+       <property name="pricebillid"		column="pricebillid"	type="long" />
+       <property name="hasrefund"		column="hasrefund"	type="string" />
+       <property name="gspupdatetime"		column="gspupdatetime"	type="timestamp" />
+       <property name="refundpricebillid"		column="refundpricebillid"	type="long" />
+				        
+    </class>
+</hibernate-mapping>

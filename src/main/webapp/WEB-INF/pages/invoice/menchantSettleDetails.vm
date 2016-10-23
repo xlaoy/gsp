@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+#if($!settle)
+<div class="bill_panel">
+	<table class="isTable" style="width:100%;">
+		<tr>
+			<td width="100px;">单号</td>
+			<td width="250px;">$!{settle.recordId}</td>
+			<td width="100px;">结算单类型</td>
+			<td>$!billTypeMap.get($!{settle.tag})</td>
+		</tr>
+		<tr>
+			<td>场次类型</td>
+			<td>
+				#if($VmUtils.eq($!settle.playType,'ZL'))
+					直连
+				#elseif($VmUtils.eq($!settle.playType,'XN'))
+					虚拟
+				#elseif($VmUtils.eq($!settle.playType,'GW'))
+					格瓦票务
+				#elseif($VmUtils.eq($!settle.playType,'BC'))
+					包场
+				#end
+			</td>
+			<td>结算周期</td>
+			<td>
+				[ $!DateUtil.formatTimestamp($!{settle.startTime}) ~ $!DateUtil.formatTimestamp($!{settle.endTime}) )
+			</td>
+		</tr>
+		<tr>
+			<td>场馆</td>
+			<td colspan="3">
+				#if($VmUtils.eq($!settle.tag,'CHANNEL'))
+					$!csc.vendorName
+					#if($VmUtils.eq($!csc.vendorType,'CINEMA'))
+						<span  style="color: #075F0A;">[ 单家影院 ]</span>
+					#elseif($VmUtils.eq($!csc.vendorType,'SYS'))
+						<span  style="color: #075F0A;">[ 系统方 ]</span>
+					#elseif($VmUtils.eq($!csc.vendorType,'THEATRES'))
+						<span  style="color: #075F0A;">[ 院线方 ]</span>
+					#end
+				#else
+					$!place.name
+					#if($VmUtils.eq($!settle.special,'HEPING_OUTER'))
+						<span  style="color: #075F0A;">[ 大光明巨幕 ]</span>
+					#elseif($VmUtils.eq($!settle.special,'WANDA_ACTIVITY'))
+						<span  style="color: #075F0A;">[ 万达活动场 ]</span>
+					#elseif($VmUtils.eq($!settle.special,'WANDA_NOT_ACTIVITY'))
+						<span  style="color: #075F0A;">[ 万达非活动场 ]</span>
+					#end
+				#end
+			</td>
+		</tr>
+		<tr>
+			<td>出票数量</td>
+			<td>
+				$VmUtils.getTotal($!{settle.succTicketNumber})
+			</td>
+			<td>出票金额</td>
+			<td>$!CurrencyFmt.format($!{settle.succTicketAmount})</td>
+		</tr>
+		<tr>
+			<td>退票数量</td>
+			<td>$VmUtils.getTotal($!{settle.refundTotalNumber})</td>
+			<td>退票金额</td>
+			<td>$!CurrencyFmt.format($!{settle.refundTotalAmount})</td>
+		</tr>
+		<tr>
+			<td>往期差异票数</td>
+			<td>$VmUtils.getTotal($!{settle.previousRefundNumber})</td>
+			<td>往期差异金额</td>
+			<td>$!CurrencyFmt.format($!{settle.previousRefundAmount})</td>
+		</tr>
+		<tr>
+			<td>调整数量</td>
+			<td>$VmUtils.getTotal($!{settle.adjustTotalNumber})</td>
+			<td>调整金额</td>
+			<td>$!CurrencyFmt.format($!{settle.adjustTotalAmount})</td>
+		</tr>
+		<tr>
+			<td>申请结算数量</td>
+			<td>$VmUtils.getTotal($!{settle.applySettleNumber})</td>
+			<td>申请结算金额</td>
+			<td>$!CurrencyFmt.format($!{settle.applySettleAmount})</td>
+		</tr>
+		<tr>
+			<td>异价票数</td>
+			<td>$VmUtils.getTotal($!{settle.diffPriceNumber})</td>
+			<td>异价差额</td>
+			<td>$!CurrencyFmt.format($!{settle.diffPriceAmount})</td>
+		</tr>
+		<tr>
+			<td>包场预付</td>
+			<td>$!CurrencyFmt.format($!{extend.bcPrePay})</td>
+			<td>GW开票金额</td>
+			<td>$!CurrencyFmt.format($!{extend.billingamount})</td>
+		</tr>
+		<tr>
+			<td>结算票数</td>
+			<td>$VmUtils.getTotal($!{settle.orderTotalNumber})</td>
+			<td>结算金额</td>
+			<td>$!CurrencyFmt.format($!{settle.orderTotalAmount})</td>
+		</tr>
+	</table>
+</div>
+#else
+<div class="ui_warning">没有数据。</div>
+#end

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>对账明细</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+		<table border="1">
+			<thead>
+				<tr>
+					<td width="80" height="32" valign="middle">场次ID</td>
+					<td width="210" valign="middle">电影名称</td>
+					<td width="110" valign="middle">放映时间</td>
+					<td width="80" valign="middle">结算票数</td>
+					<td width="80" valign="middle">结算金额</td>
+					<td width="80" valign="middle">退票票数</td>
+					<td width="80" valign="middle">退票金额</td>
+				</tr>
+			</thead>
+			<tbody>
+				#set($allOrder=0)
+				#set($allOrderAmount=0)
+				#set($allRefund=0)
+				#set($allRefundmount=0)
+				#if($aggres && $aggres.size() > 0)
+					#foreach($ag in ${aggres.keySet()})
+						<tr>
+							<td width="80" height="26" valign="middle" align="left">
+								$!{ag}
+							</td>
+							#set($otherIno= $VmUtils.readJsonToMap($pom.get($!{ag}).otherInfo))
+							<td height="26" valign="middle" align="left">
+								$!{otherIno.get("影片")}
+								
+							</td>
+							<td height="26" valign="middle" align="left">
+								$!{otherIno.get("场次")}
+							</td>
+							#set($aggre=$!{aggres.get(${ag})})
+							#set($orderTotal=0)
+							#set($orderAmount=0)
+							#set($refundTotal=0)
+							#set($refundAmount=0)
+							#if($!{aggre.get("orderTotal")})
+								#set($orderTotal=$!{aggre.get("orderTotal")})
+							#end
+							
+							#if($!{aggre.get("orderAmount")})
+								#set($orderAmount=$!{aggre.get("orderAmount")})
+							#end
+							
+							#if($!{aggre.get("refundTotal")})
+								#set($refundTotal=$!{aggre.get("refundTotal")})
+							#end
+							#if($!{aggre.get("refundAmount")})
+								#set($refundAmount=$!{aggre.get("refundAmount")})
+							#end
+							#if($!{aggre.get("adjustTotal")})
+								#set($adjustTotal=$!{aggre.get("adjustTotal")})
+							#end
+							#if($!{aggre.get("adjustTotal")})
+								#set($adjustAmount=$!{aggre.get("adjustAmount")})
+							#end
+							<td width="80" height="26" valign="middle" align="left">
+								#set($orderTotal=$VmUtils.calculate($orderTotal, $refundTotal ,"-"))
+								$!orderTotal
+								
+							</td>
+							<td width="80" height="26" valign="middle" align="left">
+								#set($orderAmount=$VmUtils.calculate($orderAmount, $refundAmount ,"-"))
+								$!CurrencyFmt.format($!orderAmount)
+								
+							</td>
+							<td width="80" height="26" valign="middle" align="left">
+								${refundTotal}
+								
+							</td>
+							<td width="80" height="26" valign="middle" align="left">
+								$!CurrencyFmt.format(${refundAmount})
+							</td>
+						</tr>
+					#set($allOrder=$allOrder + $orderTotal)
+					#set($allOrderAmount= $allOrderAmount + $orderAmount)
+					#set($allRefund= $allRefund + $refundTotal)
+					#set($allRefundmount= $allRefundmount + $refundAmount)
+				#end
+				
+				#set($allAdjust=0)
+				#set($allAdjustAmount=0)
+				#if($ads && $ads.size() > 0)
+					#foreach($ad in ${ads})
+						#set($allAdjust=$!{ad.adjustNumber}+$allAdjust)
+						#set($allAdjustAmount=$!{ad.amount}+$allAdjustAmount)
+					#end
+					<tr>
+						<td height="26" valign="middle" align="left">调整</td>
+						<td colspan="2" height="26" valign="middle" align="left"></td>
+						<td height="26" valign="middle" align="left">$allAdjust</td>
+						<td height="26" valign="middle" align="left">$allAdjustAmount</td>
+						<td colspan="5" height="26" valign="middle" align="left"></td>
+					</tr>
+				#end
+				
+				
+			#set($prn=0)
+			#set($pra=0)
+			#if($settle && ($settle.previousRefundNumber != 0 || $settle.previousRefundAmount != 0))
+			<tr>
+				<td height="26" valign="middle" align="left">差异</td>
+				<td colspan="2" height="26" valign="middle" align="left"></td>
+				#set($prn=$settle.previousRefundNumber)
+				#set($pra=$settle.previousRefundAmount)
+				<td height="26" valign="middle" align="left">$prn</td>
+				<td height="26" valign="middle" align="left">$pra</td>
+				<td colspan="5" height="26" valign="middle" align="left"></td>
+			</tr>
+			#end
+			#set($allOrder=$allOrder + $allAdjust)
+			#set($allOrderAmount= $allOrderAmount + $allAdjustAmount)
+			#set($allOrder=$allOrder - $prn)
+			#set($allOrderAmount=$allOrderAmount - $pra)
+				
+				<tr>
+					<td width="80" height="26" valign="middle" align="left">当前合计</td>
+					<td colspan="2">&nbsp;</td>
+					<td height="26" valign="middle" align="left">$allOrder</td>
+					<td width="80" height="26" valign="middle" align="left">$!CurrencyFmt.format($!allOrderAmount)</td>
+					<td width="80" height="26" valign="middle" align="left">$!allRefund</td>
+					<td width="80" height="26" valign="middle" align="left">$!CurrencyFmt.format($!allRefundmount)</td>
+					<td colspan="3">&nbsp;</td>
+				</tr>
+				#else
+				<tr>
+					<td height="26" valign="middle">查询条件范围内，没有数据</td>
+				</tr>
+				#end
+			</tbody>
+		</table>
+</body>
+</html>

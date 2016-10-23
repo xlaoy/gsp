@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>通道费结算</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+	</head>
+	<body id="_body">
+		<div class="inner">
+			#set($nvg="loadUnVerifiedConfig")
+			#parse('WEB-INF/pages/nvaig/approvnvaig.vm')
+		<div class="mode_search">
+			<form action="${basePath}platform/channelsettle/loadUnVerifiedConfig.xhtml" method="post" id="verifiedConfigform">
+				供应商名称：<input type="text" class="text" name="vendorName" value="$!vendorName" autocomplete="off">
+				<input type="submit" value="查询" class="button minBt whiteBt">
+			</form>
+		</div>
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th class="sortable" width="5%"><span class="carat">编号</span></th>
+					<th class="sortable" width="5%"><span class="carat">供应商名称</span></th>
+					<th class="sortable" width="5%"><span class="carat">供应商编号</span></th>
+					<th class="sortable" width="5%"><span class="carat">供应商类型</span></th>
+					<th class="sortable" width="5%"><span class="carat">结算周期</span></th>
+					<th class="sortable" width="15%"><span class="carat">结算方式</span></th>
+					<th class="sortable" width="5%"><span class="carat">退票是否结算</span></th>
+					<th class="sortable" width="5%"><span class="carat">首次结算日期</span></th>
+					<th class="sortable" width="5%"><span class="carat">状态</span></th>
+					<th class="sortable" width="5%"><span class="carat">操作</span></th>
+				</tr>
+			</thead>
+			<tbody>
+				 #if($configs && $configs.size() > 0)
+				 	#foreach($config in $configs)			
+						<tr>
+						  <td style="width:30px;"><span>$!{foreach.count}</span></td>
+						  <td style="width:80px;"><span>$!{config.vendorName}</span></td>
+						  <td style="width:60px;"><span>$!{config.vendorCode}</span></td>
+						  <td style="width:60px;"><span>$!{config.vendorType}</span></td>
+						  <td style="width:60px;">
+						  	<span>
+						  		#if($!{config.settleCycle}=='MONTH')
+						  			按月结算
+						  		#else
+						  			每$!{config.settleDays}结算一次
+						  		#end
+						  	</span>
+						  </td>
+						  <td>
+						  	<span>
+						  		#if($!{config.settleMoney})
+						  			每票结算$!{config.settleMoney}元
+						  		#end
+						  		#if($!{config.orderPercent})
+						  			按订单$!{config.orderPercent}%结算
+						  		#end
+						  	</span>
+						  </td>
+						  <td>
+						  	<span>
+						  		#if($!{config.isSettleRefund}=='Y')
+						  			是
+						  		#else
+						  			否
+						  		#end
+						  	</span>
+						  </td>
+						  <td><span>$!DateUtil.formatDate($!{config.firstSettleDate})</span></td>
+						  <td>
+						  	<span>
+						  	#if($config)
+								#if("Y" eq $!{config.verifyStatus})
+									已审核
+								#elseif("N" eq $!{config.verifyStatus})
+									未审核
+								#end
+							#end
+						  	</span>
+						  </td>
+						  <td>
+						  	<span>
+						  		<a href="javascript:verifyChannelSettleConfig('$!{config.recordId}');">通过审核</a>
+						  		<a href="javascript:abandonChannelSettleConfig('$!{config.recordId}');">废弃</a>
+						  		<a href="javascript:viewCinemaDetails('$!{config.recordId}')">明细</a>
+						  		<a onclick="new_window = window.open(); exportCinemaDetails('${basePath}platform/channelsettle/exportCinemaDetails.xhtml?recordId=$!{config.recordId}')" href="javascript:void(0);">导出</a>
+						  	</span>
+						  </td>
+						</tr>
+					#end
+				 #end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="10">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	<div id="commMark" style="display:none; height: 550px; overflow:auto"></div>
+	</body>	
+	<script type="text/javascript">
+	var new_window = null;  
+
+	function exportCinemaDetails(url) {    
+	    new_window.location.href = url;    
+	}  
+
+	function viewCinemaDetails(recordId){
+		var url = '${basePath}platform/channelsettle/viewCinemaDetails.xhtml';
+		var values = {"recordId":recordId}
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		gewara.util.sendLoad('commMark', url, values, function(){
+			GewaraUtil.unmask(mid);
+			gewa.util.maskContent('','commMark','关联影院明细',350,'commMark','','','','','',function(){
+			});
+			this(arguments[0]);
+		}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');	
+	}
+
+		function verifyChannelSettleConfig(recordId){
+			gewa.util.issure('','确认要进行此通道费结算审核？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+ 				var url = "${basePath}platform/channelsettle/verifyChannelConfig.xhtml";
+ 				var values = {"recordId":recordId};
+ 				GewaraUtil.sendRequest(url, values, function(result){
+ 					GewaraUtil.unmask();
+ 					if(result.success == true){
+ 						gewaUtil.alert("审核成功！",function(){
+ 							$('verifiedConfigform').submit();
+ 						});
+ 					}else{
+ 						gewaUtil.alert(result.msg);
+ 					}
+ 				});
+ 				gewa.util.container['keys'].dispose('keys');
+ 			});
+		}
+		
+		function abandonChannelSettleConfig(recordId){
+			gewa.util.issure('','确认废弃该通道费结算配置？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+ 				var url = "${basePath}platform/channelsettle/abandonChannelConfig.xhtml";
+ 				var values = {"recordId":recordId};
+ 				GewaraUtil.sendRequest(url, values, function(result){
+ 					GewaraUtil.unmask();
+ 					if(result.success == true){
+ 						gewaUtil.alert("成功！",function(){
+ 							$('verifiedConfigform').submit();
+ 						});
+ 					}else{
+ 						gewaUtil.alert(result.msg);
+ 					}
+ 				});
+ 				gewa.util.container['keys'].dispose('keys');
+ 			});
+		}
+	</script>
+</html>

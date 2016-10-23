@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>微票月账单</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+
+<style type="text/css">
+html{background:#fff;}
+</style>
+
+</head>
+
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryWPPointCard")
+	#parse('WEB-INF/pages/nvaig/wpnvaig.vm')
+	
+	<div class="mode_search">
+		<form action="${basePath}platform/pointcard/queryWPPointCard.xhtml" method="post" id="queryWPPointCardForm">
+				<h2>查询条件</h2><br>
+				<div>
+					账单号：
+					<input type="text" class="text" name="recordid" id="recordid" value="$!{recordid}" style="width: 100px;"/>
+					&nbsp;&nbsp;
+					统计类型：
+					<select id="ctype" name="ctype" class="text" style="width: 100px;">
+						<option value="MONTH" #if($VmUtils.eq($!{ctype},"MONTH")) selected="selected" #end>按月</option>
+						<option value="DAY" #if($VmUtils.eq($!{ctype},"DAY")) selected="selected" #end>按天</option>
+					</select>
+					&nbsp;&nbsp;
+					时间：
+					<input style="width:150px;" class="text" name="start" id="start" value="$!{start}" 
+											onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'end\')||\'2020-10-01 00:00:00\'}'})"/>至
+					<input style="width:150px;" class="text" name="end" id="end" value="$!{end}" 
+											onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'start\')}',maxDate:'2020-10-01 00:00:00'})"/>
+					&nbsp;&nbsp;
+					<a href="javascript:$('queryWPPointCardForm').submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+				</div>
+		</form>
+	</div>
+	
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th style="width:5%;">序号</th>
+					<th style="width:5%;">单号</th>
+					<th >系统</th>
+					<th style="width:10%;">统计周期</th>
+					<th style="width:7%;">出票数量</th>
+					<th style="width:7%;">出票点卡金额</th>
+					<th style="width:7%;">退票数量</th>
+					<th style="width:7%;">退票点卡金额</th>
+					<th style="width:7%;">结算票数</th>
+					<th style="width:7%;">结算点卡金额</th>
+					<th style="width:7%;">开票金额</th>
+					<th style="width:7%;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($s in ${sblist})
+				<tr>
+					<td>$!{foreach.count}</td>
+					<td>$!{s.recordid}</td>
+					<td>微票系统</td>
+					<td>
+						[ $!DateUtil.formatTimestamp($!{s.starttime}) -<br/> 
+						 &nbsp;&nbsp;$!DateUtil.formatTimestamp($!{s.endtime}) )
+					</td>
+					<td>$!{s.successnum}</td>
+					<td>$!CurrencyFmt.format($!{s.successamount})</td>
+					<td>$!{s.refundnum}</td>
+					<td>$!CurrencyFmt.format($!{s.refundamount})</td>
+					<td>$VmUtils.getTotal($!{s.totalnum})</td>
+					<td>$!CurrencyFmt.format($!{s.totalamount})</td>
+					<td>$!CurrencyFmt.format($!{s.kpamount})</td>
+					<td>
+						#if($VmUtils.eq($!s.ctype, "MONTH"))
+						<a href="${basePath}platform/pointcard/queryPlaceWPPointCard.xhtml?settleid=$!{s.recordid}&ctype=$!{s.ctype}">影院月账单</a>
+						<br><a href="${basePath}platform/pointcard/queryWPPointCard.xhtml?settleid=$!{s.recordid}&ctype=DAY">系统日账单</a>
+						#end
+						#if($VmUtils.eq($!s.ctype, "DAY"))
+						<a href="${basePath}platform/pointcard/queryPlaceWPPointCard.xhtml?settleid=$!{s.recordid}&ctype=$!{s.ctype}">影院日账单</a>
+						#end
+						<br><a href="${basePath}platform/pointcard/exportPointCardOrder.xhtml?settleid=$!{s.recordid}&etype=wpc&isXls=download">导出订单</a>
+					</td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="12">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	$$('.tips').amTips();
+	lockMenu();
+});
+
+function lockMenu(){
+	var menus = parent.document.getElements('#navleftid a');
+	if(menus)menus.filter(function(link){
+		link.removeClass('select');
+		return link.get('href').indexOf(document.location.pathname) >= 0;
+	}).addClass('select');
+}
+</script>
+
+</body>
+</html>

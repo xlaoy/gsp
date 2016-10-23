@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body id="_body">
+<div class="inner">
+	
+	<table border="1">
+		<thead>
+			<tr>
+				<th><span>影院id</span></th>
+				<th><span>统一编码</span></th>
+				<th><span>系统</span></th>
+				<th><span>院线</span></th>
+				<th><span>名称</span></th>
+				<th><span>结算周期</span></th>
+				<th><span>结算时限</span></th>
+				<th><span>结算方式</span></th>
+				<th><span>结算时间点</span></th>
+				<th><span>首次结算日期</span></th>
+				<th><span>帐套编号</span></th>
+				<th><span>业务供应商</span></th>
+				<th><span>业务供应商结算</span></th>
+				<th><span>付款供应商</span></th>
+				<th><span>卖品结算</span></th>
+				<th><span>管理人</span></th>
+				<th><span>状态</span></th>
+			</tr>
+		</thead>
+		<tbody>
+			#foreach($map in ${maplist})
+			<tr>
+				<td><span>$!{map.get("place_id")}</span></td>
+				<td><span>$!{map.get("pcid")}</span></td>
+				<td><span>$!{map.get("open_type")}</span></td>
+				<td><span>$!{map.get("belong_to")}</span></td>
+				<td><span>$!{map.get("name")}</span></td>
+				<td><span>$!{VmUtils.displayEnums("SettleCycleEnums",$!{map.get("settle_cycle")})}</span></td>
+				<td><span>$!{map.get("offset_value")}个工作日</span></td>
+				<td><span>$!{VmUtils.displayEnums("SettleBaseEnums",$!{map.get("settle_base")})}</span></td>
+				<td><span>$!{map.get("settle_time")}</span></td>
+				<td><span>$!DateUtil.formatDate($!{map.get("first_settle")})</span></td>
+				<td><span>$!{map.get("zhangtao_no")}</span></td>
+				<td><span>【$!{map.get("vender_no")}】$!{map.get("vender_name")}</span></td>
+				<td><span>
+					#if($VmUtils.eq($!{map.get("play_type")},"Y"))
+						是
+					#elseif($VmUtils.eq($!{map.get("play_type")},"N"))
+						否
+					#else
+						
+				    #end
+					</span>
+				</td>
+				<td><span>【$!{map.get("pay_vender_no")}】$!{map.get("pay_vender_name")}</span></td>
+				<td><span>
+					#if($VmUtils.eq($!{map.get("is_goods_settle")},"Y"))
+						是
+					#elseif($VmUtils.eq($!{map.get("is_goods_settle")},"N"))
+					            否
+					#else
+				    #end
+					</span>
+				</td>
+				<td><span>$!{map.get("owner")}</span></td>	
+				<td><span>
+					#if($VmUtils.eq($!{map.get("status")},"Y"))
+						已审核
+					#elseif($VmUtils.eq($!{map.get("status")},"N"))
+						未审核
+					#else 
+						未配置
+					#end
+					</span>
+				</td>
+			</tr>
+			#end
+		</tbody>
+	</table>
+	
+</div>
+</body>
+</html>

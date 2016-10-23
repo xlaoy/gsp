@@ -1,0 +1,42 @@
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 31, 2013 2:18:24 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.StatusTracker" table="Status_tracker" schema="gsp">
+    	<id name="recordId" type="long">
+            <column name="record_id" precision="65535" scale="65531" />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_status_tracker</param>
+			</generator>
+        </id>
+        <property name="tag" type="string">
+            <column name="tag" length="10" />
+        </property>
+         <property name="relateId" type="long">
+            <column name="relate_id" />
+        </property>
+        <property name="addTime" type="timestamp">
+            <column name="add_time"  />
+        </property>
+        <property name="operator" type="string">
+            <column name="operator" length="10" />
+        </property>
+         <property name="comments" type="string">
+            <column name="comments" length="10" />
+        </property>
+         <property name="otherInfo" type="string">
+            <column name="other_info" length="10" />
+        </property>
+        <property name="oldStatus" type="string">
+            <column name="old_status" length="10" />
+        </property>
+        <property name="newStatus" type="string">
+            <column name="new_status" length="10" />
+        </property>
+        <property name="operatorCategory" type="string">
+            <column name="operator_category" length="10" />
+        </property>
+    </class>
+</hibernate-mapping>

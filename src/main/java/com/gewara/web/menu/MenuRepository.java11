@@ -1,0 +1,48 @@
+package com.gewara.web.menu;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.gewara.model.acl.WebModule;
+public class MenuRepository implements Serializable {
+	private static final long serialVersionUID = -7404705716824736582L;
+	public static final String GEWA_MENU_REPOSITORY_KEY = "com.gewara.web.menu.GEWA_MENU_REPOSITORY";
+	public static final String PARTNER_MENU_REPOSITORY_KEY = "com.gewara.web.menu.PARTNER_MENU_REPOSITORY";
+	
+	Map<String, List<WebModule>> menuMap = null;
+	List<WebModule> topMenuList = null;
+	public MenuRepository(List<WebModule> moduleList){
+		menuMap = new LinkedHashMap<String, List<WebModule>>();
+		topMenuList = new ArrayList<WebModule>();
+		menuMap.put("0", topMenuList);
+		List<WebModule> tmp = null;
+		for(WebModule module: moduleList){
+			if(module.isTop()){
+				topMenuList.add(module);
+			}else {
+				tmp = menuMap.get(module.getParentcode());
+				if(tmp==null) {
+					tmp = new ArrayList<WebModule>();
+					menuMap.put(module.getParentcode(), tmp);
+				}
+				tmp.add(module);
+			}
+		}
+	}
+	public Map<String, List<WebModule>> getMenuMap() {
+		return menuMap;
+	}
+	public void setMenuMap(Map<String, List<WebModule>> menuMap) {
+		this.menuMap = menuMap;
+	}
+	
+	
+	public List<WebModule> getTopMenu(){
+		return menuMap.get("0");
+	}
+	
+	
+}

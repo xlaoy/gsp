@@ -1,0 +1,58 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+	<context:property-placeholder location="classpath:config/*.remote.properties"/>
+	<bean id="VmUtils" class="com.gewara.util.VmUtils" />
+	<bean id="CurrencyFmt" class="com.gewara.util.CurrencyFormatter" />
+	<bean id="config" class="com.gewara.Config">
+	
+		<property name="pageMap">
+			<map>
+				<entry key="basePath" value="/gsp/" />
+				<entry key="staticPath" value="http://img5.gewara.cn/" />
+				<entry key="absPath" value="http://cinema.gewara.com" />
+				<entry key="picPath" value="http://img.gewara.cn/" />
+				<entry key="VmUtils" value-ref="VmUtils" />
+				<entry key="CurrencyFmt" value-ref="CurrencyFmt" />
+				<entry key="fileURL" value="http://img.gewara.cn"></entry>
+			</map>
+		</property>
+		<property name="configMap">
+			<map>
+				<entry key="terminalUrl" value="http://houtai.gewara.com/terminal/inner/getTaketimeByTradeNos.xhtml"/>
+				<entry key="channelUrl" value="http://houtai.gewara.com/chargeChannel/getDataDictionaryInfos.xhtml"/>
+				<entry key="qryWandaDept" value="http://houtai.gewara.com/ticket2/inner/qryCinemaInfo.xhtml"/>
+				<entry key="imgServer" value="102" />
+				<entry key="cacheVersionKey" value="cacheVersion" />
+				<!-- 单点登录地址 -->
+				<entry key="ssoLoginUrl" value="http://sso.gewara.com/sso/login"></entry>
+				<!-- 单点登录验证地址 -->
+				<entry key="ssoValidateUrl" value="http://sso.gewara.com/sso/"></entry>
+				<!-- 单点登录获取权限的地址 -->
+				<entry key="ssoResoureUrl" value="http://sso.gewara.com/sso/api/findResoureByName.action"></entry>
+				<!-- 单点登录获取用户列表的地址 -->
+				<entry key="ssoUserListUrl" value="http://sso.gewara.com/sso/api/getUserList.action"></entry>
+				<entry key="sysInitTime" value="2013-06-29 23:59:59"></entry>
+				<entry key="uploadTempURL" value="http://img.gewara.cn/common/uploadXls4Json.xhtml"></entry>
+				<entry key="uploadComit" value="http://img.gewara.cn/common/moveTempFilesTo.xhtml"></entry>
+				<entry key="merchantAbs" value="http://cinema.gewara.com/cinemapro/"></entry>
+				<entry key="CINEMAPRO" value="api/checkToken.xhtml"></entry>
+				<entry key="openApiUrl" value="http://openapi.gewara.com/router/rest"/>
+				<entry key="openApiPrikey" value="${openapi.prikey}"/>
+				
+				<entry key="ftpserver" value="${yongyou.server}"/>
+				<entry key="ftpport" value="${yongyou.port}"/>
+				<entry key="ftpuser" value="${yongyou.user}"/>
+				<entry key="ftppwd" value="${yongyou.pwd}"/>
+				<entry key="yypass" value="${yongyou.md5pass}"/>
+				
+				<entry key="openfire.host" value="${openfire.host}" />
+				<entry key="openfire.monitorUser" value="${openfire.monitorUser}" />
+				
+			</map>
+		</property>
+	</bean>
+</beans>

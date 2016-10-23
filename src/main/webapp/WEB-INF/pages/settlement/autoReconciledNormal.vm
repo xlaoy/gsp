@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>影院结算平台</title>
+#parse('WEB-INF/pages/common/common.vm')
+#parse('WEB-INF/pages/common/edaStyle.vm')
+</head>
+<body>
+	<div class="bill_panel">
+		<table class="isTable" style="width:100%;">
+			<thead id="tableY">
+				<th>订单号</th>
+				<th>对账码</th>
+				<th>影厅</th>
+				<th>状态</th>
+				<th>票数</th>
+				<th>金额</th>
+				<th>影院名称</th>
+			</thead>
+			<tbody id="tableB">
+				#foreach($n in ${resultList})
+				<tr>
+					<td><span class="inbl">$!{n.tradeNo}</span></td>
+					<td><span class="inbl">$!{n.reconCode}</span></td>
+					<td><span class="inbl">$!{n.movieHall}</span></td>
+					<td><span class="inbl">$!autoResultMap.get($!{n.orderStatus})</span></td>
+					<td><span class="inbl">$!{n.votes}</span></td>
+					<td><span class="inbl">$!{n.totalPrice}</span></td>
+					<td><span class="inbl">$!{place.name}</span></td>
+				</tr>
+				#end
+			</tbody>
+		</table>
+		<div class="bill_tool">
+			<div class="right">
+				#parse('WEB-INF/include/pageUtil.vm')
+			</div>
+		</div>
+	</div>
+</body>
+</html>

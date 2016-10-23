@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<body id="_body">
+<div >
+
+<table border="1">
+	<thead>
+		<tr>
+			<th>对账码</th>
+			<th>票数</th>
+			<th>M订单号</th>
+			<th>M单价</th>
+			<th>M结算金额</th>
+			<th>GW订单号</th>
+			<th>GW最终单价</th>
+			<th>GW最终金额</th>
+			<th>结算差额(GW-M)</th>
+			<th>GW原始价格</th>
+			<th>GW原始金额</th>
+			<th>GW异价价格</th>
+			<th>GW异价金额</th>
+		</tr>
+	</thead>
+	<tbody>
+		#foreach($result in $!resultlist)
+		<tr>
+			<td  style="vnd.ms-excel.numberformat:@">$!{result.recencode}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{result.num}</td>
+			<td style="background: #E7EDF9;vnd.ms-excel.numberformat:@">$!{result.mtradeno}</td>
+			<td style="background: #E7EDF9;vnd.ms-excel.numberformat:@">$!{result.mprice}</td>
+			<td style="background: #E7EDF9;vnd.ms-excel.numberformat:@">$!{result.mamount}</td>
+			<td style="background: #F3EFE8;vnd.ms-excel.numberformat:@">$!{result.gtradeno}</td>
+			<td style="background: #F3EFE8;vnd.ms-excel.numberformat:@">$!{result.gprice}</td>
+			<td style="background: #F3EFE8;vnd.ms-excel.numberformat:@">$!{result.gamount}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{result.xiangcha}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{result.oprice}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{result.oamount}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{result.yprice}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{result.yamount}</td>
+		</tr>
+		#end
+	</tbody>
+</table>
+</div>
+</body>
+</html>

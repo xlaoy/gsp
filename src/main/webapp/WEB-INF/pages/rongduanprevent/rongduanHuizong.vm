@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>熔断汇总</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+
+<style type="text/css">
+html{background:#fff;}
+</style>
+
+</head>
+
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryRongduanHuizong")
+	#parse('WEB-INF/pages/nvaig/rongduannvaig.vm')
+	
+	<div class="mode_search">
+		<form action="${basePath}platform/rongduan/queryRongduanHuizong.xhtml" method="post" >
+				<h2>查询条件</h2><br>
+				<div>
+					供应商名称：
+					<input type="text" class="text" name="vendorName" id="vendorName" value="$!{params.vendorName}"/>
+					&nbsp;&nbsp;
+					<a href="javascript:document.forms[0].submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+				</div>
+		</form>
+	</div>
+	
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th style="width:7%;">供应商编号</th>
+					<th style="width:17%;">供应商名称</th>
+					<th style="width:8%;">预付余额</th>
+					<th style="width:8%;">未确认结算单金额</th>
+					<th style="width:8%;">未结算订单金额</th>
+					<th style="width:8%;">可用余额</th>
+					<th style="width:8%;">预警余额</th>
+					<th style="width:5%;">状态</th>
+					<th style="width:10%;">截止统计时间</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($rdp in $rdpList)
+				<tr>
+					<td>$!rdp.vendorCode</td>
+					<td>$!rdp.vendorName</td>
+					<td>$!CurrencyFmt.format($!rdp.canUseAmount)</td>
+					<td>$!CurrencyFmt.format($!rdp.waitingPayAmount)</td>
+					<td>
+						<a href="javascript:queryRongdunDayCount('$!rdp.vendorCode')">$!CurrencyFmt.format($!rdp.uncountAmount)</a>
+					</td>
+					<td>
+						#if($VmUtils.eq("Y",$!{rdp.status}))
+							<span style="color: #075F0A; font-weight: bold;">$!CurrencyFmt.format($!rdp.surplusAmount)</span>
+						#elseif($VmUtils.eq("N",$!{rdp.status}))
+							<span style="color: #D30C0C; font-weight: bold;">$!CurrencyFmt.format($!rdp.surplusAmount)</span>
+						#end
+					</td>
+					<td>$!CurrencyFmt.format($!rdp.waringAmount)</td>
+					<td>
+						#if($VmUtils.eq("Y",$!{rdp.status}))
+							<span style="color: #075F0A; font-weight: bold;">正常</span>
+						#elseif($VmUtils.eq("N",$!{rdp.status}))
+							<span style="color: #D30C0C; font-weight: bold;">预警</span>
+						#end
+					</td>
+					<td>$!DateUtil.formatTimestamp($rdp.updateTime)</td>
+					<td>
+						<a href="javascript:showPayPop('$!rdp.vendorCode', '$!rdp.vendorName')">发起预付款</a>
+						&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="javascript:showWaringPop('$!rdp.vendorCode', '$!rdp.vendorName')">修改预警金额</a>
+						<br>
+						<a href="${basePath}platform/rongduan/queryRongdunPayRecord.xhtml?vendorCode=$!rdp.vendorCode">预付详情</a>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="${basePath}platform/rongduan/queryRongdunBuckleRecord.xhtml?vendorCode=$!rdp.vendorCode">扣款详情</a>
+					</td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="10">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	<div>
+		<br>
+		<p>说明：</p>
+		<p>a) 预付余额：如3月5日，预付余额=账上余额（借方正数，贷方负数）+ 本期支付预付款金额 - 新生成等待付款金额。</p>
+		<p>b) 未确认结算单金额 = 该影院（院线）所有未确认结算单金额（包括“等待商户确认”、“商户申请调整”这两种状态结算的金额）。</p>
+		<p>c) 未结算订单金额：本期（3.1-3.5所有出票成功金额）。</p>
+		<p>d) 可用余额 = 预付余额 - 未确认结算单金额- 未结算订单金额。当可用余额小于预警余额时，系统会发出邮件提醒要进行系统预付了。</p>
+		<p>e) 预警余额：可用余额的最小阈值。</p>
+		<p>f) 系统会在每天的9点和14点进行数据统计，统计的时候会导致【发起预付款】和【修改预警金额】功能无法使用，请勿在该时间段内操作。</p>
+	</div>
+</div>
+
+<div id="dayCountMark" style="display:none; height: 450px;overflow-y:auto;"></div>
+<div id="payMark" style="display:none; height: 230px;overflow-y:auto;"></div>
+<div id="waringMark" style="display:none; height: 150px;overflow-y:auto;"></div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	$$('.tips').amTips();
+	lockMenu();
+});
+
+function lockMenu(){
+	var menus = parent.document.getElements('#navleftid a');
+	if(menus)menus.filter(function(link){
+		link.removeClass('select');
+		return link.get('href').indexOf(document.location.pathname) >= 0;
+	}).addClass('select');
+}
+
+
+//未结算订单金额查询
+function queryRongdunDayCount(vendorCode){
+	var url = '${basePath}/platform/rongduan/queryRongdunDayCount.xhtml';
+	var values = {"vendorCode":vendorCode}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('dayCountMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','dayCountMark','未结算订单日统计' ,850,'dayCountMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+//弹出预付窗口
+function showPayPop(vendorCode, vendorName) {
+	var url = '${basePath}/platform/rongduan/queryRDPreventDetail.xhtml';
+	var values = {"vendorCode":vendorCode, "opt": "pay"}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('payMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','payMark', vendorName + '预付款' ,400,'payMark','','','','','',function(){});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+//关闭预付窗口
+function closePayPop() {
+	gewa.util.container['payMark'].dispose('payMark');
+}
+
+//预付款
+function pay(vendorCode, payWay) {
+	var amount = $('amountinp_' + vendorCode).value;
+	var content = $('content_' + vendorCode).value;
+	if(amount == null || amount == "") {
+		return;
+	}
+	var regint = /^\d*$/;
+	if(!regint.test(amount)){ 
+		gewaUtil.alert("预付金额只能为整数!");
+		return;
+	}
+	var online = "";
+	if(payWay == "Y") {
+		online = "线上";
+	} else if(payWay == "N") {
+		online = "线下";
+	}
+	gewa.util.issure('','确认要' + online + '付款吗？','提示',420,'keys',function(calls,id){
+		var url = "${basePath}/platform/rongduan/rongdunPay.xhtml";
+		var values = {"vendorCode":vendorCode, "payAmount":amount, "payWay": payWay, "payContent": content};
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(mid);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){
+					location = "${basePath}platform/rongduan/queryRongduanHuizong.xhtml";
+				});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+
+//弹出修改预警金额窗口
+function showWaringPop(vendorCode, vendorName) {
+	var url = '${basePath}/platform/rongduan/queryRDPreventDetail.xhtml';
+	var values = {"vendorCode":vendorCode, "opt": "waringmfy"}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('waringMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','waringMark', vendorName + '修改预警金额' ,370,'waringMark','','','','','',function(){});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+//关闭改预警金额窗口
+function closeWaringPop() {
+	gewa.util.container['waringMark'].dispose('waringMark');
+}
+
+//提交预警金额修改
+function waringMdy(vendorCode) {
+	var amount = $('waringinp_' + vendorCode).value;
+	if(amount == null || amount == "") {
+		return;
+	}
+	var regint = /^\d*$/;
+	if(!regint.test(amount)){ 
+		gewaUtil.alert("预警金额只能为整数!");
+		return;
+	}
+	
+	gewa.util.issure('','确认修改吗？','提示',420,'keys',function(calls,id){
+		var url = "${basePath}/platform/rongduan/waringMfy.xhtml";
+		var values = {"vendorCode":vendorCode, "amount":amount};
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(mid);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){
+					location = "${basePath}platform/rongduan/queryRongduanHuizong.xhtml";
+				});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+</script>
+
+</body>
+</html>

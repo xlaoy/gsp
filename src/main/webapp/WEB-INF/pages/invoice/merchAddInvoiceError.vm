@@ -1,0 +1,9 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div style="text-align: center; font-size: 16px; line-height: 30px;">
+<br><br><br><br>
+<span>
+错误：$!{errorMsgs}
+</span>
+<br><br><br>
+<a class="button largeBt mr20" href="javascript:void();" onclick="cancelInvoiceAddMark();"><span style="width:70px;">确定</span></a>
+</div>

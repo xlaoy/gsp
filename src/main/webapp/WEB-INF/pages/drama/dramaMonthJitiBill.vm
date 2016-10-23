@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html style="background: #fff;">
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+<script type="text/javascript" src="${basePath}js/autoComplete.js"></script>
+<style type="text/css">
+.s{background:#f0f0f0;}
+</style>
+</head>
+
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryJitiBill")
+	#parse('WEB-INF/pages/nvaig/dramasettlenvaig.vm')
+	
+	<div class="mode_search">
+		<form action="${basePath}platform/drama/queryJitiBill.xhtml" method="post" id="jitiForm">
+				<h2>查询条件</h2><br>
+				<div>
+					项目名称：
+					<input type="hidden" name="dramaid" id="dramaid" value="$!{params.dramaid}"/>
+					<input type="text" class="text" name="dramaname" id="dramaname" value="$!{params.dramaname}" style="width: 250px;" autocomplete="off"/>
+					&nbsp;&nbsp;
+					供应商名称：
+					<input type="hidden" name="suppliercode" id="suppliercode" value="$!{params.suppliercode}"/>
+					<input type="text" class="text" name="suppliername" id="suppliername" value="$!{params.suppliername}" style="width: 250px;" autocomplete="off"/>
+					&nbsp;&nbsp;
+					月份：
+					<input style="width:150px;" onclick="WdatePicker({dateFmt:'yyyy-MM'})" class="Wdate" onFocus="WdatePicker({dateFmt:'yyyy-MM'})" id="month" name="month" value="$!{params.month}"/>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="javascript:$('jitiForm').submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<input type="hidden" name="isXls" id="isXls"/>
+					<a href="javascript:downloadxls();" class="button minBt whiteBt"><span>导&nbsp;&nbsp;出</span></a>
+				</div>
+		</form>
+	</div>
+	
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th style="width:5%;">单号</th>
+					<th>项目名称</th>
+					<th style="width:5%;">项目属性</th>
+					<th style="width:6%;">供应商编号</th>
+					<th style="width:13%;">供应商名称</th>
+					<th style="width:9%;">单据周期</th>
+					<th style="width:9%;">项目周期</th>
+					<th style="width:5%;">票面金额</th>
+					<th style="width:5%;">退票金额</th>
+					<th style="width:5%;">结算金额</th>
+					<th style="width:6%;">商户兑换券</th>
+					<th style="width:6%;">商户抵值券</th>
+					<th style="width:5%;">场馆补贴</th>
+					<th style="width:5%;">毛利润</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($bill in ${jitiList})
+				<tr>
+					<td>$!{bill.recordid}</td>
+					<td>
+						<span style="color: #FA750D">【项目:$!{bill.dramaid}】</span>
+						<span style="color: #FA750D">【版本:$!{configmap.get($!{bill.configid}).dramaversionid}】</span>
+						<br>$!{dramamap.get($!{bill.dramaid}).dramaname}
+					</td>
+					<td>
+						#if($VmUtils.eq($!{dramamap.get($!{bill.dramaid}).origin},"GW"))
+							格瓦拉
+						#elseif($VmUtils.eq($!{dramamap.get($!{bill.dramaid}).origin},"WG"))
+							微格娱乐
+						#else
+							$!{dramamap.get($!{bill.dramaid}).origin}
+						#end
+						<br>
+						#if($VmUtils.eq($!{dramamap.get($!{bill.dramaid}).pretype},"M"))
+							非代售
+						#elseif($VmUtils.eq($!{dramamap.get($!{bill.dramaid}).pretype},"E"))
+							代售
+						#end
+					</td>
+					<td>$!{bill.suppliercode}</td>
+					<td>$!{suppliermap.get($!{bill.suppliercode}).name}</td>
+					<td>
+						[ $!DateUtil.formatTimestamp($!{bill.starttime}) - 
+						<br>&nbsp;&nbsp;$!DateUtil.formatTimestamp($!{bill.endtime}) )
+					</td>
+					<td>
+						[ $!DateUtil.formatTimestamp($!{configmap.get($!{bill.configid}).starttime}) - 
+						<br>&nbsp;&nbsp;$!DateUtil.formatTimestamp($!{configmap.get($!{bill.configid}).endtime}) )
+					</td>
+					<td>$!CurrencyFmt.format($!{bill.ticketamount})</td>
+					<td>$!CurrencyFmt.format($!{bill.refundamount})</td>
+					<td>$!CurrencyFmt.format($!{bill.settleamount})</td>
+					<td>$!CurrencyFmt.format($!{bill.madisamount})</td>
+					<td>$!CurrencyFmt.format($!{bill.mbddisamount})</td>
+					<td>$!CurrencyFmt.format($!{bill.butieamount})</td>
+					<td>$!CurrencyFmt.format($!{bill.profitamount})</td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="14">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+});
+
+//演出项目数据下来查询
+new mSift('dramasel').Create({
+	"url": "${basePath}platform/drama/queryDramaData.xhtml",
+	"prama": function() {
+		var pdata = {
+				"dramaname": document.getElementById('dramaname').value,
+				"maxrow": 10
+			};
+		return pdata;
+	},
+	"codeObj": document.getElementById('dramaid'),
+	"nameObj": document.getElementById('dramaname'),
+	"returnCode": function(date) {
+		return date.recordid;
+	},
+	"returnName":function(date) {
+		return date.dramaname;
+	}
+});
+
+//供应商下来查询
+new mSift('suppliersel').Create({
+	"url": "${basePath}platform/drama/queryBaseData.xhtml",
+	"prama": function() {
+		var pdata = {
+				"name": document.getElementById('suppliername').value,
+				"type": "supplier",
+				"maxrow": 10
+			};
+		return pdata;
+	},
+	"codeObj": document.getElementById('suppliercode'),
+	"nameObj": document.getElementById('suppliername'),
+	"returnCode": function(date) {
+		return date.code;
+	},
+	"returnName":function(date) {
+		return date.name;
+	}
+});
+
+//导出账单
+function downloadxls(){
+	$("isXls").value="downloadxls";
+	$('jitiForm').submit();
+	$("isXls").value="";
+};
+</script>
+</body>
+</html>

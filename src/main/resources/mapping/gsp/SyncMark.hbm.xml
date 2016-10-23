@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.gewara.model.gsp.SyncMark" table="sync_mark">
+		<id name="tag" type="string" column="tag">
+        	<generator class="assigned"/>
+		</id>
+        <property name="lastExecuteTime" type="timestamp">
+            <column name="LAST_EXECUTE_TIME" not-null="true"/>
+        </property>
+        <property name="modifyTime" type="timestamp">
+            <column name="MODIFY_TIME" not-null="true"/>
+        </property>
+	</class>
+</hibernate-mapping>

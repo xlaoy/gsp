@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.gewara.model.gsp.DiffPriceOrder" table="diff_price_order">
+	
+		<id name="tradeno" type="string">
+            <column name="trade_no" length="25" />
+            <generator class="assigned" />
+        </id>
+        
+        <property name="actualPrice" column="actual_price" type="java.lang.Double" />
+        <property name="quantity" column="quantity" type="java.lang.Integer" />
+        <property name="updateTime" column="update_time" type="timestamp" />
+        <property name="mpId" column="mp_id" type="long" />
+        <property name="chekcBillId" column="check_bill_id" type="long" />
+        <property name="settleBillId" column="settlt_bill_id" type="long" />
+        <property name="refund" column="refund" type="string" />
+        <property name="refundsettleid" column="refund_settleid" type="long" />
+	</class>
+</hibernate-mapping>

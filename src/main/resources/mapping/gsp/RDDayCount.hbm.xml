@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.RDDayCount" table="rd_daycount" schema="gsp">
+    
+       <id name="recordId" type="long">
+            <column name="record_id"  />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_req_money</param>
+			</generator>
+       </id>
+       
+       <property name="vendorCode"		column="vendor_code"		type="string" />
+       <property name="vendorName"		column="vendor_name"		type="string" />
+       <property name="startTime"	column="start_time"	type="timestamp" />
+       <property name="endTime"	column="end_time"	type="timestamp" />
+       <property name="amount"	column="amount"		type="java.lang.Double" />
+       <property name="num"	column="num"		type="long" />
+        
+    </class>
+</hibernate-mapping>

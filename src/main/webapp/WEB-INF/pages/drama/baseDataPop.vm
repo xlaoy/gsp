@@ -1,0 +1,39 @@
+<input type="hidden" class="text" id="drecordid" value="$!{data.recordid}" >
+<table style="margin: auto;">
+	<tr height="40px;">
+		<td>type：</td>
+		<td>
+			<select id="dtype" class="text" >
+				<option value="place" #if($VmUtils.eq($!{data.type},"place")) selected="selected" #end>place</option>
+				<option value="supplier" #if($VmUtils.eq($!{data.type},"supplier")) selected="selected" #end>supplier</option>
+				<option value="sysdatajob" #if($VmUtils.eq($!{data.type},"sysdatajob")) selected="selected" #end>sysdatajob</option>
+				<option value="repayuser" #if($VmUtils.eq($!{params.type},"repayuser")) selected="selected" #end>repayuser</option>
+				<option value="DRAMAMAIL" #if($VmUtils.eq($!{params.type},"DRAMAMAIL")) selected="selected" #end>DRAMAMAIL</option>
+			</select>
+		</td>
+	</tr>
+	<tr height="40px;">
+		<td>code：</td>
+		<td>
+			<input type="text" class="text" id="dcode" value="$!{data.code}" >
+		</td>
+	</tr>
+	<tr height="40px;">
+		<td>name：</td>
+		<td>
+			<input type="text" class="text" id="dname" value="$!{data.name}" >
+		</td>
+	</tr>
+	<tr height="40px;">
+		<td>special：</td>
+		<td>
+			<textarea rows="3" cols="22" id="dspecial">$!{data.special}</textarea>
+		</td>
+	</tr>
+	<tr height="40px;">
+		<td></td>
+		<td>
+			<a href="javascript:saveBaseData();" class="button minBt whiteBt">保存</a>
+		</td>
+	</tr>
+</table>

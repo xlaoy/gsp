@@ -1,0 +1,16 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	</head>
+	<body>
+		<table>
+			<tbody>
+				#if($places && $places.size() > 0)
+				  #foreach($p in $places)
+					<tr><td>$!{p.name}</td></tr>		  	
+				  #end
+				#end
+			</tbody>
+		</table>
+	</body>
+</html>

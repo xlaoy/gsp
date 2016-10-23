@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<div class="mod_hd tabs_gary">
+	<a href="${basePath}platform/drama/queryDrama.xhtml"  #if($VmUtils.eq($!nvg,'queryDrama')) class="select" #end>演出项目</a>
+	<a href="${basePath}platform/drama/queryDramaConfig.xhtml" #if($VmUtils.eq($!nvg,'queryDramaConfig')) class="select" #end>演出配置</a>
+	<a href="${basePath}platform/drama/queryDramaBaseData.xhtml" #if($VmUtils.eq($!nvg,'queryDramaBaseData')) class="select" #end>基础数据</a>
+	<a href="${basePath}platform/drama/queryDramaOrder.xhtml" #if($VmUtils.eq($!nvg,'queryDramaOrder')) class="select" #end>演出订单</a>
+</div>

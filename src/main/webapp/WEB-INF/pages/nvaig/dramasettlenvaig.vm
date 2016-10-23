@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<div class="mod_hd tabs_gary">
+	<a href="${basePath}platform/drama/queryDramaSettleBill.xhtml"  #if($VmUtils.eq($!nvg,'queryDramaSettleBill')) class="select" #end>演出结算单</a>
+	<a href="${basePath}platform/drama/queryJitiBill.xhtml" #if($VmUtils.eq($!nvg,'queryJitiBill')) class="select" #end>计提成本单</a>
+</div>

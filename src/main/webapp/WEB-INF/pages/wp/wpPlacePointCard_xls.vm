@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+
+<body >
+	
+<table border="1">
+	<thead>
+		<tr>
+			<th >单号</th>
+			<th >影院名称</th>
+			<th>统计周期</th>
+			<th>出票数量</th>
+			<th>出票点卡金额</th>
+			<th>退票数量</th>
+			<th>退票点卡金额</th>
+			<th>结算票数</th>
+			<th>结算点卡金额</th>
+			<th>开票金额</th>
+		</tr>
+	</thead>
+	<tbody>
+		#foreach($s in ${sblist})
+		<tr>
+			<td style="vnd.ms-excel.numberformat:@">$!{s.recordid}</td>
+			<td style="vnd.ms-excel.numberformat:@">【$!{s.cinemaid}】<br>$!{s.cinemaname}</td>
+			<td style="vnd.ms-excel.numberformat:@">
+				[ $!DateUtil.formatTimestamp($!{s.starttime}) -<br/> 
+				 &nbsp;&nbsp;$!DateUtil.formatTimestamp($!{s.endtime}) )
+			</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{s.successnum}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{s.successamount})</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{s.refundnum}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{s.refundamount})</td>
+			<td style="vnd.ms-excel.numberformat:@">$VmUtils.getTotal($!{s.totalnum})</td>
+			<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{s.totalamount})</td>
+			<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{s.kpamount})</td>
+		</tr>
+		#end
+	</tbody>
+</table>
+
+
+</body>
+</html>

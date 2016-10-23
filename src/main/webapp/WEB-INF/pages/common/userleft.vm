@@ -1,0 +1,18 @@
+<nav id="navleftid">
+	<a id="firstId" href="${basePath}settle/userCenter/userSettlement.xhtml" target='mainContent' class='select'>结账申请</a>
+	<a href="${basePath}settle/userCenter/applyManage.xhtml" target='mainContent'  >申请管理</a>
+</nav>
+
+
+<script type="text/javascript">
+$$('#navleftid a').each(function(el){
+	el.addEvent('click', function(){
+		$$('#navleftid a').each(function(el1){
+			el1.set('class','');
+		});
+		$('mainContent').set('src',el.get('href'));
+		el.set('class','select');
+	    return false;
+	});
+});
+</script>

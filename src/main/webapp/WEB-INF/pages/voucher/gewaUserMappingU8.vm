@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>交易结算系统</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+		.mode_search{margin-top:0px;}
+		.mode_search h2{padding-bottom:20px; display:block;}
+		#inputBox{margin-bottom:15px;}
+	</style>
+</head>
+<body id="_body">
+<div class="inner">
+
+	#set($nvg="gewaUserMapU8")
+	#parse('WEB-INF/pages/nvaig/confignvaig.vm')
+	<br>
+	<div class="mode_search">
+		<a href="javascript:showPopAddWindow();" class="button minBt redBt">新增</a>
+	</div>
+	
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th ><span>编号</span><span class="carat"></span></th>
+					<th class="sortable"><span>格瓦拉登陆名</span><span class="carat"></span></th>
+					<th class="sortable"><span>真实姓名</span><span class="carat"></span></th>
+					<th class="sortable"><span>操作</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+			#if($mappings && $mappings.size() > 0)
+			<tbody>
+			   #foreach($m in $mappings)
+				<tr>
+					<td style="width:30px;"><span>
+						$!{foreach.count}
+						</span>
+					</td>
+					<td style="width:30px;"><span>
+						$!m.gewaLoginName
+						</span>
+					</td>
+					<td style="width:150px;"><span>
+						$m.gewaRealName
+						</span>
+					</td>
+					<td style="width:150px;"><span>
+						<a href="javascript:deleteMappings($!m.recordId);">删除</a>
+						</span>
+					</td>
+				</tr>
+			  #end
+			#else
+			  <tr>
+			  		<td></td>
+			  		<td></td>
+			  		<td></td>
+			  		<td><a href="javascript:showPopAddWindow();">添加映射</a></td>
+			  </tr>
+		    #end
+			</tbody>
+		</table>
+	</div>
+	
+</div>
+<div id="commMark" style="display:none;">
+	<div class="mode_search clear">
+		<h2>新增映射</h2>
+		<form id="mappingForm" name="mappingForm">
+			<div id="inputBox">
+				<p><label for="gewaLoginName">登录名&nbsp;&nbsp;&nbsp;:</label><input class="text" id="gewaLoginName" name="gewaLoginName"></p>
+				<br>
+				<p><label for="gewaLoginName">真实姓名:</label><input class="text" id="gewaRealName" name="gewaRealName"></p>
+				<br>
+				<p align="center">
+				<a href="javascript:submitForm()" class="button bigBt redBt"><span>提交</span></a>
+				<a href="javascript:cancelCommentMarks()" class="button bigBt redBt"><span>取消</span></a>
+				</p>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	#if($sb && $sb.size() > 0)
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	#end
+	$$('.tips').amTips();
+	completer = new Autocompleter.Local($("placeFirstLetter"), parent.pdata, {
+		'delay': 100,
+		'maxChoices': 10,
+		'minLength':0,
+		'requestid':'placeId',
+		'filter': function() {
+			var vl = this.queryValue;
+			var values = vl.trim().split(/ +/);
+			return this.tokens.filter(function(token){
+				var result = values.every(function(v){
+					var reg = new RegExp(v.escapeRegExp(),'i');
+					return reg.test(token.pinyin) || reg.test(token.name);
+				});
+				return result;
+			});
+		},
+		'injectChoice': function(choice){
+			parent.myGenChoice(this,choice);
+		}
+	});
+});
+
+function showPopAddWindow(){
+	gewa.util.maskContent('','commMark','',360,'commMark');
+}
+
+function cancelCommentMarks(){
+	gewa.util.container['commMark'].dispose('commMark');
+}
+
+function submitForm(){
+	var values = gewara.util.getPostValues("mappingForm");
+	for (var v in values){
+		if (values[v] == ''){
+			gewaUtil.alert("结算配置所有字段为必填项");
+			return;
+		}
+	}
+	var url = "${basePath}vouch/yongyou/saveGewaUserMapU8.xhtml";
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask();
+		if(result.success == true){
+			gewaUtil.alert("操作完成！", function(){
+				cancelCommentMarks();
+				window.location.reload();
+			});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	});
+}
+
+function deleteMappings(recordId){
+	var values = {"recordId":recordId};
+	var url = "${basePath}vouch/yongyou/deleteGewaUserMapU8.xhtml";
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask();
+		if(result.success == true){
+			gewaUtil.alert("操作完成！", function(){
+				window.location.reload();
+			});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.drama.DramaPlayItem" table="drama_playitem" schema="gsp">
+    
+       <id name="recordid" type="long">
+            <column name="recordid"  />
+            <generator class="assigned" />
+       </id>
+       
+       <property name="dpid"		column="dpid"	type="long" />
+       <property name="dramaid"		column="dramaid"	type="long" />
+       <property name="playtime"		column="playtime"	type="timestamp" />
+       <property name="gspupdatetime"		column="gspupdatetime"	type="timestamp" />
+        
+    </class>
+</hibernate-mapping>

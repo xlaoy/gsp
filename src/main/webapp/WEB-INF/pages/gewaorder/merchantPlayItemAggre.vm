@@ -1,0 +1,271 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>影院结算平台</title>
+#parse('WEB-INF/pages/common/common.vm')
+#parse('WEB-INF/pages/common/edaStyle.vm')
+</head>
+<body>
+#set($isFilmPlay=true)
+#parse('WEB-INF/pages/common/merchantMenu_eda.vm')
+<div class="bodyBox">
+	<div class="mlr30 mt20">
+		<form id="" method="post" action="${basePath}merchant/gewaorder/queryPlayItemAggre.xhtml">
+			<div class="clear">
+				<div class="left">
+					<ul class="clear chosOp">
+						<li>
+							#*
+							<div id="placeName"></div>
+								<input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}"/>
+							*#
+							<div class="ui_simulate_20">
+								<div class="simulate_select_20">
+									<div class="select_value_20">#if($VmUtils.isNotBlank($!place.name)) $place.name #else 全部 #end</div>
+									<a class="select_arrow_20" href="javascript:void(0);"></a>
+									<input class="simulate_value_20" type="hidden" value="$!{params.placeId}" name="placeId" id="placeId"/>
+								</div>
+								
+								<ul class="simulate_options_20" id="simulate_options_ul">
+									<li><a href="javascript:void(0);" data-value="">全部</a></li>
+									#foreach($citycode in $optionData.keySet())
+										#foreach($key in $optionData.get($citycode).keySet())
+											<li><a href="javascript:void(0);" data-value="$key">$optionData.get($citycode).get($key)</a></li>
+										#end
+									#end
+								</ul>
+							</div>
+						</li>
+						<li>
+							<input class="text t_Icon mr5" name="start" id="start"  value='$!{params.start}' 
+										onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" />至
+							<input class="text t_Icon mr10" name="end" id="end"  value='$!{params.end}' 
+								onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" />
+						</li>
+						<li>
+							<input type="hidden" name="playId" id="playId" value="$!{params.playId}"/>
+							<input type="hidden" name="settleId" value="$!params.settleId"/>
+							<input type="hidden" name="isXls" id="isXls" />
+							
+							<a class="button largeBt mr20" href="#" onclick="document.forms[0].submit()"><span style="width:70px;">查询</span></a>
+						</li>
+					</ul>
+				</div>
+				<a class="usP export" href="javascript:downloadxls();" title="导出Excel"></a>
+			</div>
+		</form>
+		<div class="bill_panel">
+			<div class="bill_tool">
+				<div class="right">
+					#parse('WEB-INF/include/pageUtil.vm')
+				</div>
+				<div class="left">
+					#parse("WEB-INF/pages/common/goback.vm")
+				</div>
+			</div>
+			<table class="isTable" width="100%">
+					<colgroup>
+						</colgroup>
+						<thead>
+							<tr>
+								<th>编号</th>
+								<th>场次ID</th>
+								<th>电影名称</th>
+								<th>放映时间</th>
+								<th>影厅</th>
+								<th >出票票数</th>
+								<th >出票金额</th>
+								<th >退票数量</th>
+								<th >退票金额</th>
+							</tr>
+						</thead>
+						<tbody>
+						#set($allOrder=0)
+						#set($allOrderAmount=0)
+						#set($allRefund=0)
+						#set($allRefundmount=0)
+						#set($allAdjust=0)
+						#set($allAdjustAmount=0)
+				#foreach($ag in ${aggres.keySet()})
+				<tr>
+					<td style="width:30px;">
+						$!{foreach.count}
+					</td>
+					<td style="width:60px;">
+						<a href="${basePath}merchant/gewaorder/queryGewarOrder.xhtml?playId=$!{ag}&placeId=$!{params.placeId}&start=$!{params.start}&end=$!{params.end}">$!{ag}</a>
+					</td>
+					#set($otherIno= $VmUtils.readJsonToMap($pom.get($!{ag}).otherInfo))
+					<td style="width:150px;">
+						$!{otherIno.get("影片")}
+					</td>
+					<td style="width:150px;">
+						$!{otherIno.get("场次")}
+					</td>
+					<td>
+						$!{otherIno.get("影厅")}
+					</td>
+					#set($aggre=$!{aggres.get(${ag})})
+					#set($orderTotal=0)
+					#set($orderAmount=0)
+					#set($refundTotal=0)
+					#set($refundAmount=0)
+					#set($adjustTotal=0)
+					#set($adjustAmount=0)
+					#if($!{aggre.get("orderTotal")})
+						#set($orderTotal=$!{aggre.get("orderTotal")})
+					#end
+					
+					#if($!{aggre.get("orderAmount")})
+						#set($orderAmount=$!{aggre.get("orderAmount")})
+					#end
+					
+					#if($!{aggre.get("refundTotal")})
+						#set($refundTotal=$!{aggre.get("refundTotal")})
+					#end
+					#if($!{aggre.get("refundAmount")})
+						#set($refundAmount=$!{aggre.get("refundAmount")})
+					#end
+					#if($!{aggre.get("adjustTotal")})
+						#set($adjustTotal=$!{aggre.get("adjustTotal")})
+					#end
+					#if($!{aggre.get("adjustTotal")})
+						#set($adjustAmount=$!{aggre.get("adjustAmount")})
+					#end
+					<td>
+						#set($orderTotal=$VmUtils.calculate($orderTotal, $refundTotal ,"-"))
+						$!orderTotal
+					</td>
+					<td>
+						#set($orderAmount=$VmUtils.calculate($orderAmount, $refundAmount ,"-"))
+						$!CurrencyFmt.format($!orderAmount)
+					</td>
+					<td>
+						${refundTotal}
+					</td>
+					<td>
+						$!CurrencyFmt.format(${refundAmount})
+					</td>
+				</tr>
+				#set($allOrder=$allOrder + $orderTotal)
+				#set($allOrderAmount= $allOrderAmount + $orderAmount)
+				#set($allRefund= $allRefund + $refundTotal)
+				#set($allRefundmount= $allRefundmount + $refundAmount)
+				#end
+				
+				#set($allAdjust=0)
+				#set($allAdjustAmount=0)
+				#if($ads && $ads.size() > 0)
+					#foreach($ad in ${ads})
+						#set($allAdjust=$!{ad.adjustNumber}+$allAdjust)
+						#set($allAdjustAmount=$!{ad.amount}+$allAdjustAmount)
+					#end
+					<tr>
+						<td>调整</td>
+						<td colspan="4"></td>
+						<td>$allAdjust</td>
+						<td>$allAdjustAmount</td>
+						<td colspan="4"><a><span style="cursor: pointer;" onclick="loadAdjustList();">查看详情</span></a></td>
+					</tr>
+				#end
+				
+				#set($prn=0)
+				#set($pra=0)
+				#if($settle && ($settle.previousRefundNumber != 0 || $settle.previousRefundAmount != 0))
+				<tr>
+					<td>差异</td>
+					<td colspan="4"></td>
+					#set($prn=$settle.previousRefundNumber)
+					#set($pra=$settle.previousRefundAmount)
+					<td>$prn</td>
+					<td>$pra</td>
+					<td colspan="4"></td>
+				</tr>
+				#end
+				#set($allOrder=$allOrder + $allAdjust)
+				#set($allOrderAmount= $allOrderAmount + $allAdjustAmount)
+				#set($allOrder=$allOrder - $prn)
+				#set($allOrderAmount=$allOrderAmount - $pra)
+				<tr>
+					<td>合计</td><td colspan="4"></td>
+					<td>$allOrder</td>
+					<td>$!CurrencyFmt.format($allOrderAmount)</td>
+					<td>$allRefund</td>
+					<td>$!CurrencyFmt.format($allRefundmount)</td>
+				</tr>
+				</tbody>
+			</table>
+			#if(!$!{params.playId})
+			<div class="bill_tool mt10">
+				<div class="bill_toolExe">
+					请选择您要查询场次数据的影院。
+				</div>
+			</div>
+			#end
+		</div>
+	</div>
+</div>
+<div id="wrapper" style="display:none; height: 350px;overflow:hidden;position: relative;">
+	#if($ads && $ads.size() > 0)
+	<table class="isTable" width="100%" id="wrapped">
+		<thead>
+			<tr>
+				<th><label>调整数量</label></th>
+				<th> 调整金额</th>
+				<th> 调整原因</th>
+				<th> 调整备注</th>
+			</tr>
+		</thead>
+		#foreach($ad in ${ads})
+			<tr>
+				<td>$!{ad.adjustNumber}</td>
+				<td>$!{ad.amount}</td>
+				<td>$VmUtils.displayEnums("AdjustReasonEnums" , $!{ad.reason})</td>
+				<td>$!{ad.comments}</td>
+			</tr>
+		#end
+	</table>
+	#end
+</div>
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	//isCreateOption();
+	document.getElements('tbody tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	autoCountHeight();
+});
+var downloadxls=function(){
+	if(document.forms[0]){
+		$("isXls").value="downloadxls";
+		document.forms[0].submit();
+		$("isXls").value="";
+	}else{
+		var a=document.location.href;
+		a=a+"&isXls=download";
+		document.location.href=a;
+	}
+};
+function autoCountHeight(flag){
+	var id = parent.document.getElementById('coverForm');
+	if(id){
+		id.style.height = window.innerHeight+'px';
+	}
+	if(flag)return;
+	document.addEvent('resize',function(){
+		autoCountHeight(true);
+	});
+}
+	function loadAdjustList(){
+		gewa.util.maskContent('','wrapper','调整列表',800,'wrapper','','','','','',function(){
+			new ScrollerBar("wrapper",{wrapped:"wrapped"});
+		});
+	}
+</script>
+
+</body>
+</html>

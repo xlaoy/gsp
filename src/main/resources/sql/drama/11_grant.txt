@@ -1,0 +1,12 @@
+grant select on WEBDATA.view_buyitem4gsp  to gspview;
+grant select on WEBDATA.view_drama   to gspview;
+grant select on WEBDATA.view_drama_seat_dis   to gspview;
+grant select on WEBDATA.view_drama_settleprice   to gspview;
+grant select on WEBDATA.view_ecard4gsp   to gspview;
+grant select on WEBDATA.VIEW_MANUALBUYITEM   to gspview;
+grant select on WEBDATA.view_manualbuyitem4gsp   to gspview;
+grant select on WEBDATA.view4js_ticket_order   to gspview;
+grant select on WEBDATA.view_theatre   to gspview;
+grant select on WEBDATA.view_manualdramaorder   to gspview;
+grant select on WEBDATA.VIEW_OPEN_DRAMA_ITEM   to gspview;
+grant select on WEBDATA.view4placeallowance   to gspview;

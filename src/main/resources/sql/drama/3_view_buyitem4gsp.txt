@@ -1,0 +1,9 @@
+create or replace view view_buyitem4gsp as
+select i.recordid, i.orderid, i.placeid, i.quantity, i.totalfee, i.disfee, i.discount, 
+i.disreason, i.addtime, i.playtime, i.tipid, i.disid, i.unitprice, i.relatedid as playid, 
+case when d.quantity is null then 0
+     when d.quantity = 0 then 0
+     else i.quantity / d.quantity
+     end as taopiaonum
+from  buyitem i left outer join disquantity d on i.disid = d.recordid
+where i.tag = 'dramaplayitem';

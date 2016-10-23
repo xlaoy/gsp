@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>后台操作</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+<style type="text/css">
+.modle{margin: 30px; border: 2px solid #aaa; background: #fff; float: left;}
+p{ height: 30px; line-height: 30px; font-size: 20px; background: #EB9719; padding-left: 20px; font-weight: bold; color: #fff}
+.opt{padding: 20px; background: #fefefe; font-size: 15px;}
+table{text-align: center;}
+th, td{padding-left: 10px; padding-right: 10px;}
+</style>
+<body>
+
+<div class="modle" style="width: 450px;">
+	<p>影票结算单重算</p>
+	<div class="opt">
+		影票结算单号：<input type="text" class="text" id="ticketRecordId"/>
+		<a href="javascript:ticketChongsuan();" class="button minBt whiteBt"><span>重算</span></a>
+	</div>
+	<script type="text/javascript">
+		function ticketChongsuan() {
+			var recordId = document.getElementById("ticketRecordId").value;
+			if(recordId == "" || recordId == null) {
+				return;
+			}
+			var url = "${basePath}reversesettle.xhtml";
+			var values = {"settleIds":recordId};
+			var mid = "T" + Date.now();
+			GewaraUtil.mask('',mid);
+			GewaraUtil.sendRequest(url, values, function(result){
+				GewaraUtil.unmask(mid);
+				if(result.success == true){
+					gewaUtil.alert(result.retval);
+				}else{
+					gewaUtil.alert(result.msg);
+				}
+			});
+			gewa.util.container['keys'].dispose('keys');
+			gewa.util.container['iskyes'].dispose('iskyes');
+		}
+	</script>
+</div>
+
+<div class="modle" style="width: 450px;">
+	<p>卖品结算单重算</p>
+	<div class="opt">
+		卖品结算单号：<input type="text" class="text" id="goodsRecordId"/>
+		<a href="javascript:goodsChongsuan();" class="button minBt whiteBt"><span>重算</span></a>
+	</div>
+	<script type="text/javascript">
+		function goodsChongsuan() {
+			var recordId = document.getElementById("goodsRecordId").value;
+			if(recordId == "" || recordId == null) {
+				return;
+			}
+			var url = "${basePath}reverseGoodsSettle.xhtml";
+			var values = {"settleIds":recordId};
+			var mid = "T" + Date.now();
+			GewaraUtil.mask('',mid);
+			GewaraUtil.sendRequest(url, values, function(result){
+				GewaraUtil.unmask(mid);
+				if(result.success == true){
+					gewaUtil.alert(result.retval);
+				}else{
+					gewaUtil.alert(result.msg);
+				}
+			});
+			gewa.util.container['keys'].dispose('keys');
+			gewa.util.container['iskyes'].dispose('iskyes');
+		}
+	</script>
+</div>
+
+<div class="modle" style="width: 450px;">
+	<p>通道费结算单重算</p>
+	<div class="opt">
+		通道费结算单号：<input type="text" class="text" id="channelRecordId"/>
+		<a href="javascript:channelChongsuan();" class="button minBt whiteBt"><span>重算</span></a>
+	</div>
+	<script type="text/javascript">
+		function channelChongsuan() {
+			var recordId = document.getElementById("channelRecordId").value;
+			if(recordId == "" || recordId == null) {
+				return;
+			}
+			var url = "${basePath}reverseChannelSettle.xhtml";
+			var values = {"settleIds":recordId};
+			var mid = "T" + Date.now();
+			GewaraUtil.mask('',mid);
+			GewaraUtil.sendRequest(url, values, function(result){
+				GewaraUtil.unmask(mid);
+				if(result.success == true){
+					gewaUtil.alert(result.retval);
+				}else{
+					gewaUtil.alert(result.msg);
+				}
+			});
+			gewa.util.container['keys'].dispose('keys');
+			gewa.util.container['iskyes'].dispose('iskyes');
+		}
+	</script>
+</div>
+
+
+<div class="modle" style="width: 650px;">
+	<p>结算单状态重置</p>
+	<div class="opt">
+		结算单号：<input type="text" class="text" id="recordIds"/>
+		选择状态：
+		<select id="restatus" class="text" style="width: 180px;">
+			<option value="INVALID">INVALID</option>
+			<option value="GEWACONFIRMED">GEWACONFIRMED</option>
+			<option value="READJUST">READJUST</option>
+			<option value="WAITINGPAY">WAITINGPAY</option>
+		</select>
+		<a href="javascript:setInvalid();" class="button minBt whiteBt"><span>设置</span></a>
+	</div>
+	<script type="text/javascript">
+		function setInvalid() {
+			var recordId = document.getElementById("recordIds").value;
+			var status = document.getElementById("restatus").value;
+			if(recordId == "" || recordId == null) {
+				return;
+			}
+			gewa.util.issure('','确认要设置状态吗？','提示',420,'keys',function(calls,id){
+				var url = "${basePath}setInvalid.xhtml";
+				var values = {"recordId":recordId, "status": status};
+				var mid = "T" + Date.now();
+				GewaraUtil.mask('',mid);
+				GewaraUtil.sendRequest(url, values, function(result){
+					GewaraUtil.unmask(mid);
+					if(result.success == true){
+						gewaUtil.alert(result.retval);
+					}else{
+						gewaUtil.alert(result.msg);
+					}
+				});
+				gewa.util.container['keys'].dispose('keys');
+				gewa.util.container['iskyes'].dispose('iskyes');
+			});
+		}
+	</script>
+</div>
+
+<div class="modle"style="width: 1000px;">
+	<p>修复对账码</p>
+	<div class="opt">
+		系统：<input type="text" class="text" id="category"/>
+		影院id：<input type="text" class="text" id="dzpliceid"/>
+		时间：
+		<input id="fixstartTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'fixendTime\')||\'2020-10-01 00:00:00\'}'})"/>
+		至
+		<input id="fixendTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'fixstartTime\')}',maxDate:'2020-10-01 00:00:00'})"/>
+		<a href="javascript:repairGewaOrderOuterId();" class="button minBt whiteBt"><span>开始修复</span></a>
+	</div>
+	<script type="text/javascript">
+		function repairGewaOrderOuterId() {
+			var category = document.getElementById("category").value;
+			var fixstartTime = document.getElementById("fixstartTime").value;
+			var fixendTime = document.getElementById("fixendTime").value;
+			var placeid = document.getElementById("dzpliceid").value;
+			if(category == "" || category == null) {
+				return;
+			}
+			if(fixstartTime == "" || fixstartTime == null) {
+				return;
+			}
+			if(fixendTime == "" || fixendTime == null) {
+				return;
+			}
+			gewa.util.issure('','确认要开始修复订单对账码吗？','提示',420,'keys',function(calls,id){
+				var url = "${basePath}repairGewaOrderOuterId.xhtml";
+				var values = {"category":category, "startTime":fixstartTime, "endTime": fixendTime, "pliceid": placeid};
+				var mid = "T" + Date.now();
+				GewaraUtil.mask('',mid);
+				GewaraUtil.sendRequest(url, values, function(result){
+					GewaraUtil.unmask(mid);
+					if(result.success == true){
+						gewaUtil.alert(result.retval);
+					}else{
+						gewaUtil.alert(result.msg);
+					}
+				});
+				gewa.util.container['keys'].dispose('keys');
+				gewa.util.container['iskyes'].dispose('iskyes');
+			});
+		}
+	</script>
+</div>
+<div style="clear: both;"></div>
+<div class="modle" style="width: 900px;">
+	<p>检查影票结算单</p>
+	<div class="opt">
+		<input id="startTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'endTime\')||\'2020-10-01 00:00:00\'}'})"/>
+		<= 影票结算周期 < 
+		<input id="endTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'startTime\')}',maxDate:'2020-10-01 00:00:00'})"/>
+		选择状态：
+		<select id="ckstatus" class="text" style="width: 180px;">
+			<option value="GEWACONFIRMED">GEWACONFIRMED</option>
+			<option value="READJUST">READJUST</option>
+			<option value="INVALID">INVALID</option>
+		</select>
+		<a href="javascript:checkTicket();" class="button minBt whiteBt"><span>开始检查</span></a>
+	</div>
+	<script type="text/javascript">
+		function checkTicket() {
+			var startTime = document.getElementById("startTime").value;
+			var endTime = document.getElementById("endTime").value;
+			var status = document.getElementById("ckstatus").value;
+			if(startTime == "" || startTime == null) {
+				return;
+			}
+			if(endTime == "" || endTime == null) {
+				return;
+			}
+			gewa.util.issure('','确认要开始检查影票结算单吗？','提示',420,'keys',function(calls,id){
+				var url = "${basePath}checkTicket.xhtml";
+				var values = {"startTime":startTime, "endTime":endTime, "status":status};
+				var mid = "T" + Date.now();
+				GewaraUtil.mask('',mid);
+				GewaraUtil.sendRequest(url, values, function(result){
+					GewaraUtil.unmask(mid);
+					if(result.success == true){
+						gewaUtil.alert(result.retval);
+					}else{
+						gewaUtil.alert(result.msg);
+					}
+				});
+				gewa.util.container['keys'].dispose('keys');
+				gewa.util.container['iskyes'].dispose('iskyes');
+			});
+		}
+	</script>
+</div>
+
+<div style="clear: both;"></div>
+<div class="modle"style="width: 800px;">
+	<p>手动执行job</p>
+	<div class="opt">
+		<label for="service">请选择service</label>
+		<select id="service" onchange="javascript:selectMethodByService(this.options[this.selectedIndex].text);"  class="text">
+			<option value="dataExtractionJob">dataExtractionJob</option>
+			<option value="miscJob">miscJob</option>
+			<option value="billsGenerateJob">billsGenerateJob</option>
+			<option value="goodsSettleJob">goodsSettleJob</option>
+			<option value="channelSettleJob">channelSettleJob</option>
+			<option value="wandaOrderJob">wandaOrderJob</option>
+			<option value="baoChangJob">baoChangJob</option>
+			<option value="rongDuanJob">rongDuanJob</option>
+			<option value="WPJob">WPJob</option>
+			<option value="dramaJob">dramaJob</option>
+		</select>
+		<label for="method">请选择method</label>
+		<select id="method"  class="text" style="width: 250px;">
+			<option value="syncGoodsOrder">syncGoodsOrder</option>
+			<option value="syncPlace">syncPlace</option>
+			<option value="syncPlayItemPrice">syncPlayItemPrice</option>
+			<option value="syncOrder">syncOrder</option>
+			<option value="sysDiffPriceOrder">sysDiffPriceOrder</option>
+			<option value="sysBaoChang">sysBaoChang</option>
+		</select>
+		<input type="button" onclick="javascript:reflect();" value="执行" class="button minBt whiteBt">
+	</div>
+	<script type="text/javascript">
+		function selectMethodByService(value){
+			var obj = document.getElementById("method");
+			obj.options.length=0;
+			if(value == 'dataExtractionJob'){
+				obj.options.add(new Option('syncRefundment','syncRefundment'));
+				obj.options.add(new Option('syncGoodsOrder','syncGoodsOrder'));
+				obj.options.add(new Option('syncPlace','syncPlace'));
+				obj.options.add(new Option('syncPlayItemPrice','syncPlayItemPrice'));
+				obj.options.add(new Option('syncOrder','syncOrder'));
+				obj.options.add(new Option('syncSettleConfig','syncSettleConfig'));
+				obj.options.add(new Option('syncChannleConfig','syncChannleConfig'));
+				obj.options.add(new Option('sysDiffPriceOrder','sysDiffPriceOrder'));
+			}else if(value == 'channelSettleJob'){
+				obj.options.add(new Option('generateChannelSettleBill','generateChannelSettleBill'));
+				obj.options.add(new Option('doChannelSettleFilling','doChannelSettleFilling'));
+			}else if(value == 'goodsSettleJob'){
+				obj.options.add(new Option('generateGoodsSettleBill','generateGoodsSettleBill'));
+				obj.options.add(new Option('doGoodsSettleFilling','doGoodsSettleFilling'));
+				obj.options.add(new Option('updateGoodsTakeTime','updateGoodsTakeTime'));
+			}else if(value == 'billsGenerateJob'){
+				obj.options.add(new Option('generateSettlementBill','generateSettlementBill'));
+				obj.options.add(new Option('autoTomerchant','autoTomerchant'));
+				obj.options.add(new Option('uploadBill','uploadBill'));
+			}else if(value == 'miscJob'){
+				obj.options.add(new Option('validateNumber','validateNumber'));
+			}else if(value == 'wandaOrderJob'){
+				obj.options.add(new Option('doWandaOrderJob','doWandaOrderJob'));
+			}else if(value == 'rongDuanJob'){
+				obj.options.add(new Option('everyDayCollection','everyDayCollection'));
+				obj.options.add(new Option('rongduanCollection','rongduanCollection'));
+			}else if(value == 'WPJob'){
+				obj.options.add(new Option('autoTomerchant','autoTomerchant'));
+				obj.options.add(new Option('wpMonthFull','wpMonthFull'));
+				obj.options.add(new Option('sysPointCardOrder','sysPointCardOrder'));
+				obj.options.add(new Option('createPointCardBill','createPointCardBill'));
+				obj.options.add(new Option('calculatePointCardBill','calculatePointCardBill'));
+			}else if(value == 'dramaJob'){
+				obj.options.add(new Option('syncDrama','syncDrama'));
+				obj.options.add(new Option('syncDramaConfig','syncDramaConfig'));
+				obj.options.add(new Option('syncDramaSupplier','syncDramaSupplier'));
+				obj.options.add(new Option('syncDramaPlace','syncDramaPlace'));
+				obj.options.add(new Option('syncDramaOrder','syncDramaOrder'));
+				obj.options.add(new Option('syncDramaPlayItem','syncDramaPlayItem'));
+				obj.options.add(new Option('generateDramaBill','generateDramaBill'));
+				obj.options.add(new Option('calculateBill','calculateBill'));
+				obj.options.add(new Option('calculateJitiBill','calculateJitiBill'));
+			}else if(value == 'baoChangJob'){
+				obj.options.add(new Option('sysBaoChang','sysBaoChang'));
+				obj.options.add(new Option('bcCalculate','bcCalculate'));
+				obj.options.add(new Option('bcSettleBill','bcSettleBill'));
+			}else{
+				alert("请配置该任务下的方法");
+			}
+	  	}
+		function reflect(){
+			var service = document.getElementById("service").options[document.getElementById("service").selectedIndex].value;
+			var method = document.getElementById("method").options[document.getElementById("method").selectedIndex].value;
+			gewa.util.issure('','确定要执行该JOB？<br><h3>service:'+'<font color="red">'+service+'</font><br>method:' + '<font color="red">'+ method + '</font>' + '</h3>','注意',420,'keys',function(calls,id){
+				var url = "${basePath}commonTask/exeJobTask.xhtml";
+				var values = {"b":service, "m":method};
+				var mid = "T" + Date.now();
+				GewaraUtil.mask('',mid);
+				GewaraUtil.sendRequest(url, values, function(result){
+					GewaraUtil.unmask(mid);
+					if(result.success == true){
+						gewaUtil.alert(result.retval);
+					}else{
+						gewaUtil.alert(result.msg);
+					}
+				});
+				gewa.util.container['keys'].dispose('keys');
+				gewa.util.container['iskyes'].dispose('iskyes');
+			});
+		}
+	</script>
+</div>
+
+<div class="modle"style="width: 170px;">
+	<p>用友请求模拟</p>
+	<div class="opt">
+		<a href="${basePath}api/yongyou/downLoadPayBill.xhtml?recordId=0&key=3bafa63be9cf42fb6ae3fd38b4d9b068" target="_blank" class="button minBt whiteBt"><span>发送请求</span></a>
+	</div>
+</div>
+
+<div style="clear: both;"></div>
+<div class="modle"style="width: 800px;">
+	<p>执行系统方法</p>
+	<div class="opt">
+		bean名称：<input type="text" class="text" id="b"/>
+		method名称：<input type="text" class="text" id="m"/>
+		<a href="javascript:exeBeanMethod();" class="button minBt whiteBt"><span>开始执行</span></a>
+	</div>
+	<script type="text/javascript">
+		function exeBeanMethod() {
+			var bean = document.getElementById("b").value;
+			var method = document.getElementById("m").value;
+			if(bean == null || bean == "") {
+				return;
+			}
+			if(method == null || method == "") {
+				return;
+			}
+			gewa.util.issure('','确定要执行该方法吗？<br><h3>service:'+'<font color="red">'+bean+'</font><br>method:' + '<font color="red">'+ method + '</font>' + '</h3>','注意',420,'keys',function(calls,id){
+				var url = "${basePath}reflect.xhtml";
+				var values = {"b":bean, "m":method};
+				var mid = "T" + Date.now();
+				GewaraUtil.mask('',mid);
+				GewaraUtil.sendRequest(url, values, function(result){
+					GewaraUtil.unmask(mid);
+					if(result.success == true){
+						gewaUtil.alert(result.retval);
+					}else{
+						gewaUtil.alert(result.msg);
+					}
+				});
+				gewa.util.container['keys'].dispose('keys');
+			});
+		}
+	</script>
+</div>
+
+
+<div class="modle" style="width: 400px;">
+	<p>重置演出结算单状态</p>
+	<div class="opt">
+		现状：
+		<select id="dramastatus" class="text" style="width: 180px;">
+			<option value="FULFILLING">FULFILLING</option>
+			<option value="EXCEPTION">EXCEPTION</option>
+		</select>
+		<a href="javascript:dramareststatus();" class="button minBt whiteBt"><span>开始重置</span></a>
+	</div>
+	<script type="text/javascript">
+		function dramareststatus() {
+			var dramastatus = document.getElementById("dramastatus").value;
+			if(dramastatus == "" || dramastatus == null) {
+				return;
+			}
+			gewa.util.issure('','确认要开始重置状态吗？','提示',420,'keys',function(calls,id){
+				var url = "${basePath}dramareststatus.xhtml";
+				var values = {"status":dramastatus};
+				var mid = "T" + Date.now();
+				GewaraUtil.mask('',mid);
+				GewaraUtil.sendRequest(url, values, function(result){
+					GewaraUtil.unmask(mid);
+					if(result.success == true){
+						gewaUtil.alert(result.retval);
+					}else{
+						gewaUtil.alert(result.msg);
+					}
+				});
+				gewa.util.container['keys'].dispose('keys');
+			});
+		}
+	</script>
+</div>
+
+<div style="clear: both;"></div>
+<div class="modle"style="width: 860px;">
+	<p>结算job执行情况</p>
+	<div class="opt">
+		<table border="1">
+			<thead>
+				<tr>
+					<th>jobname</th>
+					<th>firetime</th>
+					<th>nextfire</th>
+					<th>ip</th>
+					<th>status</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($job in ${jobList})
+					<tr>
+						<td>$job.jobname</td>
+						<td>$job.firetime</td>
+						<td>$job.nextfire</td>
+						<td>$job.ip</td>
+						<td>$job.status</td>
+					</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="modle"style="width: 600px;">
+	<p>结算job执行情况</p>
+	<div class="opt">
+		<table border="1">
+			<thead>
+				<tr>
+					<th>job</th>
+					<th>最后执行时间</th>
+					<th>修改时间</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($mark in ${markList})
+					<tr>
+						<td>$mark.tag</td>
+						<td>$mark.lastExecuteTime</td>
+						<td>$mark.modifyTime</td>
+					</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="modle"style="width: 600px;">
+	<p>结算job执行情况</p>
+	<div class="opt">
+		<table border="1">
+			<thead>
+				<tr>
+					<th>job</th>
+					<th>执行状态</th>
+					<th>更新时间</th>
+					<th>重置完成</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($gj in ${gjList})
+					<tr>
+						<td>$gj.tag</td>
+						<td>$gj.status</td>
+						<td>$gj.updateTime</td>
+						<th><a href="javascript:setFinish('$gj.tag');" class="button minBt whiteBt"><span>开始重置</span></a></th>
+					</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+	<script type="text/javascript">
+		function setFinish(tag) {
+			gewa.util.issure('','确认要重置job运行状态吗？','提示',420,'keys',function(calls,id){
+				var url = "${basePath}setFinsh.xhtml";
+				var values = {"tag":tag};
+				var mid = "T" + Date.now();
+				GewaraUtil.mask('',mid);
+				GewaraUtil.sendRequest(url, values, function(result){
+					GewaraUtil.unmask(mid);
+					if(result.success == true){
+						gewaUtil.alert(result.retval);
+					}else{
+						gewaUtil.alert(result.msg);
+					}
+				});
+				gewa.util.container['keys'].dispose('keys');
+			});
+		}
+	</script>
+</div>
+
+<!-- <div style="clear: both;"></div>
+<div class="modle"style="width: 450px;">
+	<p>批量同步演出项目</p>
+	<div class="opt">
+		<form action="${basePath}batchSyncDrama.xhtml" method="post" enctype="multipart/form-data">
+			<input type="file" name="dramafile">
+			<input type="submit" value="提交">
+		</form>
+	</div>
+	<p>批量同步演出配置</p>
+	<div class="opt">
+		<form action="${basePath}batchSyncConfig.xhtml" method="post" enctype="multipart/form-data">
+			<input type="file" name="configfile">
+			<input type="submit" value="提交">
+		</form>
+	</div>
+	<p>批量同步演出场次</p>
+	<div class="opt">
+		<form action="${basePath}batchSyncPlayItem.xhtml" method="post" enctype="multipart/form-data">
+			<input type="file" name="playitemfile">
+			<input type="submit" value="提交">
+		</form>
+	</div>
+	<p>批量审批演出配置</p>
+	<div class="opt">
+		<a href="javascript:appDramaConfig();" class="button minBt whiteBt"><span>批量审批</span></a>
+	</div>
+	<script type="text/javascript">
+		function appDramaConfig() {
+			gewa.util.issure('','确认要批量审批演出配置吗？','提示',420,'keys',function(calls,id){
+				var url = "${basePath}appDramaConfig.xhtml";
+				var values = {"tag":"tag"};
+				var mid = "T" + Date.now();
+				GewaraUtil.mask('',mid);
+				GewaraUtil.sendRequest(url, values, function(result){
+					GewaraUtil.unmask(mid);
+					if(result.success == true){
+						gewaUtil.alert(result.retval);
+					}else{
+						gewaUtil.alert(result.msg);
+					}
+				});
+				gewa.util.container['keys'].dispose('keys');
+			});
+		}
+	</script>
+	<p>重置演出配置</p>
+	<div class="opt">
+		<a href="javascript:resetDramaData();" class="button minBt whiteBt"><span>开始重置</span></a>
+	</div>
+	<script type="text/javascript">
+		function resetDramaData() {
+			gewa.util.issure('','确认要重置演出配置吗？','提示',420,'keys',function(calls,id){
+				var url = "${basePath}resetDramaData.xhtml";
+				var values = {"tag":"tag"};
+				var mid = "T" + Date.now();
+				GewaraUtil.mask('',mid);
+				GewaraUtil.sendRequest(url, values, function(result){
+					GewaraUtil.unmask(mid);
+					if(result.success == true){
+						gewaUtil.alert(result.retval);
+					}else{
+						gewaUtil.alert(result.msg);
+					}
+				});
+				gewa.util.container['keys'].dispose('keys');
+			});
+		}
+	</script>
+</div> -->
+
+
+</body>
+</html>

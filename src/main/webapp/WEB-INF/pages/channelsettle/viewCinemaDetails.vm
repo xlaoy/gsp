@@ -1,0 +1,16 @@
+		<div style="width:300px; float:left;">
+			<table class="tableGear">
+				#if($results && $results.size() > 0)
+					#foreach($place in $results)
+					<tr>
+						<span>
+							<td>$!{foreach.count}</td>
+						</span>
+						<span>
+							<td>$!{place.name}</td>
+						</span>
+					</tr>
+					#end
+				#end
+			</table>
+		</div>

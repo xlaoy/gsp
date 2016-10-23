@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html style="background: #fff;">
+<head>
+<title>发票查询</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+<style type="text/css">
+.s{background:#f0f0f0;}
+</style>
+</head>
+
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryInvoice")
+	#parse('WEB-INF/pages/nvaig/invoicenvaig.vm')
+	
+	<div class="mode_search">
+		<form id="invoiceform" method="post" action="${basePath}platform/invoice/queryInvoice.xhtml">
+				<h2>查询条件</h2><br>
+				<div>
+					结算单号：
+					<input type="text" class="text" name="settleid" id="settleid" value="$!{params.settleid}" style="width: 100px;"/>
+					&nbsp;&nbsp;
+					发票单号：
+					<input type="text" class="text" name="invoicecode" id="invoicecode" value="$!{params.invoicecode}" />
+					&nbsp;&nbsp;
+					发票状态：
+					<select id="status" name="status" class="text" style="width: 110px;">
+						$VmUtils.mapToSelect($statusMap,$!{params.status})
+					</select>
+					&nbsp;&nbsp;
+					发票类型：
+					<select name="invoicetype" id="invoicetype"  style="width: 150px;" class="text">
+						<option value="">全部</option>
+						<option value="ZYFP" #if($VmUtils.eq($!params.invoicetype,"ZYFP")) selected="selected" #end>增值税专用发票</option>
+						<option value="PTFP" #if($VmUtils.eq($!params.invoicetype,"PTFP")) selected="selected" #end>增值税普通发票</option>
+					</select>
+					&nbsp;&nbsp;
+					销货单位：
+					<input type="text" class="text" name="vendername" id="vendername" value="$!{params.vendername}" />
+					<br><br>
+					提交日期：
+					<input name="start" id="start" value='$!{params.start}' onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" />至
+					<input name="end" id="end" value='$!{params.end}' onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" />
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="javascript:$('invoiceform').submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<input type="hidden" name="isXls" id="isXls"/>
+					<a href="javascript:downloadxls();" class="button minBt whiteBt" >导出EXCEL</a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="javascript:batchProcessInvoice('INVOSTAPASS');" class="button minBt whiteBt"><span>批量通过审核</span></a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="javascript:batchProcessInvoice('INVOSTAAUTH')" class="button minBt whiteBt"><span>批量认证成功</span></a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="javascript:batchdikou();" class="button minBt whiteBt"><span>批量抵扣成功</span></a>
+				</div>
+		</form>
+	</div>
+	
+	#if($settleid) 
+		<br>
+		<span style="color: #EC7001; font-size: 14px;">
+		结算单号：$settleid，GW开票金额：$!CurrencyFmt.format($!{billingamount})，总提交发票数：$!{taxnum}张，总提交发票金额：$!CurrencyFmt.format($!{invoiceamount})
+		</span> 
+	#end
+	
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead id="tableY">
+				<tr>
+					<th width="8%"><input type="checkbox" onclick="selectAll();"/>发票号码</th>
+					<th width="90px;">结算单号</th>
+					<th width="7%">发票类型</th>
+					<th width="6%">开票日期</th>
+					<th>销货单位</th>
+					<th width="4%">税率</th>
+					<th width="5%">税额</th>
+					<th width="5%">发票金额</th>
+					<th width="5%">抵扣金额</th>
+					<th width="6%">不含税金额</th>
+					<th width="6%">抵扣月份</th>
+					<th width="6%">发票状态</th>
+					<th>发票备注</th>
+					<th>最后操作人</th>
+					<th width="5%">操作</th>
+				</tr>
+			</thead>
+			<tbody id="tableB">
+				#foreach($invoice in ${invoicelist})
+				<tr>
+					<td>
+						<input type="checkbox" name="invoicecodes" value="$!{invoice.invoicecode}"/>
+						<span>$!{invoice.invoicecode}</span>
+					</td>
+					<td><div style="width: 90px; margin: 5px;">
+						#set($istlist = $!isrlistmap.get($!{invoice.invoicecode}))
+						#foreach($isr in $!istlist)
+							<a href="javascript:loadSettleDeatil('$!{isr.settleid}');">$!{isr.settleid}</a>
+						#end
+					</div></td>
+					<td><span>
+						#if($VmUtils.eq($!invoice.invoicetype,"ZYFP"))
+							增值税专用发票
+						#elseif($VmUtils.eq($!invoice.invoicetype,"PTFP"))
+							增值税普通发票
+						#end
+					</span></td>
+					<td><span>$VmUtils.format($!{invoice.invoicedate})</span></td>
+					<td><span>$!{invoice.vendername}</span></td>
+					<td><span>$!{invoice.taxrate}%</span></td>
+					<td><span>$!CurrencyFmt.format($!{invoice.taxamount})</span></td>
+					<td><span>$!CurrencyFmt.format($!{invoice.invoiceamount})</span></td>
+					<td><span>$!CurrencyFmt.format($!{invoice.deductibleamount})</span></td>
+					<td><span>$!CurrencyFmt.format($!{invoice.excludetaxamount})</span></td>
+					<td><span>$!{invoice.dikoumonth}</span></td>
+					<td><span>$!statusMap.get($!invoice.status)</span></td>
+					<td><div style="width: 150px;">$!{invoice.submitcontent}</div></td>
+					<td><div style="width: 100px;">$!{invoice.optuser}</div></td>
+					<td>
+						#if($VmUtils.eq($!invadmin,"N"))
+							#if($VmUtils.eq($!invoice.status,"INVOSTANEW"))
+								<a href="javascript:processInvoice('$!{invoice.invoicecode}', 'INVOSTAPASS')">审核通过</a>
+								<br><a href="javascript:loadInvoiceDeatilProcess('$!{invoice.invoicecode}', 'INVOSTAUNPASS');">审核不通过</a>
+							#end
+							#if($VmUtils.eq($!invoice.status,"INVOSTAPASS") && $VmUtils.eq($!invoice.invoicetype,"ZYFP"))
+								<a href="javascript:processInvoice('$!{invoice.invoicecode}', 'INVOSTAAUTH')">认证成功</a>
+								<br><a href="javascript:loadInvoiceDeatilProcess('$!{invoice.invoicecode}', 'INVOSTAUNAUTH');">认证失败</a>
+							#end
+							#if($VmUtils.eq($!invoice.status,"INVOSTAAUTH") && $VmUtils.eq($!invoice.invoicetype,"ZYFP"))
+								<a href="javascript:processInvoice('$!{invoice.invoicecode}', 'INVOSTADIKOU')">抵扣成功</a>
+								<br><a href="javascript:loadInvoiceDeatilProcess('$!{invoice.invoicecode}', 'INVOSTAUNDIKOU');">抵扣失败</a>
+							#end
+						#elseif($VmUtils.eq($!invadmin,"Y"))
+							<a href="javascript:adminProcessInvoice('$!{invoice.invoicecode}');">审批发票</a>
+						#end
+						<br><a href="javascript:loadInvoiceDeatil('$!{invoice.invoicecode}')">修改发票</a>
+					</td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="15">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
+
+<div id="detailMark" style="display:none; height: 450px;overflow-y:auto;"></div>
+
+<div id="invdetailMark" style="display:none; height: 370px;overflow-y:auto;"></div>
+
+<div id="batchdikouMark" style="display:none; height: 110px;overflow-y:auto;">
+	<p style="height: 50px; line-height: 50px; margin-left: 40px;">
+		抵扣月份：
+		<input onclick="WdatePicker({dateFmt:'yyyy-MM'})" class="Wdate" onFocus="WdatePicker({dateFmt:'yyyy-MM'})" id="mrkdikoumonth"/>
+	</p>
+	<p style="height: 50px; line-height: 50px; margin-left: 40px;">
+		<a href="javascript:dikousubmit();" class="button bigBt redBt"><span>抵扣</span></a>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<a href="javascript:cancelBatchdikouMark();" class="button bigBt redBt"><span>取消</span></a>
+	</p>
+</div>
+
+<script type="text/javascript">
+window.addEvent(
+	'domready',function(){
+		new TableGear('tableGear');
+		$('tableGear').getElements('tr').addEvents({
+			"mouseover":function(){
+				this.addClass('s')
+			},
+			"mouseout":function(){
+				this.removeClass('s')
+			}
+		});
+		$$('.tips').amTips();
+		lockMenu();
+	}
+);
+
+
+function lockMenu(){
+	var menus = parent.document.getElements('#navleftid a');
+	if(menus)menus.filter(function(link){
+		link.removeClass('select');
+		return link.get('href').indexOf(document.location.pathname) >= 0;
+	}).addClass('select');
+}
+
+
+var downloadxls=function(){
+	$("isXls").value="downloadxls";
+	$('invoiceform').submit();
+	$("isXls").value="";
+}
+
+function selectAll(){
+	document.getElements('input[type=checkbox][name=invoicecodes]').each(function(item){
+		item.checked = !item.checked;
+	})
+}
+
+//查看结算单详情
+function loadSettleDeatil(settleId){
+	var url = '${basePath}platform/settlement/settleMore.xhtml';
+	var values = {"recordId":settleId}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('detailMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','detailMark','结算单' + settleId ,850,'detailMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+//修改
+function loadInvoiceDeatil(invcode){
+	var url = '${basePath}platform/invoice/loadInvoiceDetail.xhtml';
+	var values = {"invcode":invcode, "opt":"MODIFY"}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('invdetailMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','invdetailMark','修改发票' ,500,'invdetailMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+
+//流程失败处理
+function loadInvoiceDeatilProcess(invcode, nextstatus){
+	var url = '${basePath}platform/invoice/loadInvoiceDetail.xhtml';
+	var values = {"invcode":invcode, "opt":"PROCESS", "nextstatus": nextstatus}
+	var title = "";
+	if("INVOSTAUNPASS" == nextstatus) {
+		title = "审核不通过";
+	}
+	if("INVOSTAUNAUTH" == nextstatus) {
+		title = "认证失败";
+	}
+	if("INVOSTAUNDIKOU" == nextstatus) {
+		title = "抵扣失败";
+	}
+	
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('invdetailMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','invdetailMark', title ,500,'invdetailMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+function cancelInvoiceMark(){
+	gewa.util.container['invdetailMark'].dispose('invdetailMark');
+}
+
+//批量抵扣
+function batchdikou() {
+	gewa.util.maskContent('','batchdikouMark','',310,'batchdikouMark');
+}
+
+function cancelBatchdikouMark() {
+	$("mrkdikoumonth").value = "";
+	gewa.util.container['batchdikouMark'].dispose('batchdikouMark');
+}
+
+function dikousubmit() {
+	var invcodes = "";
+	document.getElements('input[type=checkbox][name=invoicecodes]').each(function(item){
+		if (item.checked == true){
+			if (!invcodes == ""){
+				invcodes = invcodes + ",";
+			}
+			invcodes = invcodes + item.value;
+		}
+	});
+	if (invcodes == ""){
+		gewaUtil.alert("请选择发票！");
+		return;
+	}
+	var dikoumonth = $("mrkdikoumonth").value;
+	if(dikoumonth == null || dikoumonth == "") {
+		return;
+	}
+	
+	var url = "${basePath}platform/invoice/invoicePass.xhtml";
+	var values = {"invcodes":invcodes, "status": "INVOSTADIKOU", "dikoumonth":dikoumonth};
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask(mid);
+		if(result.success == true){
+			gewaUtil.alert(result.retval, function(){$('invoiceform').submit();});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	});
+}
+
+//批量通过、批量认证
+function batchProcessInvoice(nextstatus){
+	var invcodes = "";
+	document.getElements('input[type=checkbox][name=invoicecodes]').each(function(item){
+		if (item.checked == true){
+			if (!invcodes == ""){
+				invcodes = invcodes + ",";
+			}
+			invcodes = invcodes + item.value;
+		}
+	});
+	if (invcodes == ""){
+		gewaUtil.alert("请选择发票！");
+		return;
+	}
+	processInvoice(invcodes, nextstatus);
+}
+
+//通过
+function processInvoice(invcodes, nextstatus) {
+	if(invcodes == null || invcodes == "") {
+		return;
+	}
+	if(nextstatus == null || nextstatus == "") {
+		return;
+	}
+	var title = "";
+	if(nextstatus == "INVOSTAPASS") {
+		title = "确认要审核通过吗？";
+	}
+	if(nextstatus == "INVOSTAAUTH") {
+		title = "确认要认证通过吗？";
+	}
+	gewa.util.issure('',title,'提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+		var url = "${basePath}platform/invoice/invoicePass.xhtml";
+		var values = {"invcodes":invcodes, "status": nextstatus};
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(mid);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){$('invoiceform').submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+
+function updateInvoice() {
+	var opt = $('popt').value;
+	if(opt == "PROCESS") {
+		updateInvoicePROCESS();
+	} else if(opt == "MODIFY") {
+		updateInvoiceMODIFY();
+	}  else if(opt == "ADMINPROCESS") {
+		updateInvoiceADMINPROCESS();
+	}
+}
+
+function updateInvoicePROCESS() {
+
+	var invoicecode = $('pinvoicecode').value;
+	var status = $('pnextstatus').value;
+	var subcontent = $('psubmitcontent').value;
+	
+	if(subcontent == null || subcontent == "") {
+		gewaUtil.alert("发票备注不能为空！");
+		return;
+	}
+	
+	var url = "${basePath}platform/invoice/invoiceUnpass.xhtml";
+	var values = {"invcode":invoicecode, "status": status, "subcontent": subcontent};
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask(mid);
+		if(result.success == true){
+			gewaUtil.alert(result.retval, function(){$('invoiceform').submit();});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	});
+}
+
+function updateInvoiceMODIFY() {
+
+	var invoicecode = $('pinvoicecode').value;
+	var invoicetype = $('pinvoicetype').value;
+	var deductibleamount = $('pdeductibleamount').value;
+	var subcontent = $('psubmitcontent').value;
+	
+	if("ZYFP" == invoicetype) {
+		if(deductibleamount == null || deductibleamount == "") {
+			gewaUtil.alert("专用发票抵扣金额不能为空！");
+			return;
+		}
+		var reg = /^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/;
+		if(!reg.test(deductibleamount)) {
+			gewaUtil.alert("抵扣金额格式不正确！");
+			return;
+		}
+		
+		var taxamount = $('ptaxamount').value;
+		if(parseFloat(deductibleamount) > parseFloat(taxamount)) {
+			gewaUtil.alert("抵扣金额不能大于税额！");
+			return;
+		}
+	}
+	
+	if(subcontent == null || subcontent == "") {
+		gewaUtil.alert("发票备注不能为空！");
+		return;
+	}
+	
+	var url = "${basePath}platform/invoice/updateInvoice.xhtml";
+	var values = {"invcode":invoicecode, "invoicetype": invoicetype, "deductibleamount": deductibleamount,"subcontent": subcontent};
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask(mid);
+		if(result.success == true){
+			gewaUtil.alert(result.retval, function(){$('invoiceform').submit();});
+		}else{
+			hasreqMoney = false;
+			gewaUtil.alert(result.msg);
+		}
+	});
+}
+
+function updateInvoiceADMINPROCESS() {
+	var invoicecode = $('pinvoicecode').value;
+	var status = $('pstatus').value;
+	var dikoumonth = $('pdikoumonth').value;
+	var subcontent = $('psubmitcontent').value;
+	
+	if(invoicecode == null || invoicecode == "") {
+		gewaUtil.alert("发票号不能为空！");
+		return;
+	}
+	if(status == null || status == "") {
+		gewaUtil.alert("发票状态不能为空！");
+		return;
+	}
+	if("INVOSTADIKOU" == status) {
+		if(dikoumonth == null || dikoumonth == "") {
+			gewaUtil.alert("抵扣月份不能为空！");
+			return;
+		}
+	}
+	
+	if("INVOSTAPASS" == status || "INVOSTAAUTH" == status || "INVOSTADIKOU" == status) {
+		
+		var url = "${basePath}platform/invoice/invoicePass.xhtml";
+		var values = {"invcodes":invoicecode, "status": status, "dikoumonth":dikoumonth};
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(mid);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){$('invoiceform').submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		
+	} else {
+
+		if(subcontent == null || subcontent == "") {
+			gewaUtil.alert("发票备注不能为空！");
+			return;
+		}
+		
+		var url = "${basePath}platform/invoice/invoiceUnpass.xhtml";
+		var values = {"invcode":invoicecode, "status": status, "subcontent": subcontent};
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(mid);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){$('invoiceform').submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+	}
+}
+
+function choseinvtype() {
+	var invoicetype = $('pinvoicetype').value;
+	if("ZYFP" == invoicetype) {
+		document.getElementById('pamount').style.display = "block";
+	} else {
+		document.getElementById('pamount').style.display = "none";
+	}
+}
+
+function adminProcessInvoice(invoicecode){
+	var url = '${basePath}platform/invoice/loadInvoiceDetail.xhtml';
+	var values = {"invcode":invoicecode, "opt":"ADMINPROCESS"}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('invdetailMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','invdetailMark','审批发票' ,500,'invdetailMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+
+function choseinvstatus() {
+	var invoicestatus = $('pstatus').value;
+	if("INVOSTADIKOU" == invoicestatus) {
+		document.getElementById('pmonth').style.display = "block";
+	} else {
+		document.getElementById('pmonth').style.display = "none";
+	}
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+#parse('WEB-INF/pages/common/common.vm')
+#parse('WEB-INF/pages/common/edaStyle.vm')
+<script type="text/javascript" src="${staticPath}scripts/scrollerbar.js?v=00000"></script>
+<style type="text/css">
+.invotab {height: 35px; border-bottom: 1px solid #C1C1C1; margin-bottom: 20px; font-size: 15px; line-height: 35px; list-style: none;}
+.invotab li a{color: white;}
+.invotab li a:HOVER{color: black;}
+.invotab li {float: left; width: 120px; background: #E1E1E1; text-align: center; display: block;}
+.invotab .select {color: white; background: #EB6120;}
+</style>
+</head>
+<body id="_body">
+#set($isFinalStatement=true)
+#parse('WEB-INF/pages/common/merchantMenu_eda.vm')
+<div class="bodyBox" style="position:relative;z-index:1;">
+	
+	<div class="mlr30 mt20">
+	
+		<ul class="invotab">
+			<li ><a href="javascript:history.back();" class="back">返回</a>
+			<li ><a href="${basePath}merchant/gewaorder/querySettleOrderDetails.xhtml?settleBillId=$!{params.settleBillId}&placeId=$!{params.placeId}" >出票订单</a></li>
+			<li #if($REFUND) class="select" #end><a href="${basePath}merchant/gewaorder/querySettleRefundmentDetails.xhtml?settleBillId=$!{params.settleBillId}&placeId=$!{params.placeId}">退票订单</a></li>
+			<li #if($PRIVOUSREFUND) class="select" #end><a href="${basePath}merchant/gewaorder/querySettlePreviousDetails.xhtml?settleBillId=$!{params.settleBillId}&placeId=$!{params.placeId}" >往期差异订单</a></li>
+			<li ><a href="${basePath}merchant/gewaorder/querySettleAdjust.xhtml?settleBillId=$!{params.settleBillId}&placeId=$!{params.placeId}" >调整</a></li>
+		</ul>
+		
+	#if($refund && $refund.size() > 0)
+	<div>总计订单：$!{aggres[0]}笔，订单票数：$!{aggres[1]}，总计金额：$!CurrencyFmt.format(${aggres[2]})<br><br>
+	</div>
+
+	<div class="bill_panel">
+		<table class="isTable" id="tableGear" width="100%">
+			<thead>
+				<tr>
+					<th class="sortable"><span>编号</span><span class="carat"></span></th>
+					<th class="sortable"><span>订单号</span><span class="carat"></span></th>
+					<th class="sortable"><span>下单日期</span><span class="carat"></span></th>
+					<th class="sortable"><span>退票日期</span><span class="carat"></span></th>
+					<th class="sortable"><span>场次</span><span class="carat"></span></th>
+					<th class="sortable"><span>影厅</span><span class="carat"></span></th>
+					<th class="sortable"><span>影片</span><span class="carat"></span></th>
+					<th class="sortable"><span>商品数量</span><span class="carat"></span></th>
+					<th class="sortable"><span>退票金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>结算金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>对账码</span><span class="carat"></span></th>
+					<th class="sortable"><span>订单详细</span><span class="carat"></span></th>
+					<th class="sortable" width="15%"><span>退票原因</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($re in ${refund})
+				#set($o=${om.get($!{re.tradeno})})
+				<tr>
+					<td><span>
+						$!{foreach.count}
+						</span>
+					</td>
+					<td><span>
+						$!{o.tradeno}
+						</span>
+					</td>
+					
+					<td><span>
+						 $!DateUtil.formatTimestamp($!{o.dealTime}) 
+						</span>
+					</td>
+					<td><span>
+						 $!DateUtil.formatTimestamp($!{re.refundTime}) 
+						</span>
+					</td>
+					#set($otherInfo=$!{VmUtils.readJsonToMap(${o.otherInfo})})
+					<td><span>
+						$!{otherInfo.remove("场次")}
+						</span>
+					</td>
+					<td><span>
+						$!{otherInfo.remove("影厅")}
+						</span>
+					</td>
+					<td style=""><span>
+						$!{otherInfo.remove("影片")}
+						</span>
+					</td>
+					<td><span>
+						$!{o.quantity}
+						</span>
+					</td>
+					<td ><span>
+					#set($reamount=$VmUtils.calculate("$!{re.oldSettle}","$!{re.newSettle}","-"))
+						$!CurrencyFmt.format($reamount)
+						</span>
+					</td>
+					<td>
+					#set($finalAmount=$VmUtils.calculate("$!{o.totalCost}","$reamount","-"))
+						$!CurrencyFmt.format($finalAmount)
+					</td>
+					<td><span>
+						$!{o.outerId}
+						</span>
+					</td>
+					
+					<td><span>
+						$!{otherInfo.remove("影票")}
+						</span>
+					</td>
+					<td width="15%"><span>
+						$!{re.applyInfo}
+						</span>
+					</td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="13">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	#else
+	<div class="ui_warning">查询条件范围内，没有数据。</div>
+	#end
+	
+</div>
+</div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	#if($refund && $refund.size() > 0)
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	#end
+});
+
+</script>
+</body>
+</html>

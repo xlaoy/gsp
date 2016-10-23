@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<b:beans xmlns="http://camel.apache.org/schema/spring"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:b="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+	<camelContext id="camel">
+		<!-- 
+		<route >
+			<from uri="activemq:queue:doReconciliationQueue"/>
+			<to uri="bean:reconciliationJmsConsumer?method=receivedReconciliationMsg"/>
+		</route>
+		<route>
+			<from uri="activemq:queue:doSettleBillResolvingQueue"/>
+			<to uri="bean:reconciliationJmsConsumer?method=receviedSettleBillUploadFinishedMsg"/>
+		</route>
+		 -->
+		 <route>
+		 	<from uri="activemq:queue:goodsQupiaoQueue"/>
+		 	<to uri="bean:jmsGoodsTakeTimeConsumer?method=updateGoodsOrderTakeTime"/>
+		 </route>
+	</camelContext>
+	<b:bean id="activemq" class="org.apache.camel.component.jms.JmsComponent">
+		<b:property name="connectionFactory" ref="jmsFactory" />
+	</b:bean>
+	<!-- 
+	<b:bean id="reconciliationJmsConsumer" class="com.gewara.jms.ReconciliationJmsConsumer"/>
+	 -->
+	 <b:bean id="jmsGoodsTakeTimeConsumer" class="com.gewara.jms.JmsGoodsTakeTimeConsumer"/>
+</b:beans>

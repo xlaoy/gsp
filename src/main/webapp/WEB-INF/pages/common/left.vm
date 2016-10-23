@@ -1,0 +1,15 @@
+<nav id="navleftid">
+	#set($first=true)
+	#foreach($menu in $menuTop)
+		<a  
+			#if($first) 
+				id="firstId" 
+			#end  
+			href="${absPath}${basePath}$menu.moduleurl" target='mainContent' 
+			#if($memberManager1)
+				class='select'
+			#end>$menu.menutitle</a>
+		#set($first=false)
+	#end
+</nav>
+

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>通道费配置</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/iscroll.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/core.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+	<style type="text/css">
+		html{background:#fff;}
+	</style>
+	<script type="text/javascript">
+	</script>
+</head>
+<body id="_body" >
+<div class="inner">
+
+	<div class="mod_hd tabs_gary" id="settleStatusId">
+		<a href="${basePath}platform/settleconfig/settleconfigs.xhtml" >影票结算配置</a>
+		<a href="${basePath}platform/channelsettle/loadChannelConfigPage.xhtml" class="select">通道费结算配置</a>
+		<a href="${basePath}/platform/sysdata/querySysData.xhtml">系统数据管理</a>
+	</div>
+
+	<div class="mode_search" style="line-height: 40px;">
+		<form method="post" id="channleConfigForm" action="${basePath}platform/channelsettle/saveChannelSettleConfig.xhtml">
+				<table>
+					<tr>
+						<td width="150px;" align="right">供应商名称：</td>
+						<td><input type="text" class="text" name="vendorName" id="vendorName" style="width: 300px;" autocomplete="off"/></td>
+					</tr>
+					<tr>
+						<td align="right">供应商编码：</td>
+						<td><input type="text" class="text" name="vendorCode" id="vendorCode"  onblur="javascript:checkVendorNameRepeat();"  autocomplete="off"/></td>
+					</tr>
+					<tr>
+						<td align="right">项目编号：</td>
+						<td><input type="text" class="text" name="pjtcode" id="pjtcode" /></td>
+					</tr>
+					<tr>
+						<td align="right">供应商类型：</td>
+						<td>
+							<select id="vendorType" name="vendorType" class="text" onchange="javascript:loadVendorFromEC();">
+								<option value="">=请选择=</option>
+								#foreach($type in $channelVendorType.entrySet())
+									<option value="$type.key">$type.value</option>
+								#end
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td align="right">电商后台名：</td>
+						<td>
+							<select class="text" id="ec" name="houtaiId"></select>
+							<input type="button" value="添 加" id="addsyscode" style="width: 60px; height: 30px;" onclick="addsyscodefun();">
+						</td>
+					</tr>
+					<tr>
+						<td align="right">请选择影院并点击添加:</td>
+						<td>
+							<input type="hidden"  id="placeId" /> 
+							<input type="text" class="text"  id="placeFirstLetter" />
+							<input type="button" onclick="addCinemaToDiv();"  value="添 加" id="addplace" style="width: 60px; height: 30px;">
+							<span id="addplacedesc" style="color: red;"></span>
+						</td>
+					</tr>
+					<tr>
+						<td align="right">结算周期：</td>
+						<td>
+							<input type="hidden" name="settleCycle" value="MONTH">按月结算
+							<select class="text" id="settletime" name="settletime" style="width: 100px;">
+								<option value=""></option>
+								<option value="ORDERTIME">下单时间</option>
+								<option value="USETIME">消费时间</option>
+							</select>
+							<select class="text" id="timecut" name="timecut" style="width: 100px;">
+								<option value=""></option>
+								<option value="00:00:00">00:00:00</option>
+								<option value="06:00:00">06:00:00</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td valign="top"  align="right">结算方式：</td>
+						<td>
+							每票结算<input type="text" name="settleMoney" id="settleMoney" class="text" style="width: 50px;">元，
+							按订单<input type="text" name="orderPercent" id="orderPercent" class="text" style="width: 50px;">%结算
+						</td>
+					</tr>
+					<tr>
+						<td align="right">退票是否结算：</td>
+						<td>
+							<span class="sp2">
+								<input type="radio" name="isSettleRefund" value="Y" checked>是
+								<input type="radio" name="isSettleRefund" value="N">否
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td align="right">首次结算日期：</td>
+						<td><input type="text" name="firstSettleDate" id="firstSettleDate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate"></td>
+					</tr>
+					<tr>
+						<td align="right">已添加系统：</td>
+						<td>
+							<input type="text" id="syscode" name="syscode" readonly="readonly" class="text" >
+							<input type="button" value="清 除" id="delsyscode" style="width: 60px; height: 30px;" onclick="deletesyscode();">
+						</td>
+					</tr>
+					<tr>
+						<td align="right" valign="top">已选择影院：</td>
+						<td>
+							<a href="javascript:clearSelect();">清空选择</a>
+							<div id="selectCinema"></div>
+						</td>
+					</tr>
+					<tr>
+						<td  align="right">
+							<a href="javascript:submitChannelConfig();" class="button bigBt redBt">保存配置</a>
+						</td>
+						<td>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<a href="javascript:window.history.back();" class="button bigBt whiteBt">返回</a>
+						</td>
+					</tr>
+				</table>
+		</form>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+
+function addsyscodefun() {
+	var syscode = $("ec").value;
+	var existcode = $("syscode").value;
+	if(existcode == null || existcode == "") {
+		existcode += "'" + syscode + "'"
+	} else {
+		existcode += ",'" + syscode + "'"
+	}
+	$("syscode").value = existcode;
+}
+
+function deletesyscode() {
+	$("syscode").value="";
+}
+
+function loadVendorFromEC(){
+	var vendorType =  $("vendorType").value;
+	var ecObj = document.getElementById("ec");
+	if(vendorType=='CINEMA'){
+		ecObj.options.length=0; 
+		$("settletime").value="";
+		$("timecut").value="";
+		$("syscode").value = "";
+		document.getElementById("ec").disabled=true;
+		document.getElementById("placeFirstLetter").disabled=false;
+		document.getElementById("addplace").disabled=false;
+		document.getElementById("addsyscode").disabled=true;
+		document.getElementById("addplacedesc").innerHTML = "";
+		document.getElementById("timecut").disabled=true;
+		document.getElementById("settletime").disabled=true;
+		document.getElementById("syscode").disabled=true;
+		document.getElementById("delsyscode").disabled=true;
+	}else if(vendorType=='THEATRES'){
+		ecObj.options.length=0; 
+		$("settletime").value="";
+		$("syscode").value = "";
+		document.getElementById("ec").disabled=false;
+		document.getElementById("placeFirstLetter").disabled=true;
+		document.getElementById("addplace").disabled=true;
+		document.getElementById("addsyscode").disabled=true;
+		document.getElementById("addplacedesc").innerHTML = "";
+		document.getElementById("timecut").disabled=false;
+		document.getElementById("settletime").disabled=true;
+		document.getElementById("syscode").disabled=true;
+		document.getElementById("delsyscode").disabled=true;
+		$("selectCinema").set('html', "");
+		var values = {"vendorType":vendorType};
+		var url = '${basePath}/platform/channelsettle/loadVendorFromEC.xhtml';
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask();
+			if(result.success){
+				var data=result.data;
+				for(var i=0;i<data.length;i++){
+					var item = new Option(data[i].channel_name,data[i].channel_id);
+					ecObj.options.add(item);
+				}
+			}
+		});
+	} else if(vendorType=='SYS'){
+		ecObj.options.length=0; 
+		document.getElementById("ec").disabled=false;
+		document.getElementById("placeFirstLetter").disabled=false;
+		document.getElementById("addplace").disabled=false;
+		document.getElementById("addsyscode").disabled=false;
+		document.getElementById("addplacedesc").innerHTML = "选择并添加系统排除计算的影院！";
+		document.getElementById("timecut").disabled=false;
+		document.getElementById("settletime").disabled=false;
+		document.getElementById("syscode").disabled=false;
+		document.getElementById("delsyscode").disabled=false;
+		$("selectCinema").set('html', "");
+		var values = {"vendorType":vendorType};
+		var url = '${basePath}/platform/channelsettle/loadSysCode.xhtml';
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask();
+			if(result.success){
+				var data=result.rdata;
+				for(var i=0;i<data.length;i++){
+					var item = new Option(data[i].code,data[i].code);
+					ecObj.options.add(item);
+				}
+			}
+		});
+	}
+}
+
+function checkVendorNameRepeat(){
+	var vendorCode = $("vendorCode").value;
+	var recordId = $("recordId") == null ? null : $("recordId").value;
+	var values = {"vendorCode":vendorCode,"recordId":recordId};
+	var url = '${basePath}/platform/channelsettle/checkVendorNameIsRepeat.xhtml';
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask();
+		if(result.success == false){
+			gewaUtil.alert(result.msg,function(){
+				document.getElementById("vendorCode").focus();					
+			});
+		}
+	});
+}
+
+function clearSelect(){
+	$("selectCinema").set('html', "");
+}
+
+function addCinemaToDiv(){
+	var placeId = document.getElementById('placeId').value;
+	var cinemas = document.getElementsByName("cinema");
+	var toAdd = document.getElementById("placeId").value;
+	for(i=0 ; i< cinemas.length; i++){
+		if(cinemas[i].value == toAdd){
+			gewaUtil.alert("您选择的影院已添加，不能重复添加！");
+			document.getElementById('placeId').value='';
+			document.getElementById('placeFirstLetter').value='';
+			return;
+		}
+	}
+	var url = '${basePath}/platform/channelsettle/loadAllCinema.xhtml';
+	var values = {"recordId":placeId};
+	var html = "";
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask();
+		if(result.success == true){
+			html = $("selectCinema").innerHTML;
+			var value = result.retval;
+			var arr = value.split("@");
+			html = html + "<span id=cinema_" + arr[0] + "><input type='checkbox' value="+arr[0] + " name='cinema' class='mr3' checked  onclick='javascript:delSelection(this);'>"+arr[1]+'</span></br>';
+			$("selectCinema").set('html', html);
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	});
+	document.getElementById('placeId').value='';
+	document.getElementById('placeFirstLetter').value='';
+}
+
+function delSelection(obj){
+	if(obj){
+		var cinema = $('cinema_'+obj.value);
+		if(cinema){
+			 $('cinema_'+obj.value).remove();
+		}
+	}
+}
+
+function submitChannelConfig(){
+	
+	var vendorName = $("vendorName").value;
+	var vendorCode = $("vendorCode").value;
+	var vendorType =  $("vendorType").value;
+	var firstSettleDate =  $("firstSettleDate").value;
+	var pjtcode = $("pjtcode").value;
+	var ec = $("ec").value;
+	var settleMoney = $("settleMoney").value;
+	var orderPercent = $("orderPercent").value;
+	var cinema = document.getElementsByName('cinema');
+	var syscode = $("syscode").value
+	
+	if(vendorName == ""){
+		gewaUtil.alert("供应商名称为必填项");	
+		return;
+	}
+	if(vendorCode == ""){
+		gewaUtil.alert("供应商编码为必填项");
+		return;
+	}
+	if(pjtcode == "") {
+		gewaUtil.alert("项目编号为必填项");
+		return;
+	}
+	if(vendorType == ""){
+		gewaUtil.alert("请选择供应商类型");
+		return;
+	}
+	if((settleMoney + orderPercent) == null || (settleMoney + orderPercent) == "") {
+		gewaUtil.alert("结算方式不能为空");
+		return;
+	}
+	if(firstSettleDate == ""){
+		gewaUtil.alert("请选择首次结算日期");
+		return;
+	}
+	if(vendorType=='CINEMA'){
+		if(cinema.length != 1) {
+			gewaUtil.alert("影院供应商只能添加一个影院！");
+			return;
+		}
+		$("ec").value="";
+		$("timecut").value="";
+		$("settletime").value="";
+	}
+	if(vendorType=='THEATRES') {
+		if(ec == "" || ec == null) {
+			gewaUtil.alert("电商后台信息不能为空");
+			return ;
+		}
+		if(cinema.length > 0) {
+			gewaUtil.alert("院线系统不能选择影院！");
+			return;
+		}
+		$("settletime").value="";
+	}
+	if(vendorType=='SYS') {
+		if(syscode == "" || syscode == null) {
+			gewaUtil.alert("请添加系统编码");
+			return ;
+		}
+		var settletime = $("settletime").value;
+		if(settletime == "" || settletime == null) {
+			gewaUtil.alert("请选择结算依据‘下单时间’或‘消费时间’");
+			return ;
+		}
+		var timecut = $("timecut").value;
+		if(timecut == "" || timecut == null) {
+			gewaUtil.alert("请选择结算时限‘00:00:00’或‘06:00:00’");
+			return ;
+		}
+		$("ec").value="";
+	}
+	document.getElementById('channleConfigForm').submit();
+}
+
+function addSeleteCinema() {
+	var values = gewara.util.getPostValues("selectCinemaForm");
+	var html = "";
+	for ( var v in values) {
+		var arr = values[v].split("-");
+		html = html + "<input type='checkbox' value="+arr[0] + " name='cinema' class='mr3' checked>" + arr[1];
+	}
+	gewa.util.container['commMark'].dispose('commMark');
+	$("selectCinema").set('html', html);
+}
+
+
+window.addEvent('domready', function() {
+	completer = new Autocompleter.Local($("placeFirstLetter"),parent.pdata, {
+		'delay' : 100,
+		'maxChoices' : 10,
+		'minLength' : 0,
+		'requestid' : 'placeId',
+		'filter' : function() {
+			var vl = this.queryValue;
+			var values = vl.trim().split(/ +/);
+			return this.tokens.filter(function(token) {
+				var result = values.every(function(v) {
+					var reg = new RegExp(v.escapeRegExp(), 'i');
+					return reg.test(token.pinyin)
+							|| reg.test(token.name);
+				});
+				return result;
+			});
+		},
+		'injectChoice' : function(choice) {
+			parent.myGenChoice(this, choice);
+		}
+	});
+});
+</script>
+</body>
+</html>

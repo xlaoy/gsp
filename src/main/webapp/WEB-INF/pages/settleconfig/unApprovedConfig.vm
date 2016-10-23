@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>审核管理</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/iscroll.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/core.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+	
+</head>
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryUnApprovedConfig")
+	#parse('WEB-INF/pages/nvaig/approvnvaig.vm')
+	
+	<div class="mode_search">
+		<form action="${basePath}platform/settleconfig/queryUnApprovedConfig.xhtml" method="post" id="unconfigform">
+			<h2>查询条件</h2>
+			<dl class="mode_search_title">
+				<dt>系统：</dt>
+				<dd>
+					<select id="openType" name="openType">
+						<option value="" selected >全部</option>
+						<option value="HFH" #if("HFH" eq $!{params.openType}) selected  #end >火凤凰</option>
+						<option value="MTX" #if("MTX" eq $!{params.openType}) selected  #end >满天星</option>
+						<option value="JY" #if("JY" eq $!{params.openType}) selected  #end >金逸</option>
+						<option value="WD" #if("WD" eq $!{params.openType}) selected  #end >万达</option>
+						<option value="DX" #if("DX" eq $!{params.openType}) selected  #end >鼎新</option>
+						<option value="FB" #if("FB" eq $!{params.openType}) selected  #end >火烈鸟</option>
+						<option value="LMA" #if("LMA" eq $!{params.openType}) selected  #end >卢米埃</option>
+						<option value="DADI" #if("DADI" eq $!{params.openType}) selected  #end >大地</option>
+						<option value="XFLH" #if("XFLH" eq $!{params.openType}) selected  #end >幸福蓝海</option>
+					</select>
+					场馆：
+					<input type="hidden" name="placeId" id="placeId" value="$!{params.placeId}"/>
+					<input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}"/>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="javascript:$('unconfigform').submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+				</dd>
+			</dl>
+		</form>
+	</div>
+		
+		#if($scs && $scs.size() > 0)	
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th width="3%"><span>编号</span></th>
+					<th width="4%"><span>系统</span></th>
+					<th><span>名称</span></th>
+					<th width="5%"><span>结算周期</span></th>
+					<th width="5%"><span>结算期数</span></th>
+					<th width="5%"><span>结算时限</span></th>
+					<th width="5%"><span>结算方式</span></th>
+					<th width="5%"><span>结算时间</span></th>
+					<th width="6%"><span>首次结算日期</span></th>
+					<th width="5%"><span>帐套编号</span></th>
+					<th><span>业务供应商</span></th>
+					<th width="5%"><span>业务供应商结算</span></th>
+					<th><span>付款供应商</span></th>
+					<th width="5%"><span>卖品结算</span></th>
+					<th width="5%"><span>申请人</span></th>
+					<th width="5%"><span>操作</span></th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($sc in ${scs})
+				<tr>
+					#set($place=$!pm.get($!{sc.recordId}))
+					<td>$!{foreach.count}</td>
+					<td>$!place.openType</td>
+					<td>$!{place.name}</td>
+					<td>$!{VmUtils.displayEnums("SettleCycleEnums",$!{sc.settleCycle})}</td>
+					<td>$!{sc.settleValue}</td>
+					<td>$!{sc.offsetValue}</td>
+					<td>$!{VmUtils.displayEnums("SettleBaseEnums",$!{sc.settleBase})}</td>
+					<td>$!{sc.settleTime}</td>
+					<td>$!DateUtil.formatDate($!{sc.firstSettle})</td>
+					<td>$!{sc.zhangtaoNo}</td>
+					<td>【$!{sc.venderNo}】$!{sc.venderName}</td>
+					<td>
+						#if($!{sc.playType} == 'Y')
+							是
+						#elseif($!{sc.playType} == 'N')
+						            否
+						#else
+					    #end
+					</td>
+					<td>【$!{sc.payVenderNo}】$!{sc.payVenderName}</td>
+					<td>
+						#if($!{sc.isGoodsSettle} == 'Y')
+							是
+						#elseif($!{sc.isGoodsSettle} == 'N')
+						            否
+						#else
+							
+					    #end
+					</td>								
+					<td>$!{sc.applyUser}</td>
+					<td>
+						<a href="javascript:confirmSettleConfig('$!{sc.recordId}', '$!{place.owner}')">确认通过</a>
+						<br>
+						<a href="javascript:loadConfigUpdDetails('$!{sc.recordId}')">修改规则</a>
+					</td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="19">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	#else
+	<div class="ui_warning">查询条件范围内，没有数据。</div>
+	#end
+	<div id="commMark" style="display:none; height: 480px; overflow:auto">
+</div>
+</body>
+<script type="text/javascript">
+function loadConfigUpdDetails(recordId){
+	var url = '${basePath}platform/settleconfig/loadConfigUpdDetails.xhtml';
+	var values = {"recordId":recordId}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('commMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','commMark','配置规则',900,'commMark');
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+function submitConfigDetailsForm(){
+	var values = gewara.util.getPostValues("submitform");
+	for (var v in values){
+		if (values[v] == ''){
+			gewaUtil.alert("结算配置所有字段为必填项");
+			return;
+		}
+	}
+	var base = values['settleBase'];
+	var settleValue = values['settleValue'];
+	var settleCycle = values['settleCycle'];
+	if (settleCycle == 'TN'){
+		if (base == 'ORDERTIME' ){
+			if (settleValue < 3){
+				gewaUtil.alert("结算方式为下单时间时，N值最小为3，最大为15");
+				return;
+			}
+		}else if (base = 'USETIME'){
+			if (settleValue < 2){
+				gewaUtil.alert("当结算方式为消费时间时，N值最小为2， 最大为15");
+				return;
+			}
+		}
+	}
+		
+	var url = "${basePath}platform/settleconfig/modifyConfigDetails.xhtml";
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask();
+		if(result.success == true){
+			gewaUtil.alert("操作完成！", function(){
+				cancelCommentMarks();
+				$('unconfigform').submit();
+			});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	});
+}
+window.addEvent('domready',function(){
+	#if($sb && $sb.size() > 0)
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	#end
+	$$('.tips').amTips();
+	completer = new Autocompleter.Local($("placeFirstLetter"), parent.pdata, {
+		'delay': 100,
+		'maxChoices': 10,
+		'minLength':0,
+		'requestid':'placeId',
+		'filter': function() {
+			var vl = this.queryValue;
+			var values = vl.trim().split(/ +/);
+			return this.tokens.filter(function(token){
+				var result = values.every(function(v){
+					var reg = new RegExp(v.escapeRegExp(),'i');
+					return reg.test(token.pinyin) || reg.test(token.name);
+				});
+				return result;
+			});
+		},
+		'injectChoice': function(choice){
+			parent.myGenChoice(this,choice);
+		}
+	});
+	lockMenu();
+});
+function lockMenu(){
+	var menus = parent.document.getElements('#navleftid a');
+	if(menus)menus.filter(function(link){
+			link.removeClass('select');
+			return link.get('href').indexOf(document.location.pathname) >= 0;
+		}).addClass('select');
+}
+
+function confirmSettleConfig(recordId, owner){
+	var title = "确认通过此结算配置吗？";
+	if(owner == null || owner == "") {
+		title = "该影院的管理人为空，确认通过后，若申请人为空或者为system时，你将成为该影院的管理人！确认通过此结算配置吗？";
+	}
+	gewa.util.issure('',title,'提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+		var url = "${basePath}platform/settleconfig/approveConfig.xhtml";
+		var values = {"recordId":recordId};
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask();
+			if(result.success == true){
+				gewaUtil.alert("已通过， 系统会在规定时间内为该场馆生成结算单！", function(){$('unconfigform').submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+
+function cancelCommentMarks(){
+	gewa.util.container['commMark'].dispose('commMark');
+}
+</script>
+</html>

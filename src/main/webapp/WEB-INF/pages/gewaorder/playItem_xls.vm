@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body id="_body">
+<div >
+	<table class="tableGear" id="tableGear" border="1">
+		<thead>
+			<tr>
+				<th width="8%"><span>场次ID</span><span class="carat"></span></th>
+				<th width="12%" ><span>放映时间</span><span class="carat"></span></th>
+				<th ><span>电影名称</span><span class="carat"></span></th>
+				<th width="8%" ><span>结算票数</span><span class="carat"></span></th>
+				<th width="8%" ><span>结算金额</span><span class="carat"></span></th>
+				<th width="8%" ><span>优惠票数</span><span class="carat"></span></th>
+				<th width="8%" ><span>优惠金额</span><span class="carat"></span></th>
+				<th width="8%" ><span>优惠比例</span><span class="carat"></span></th>
+				<th width="12%" ><span>关联结算单号</span><span class="carat"></span></th>
+			</tr>
+		</thead>
+		<tbody>
+			#foreach($pvo in $pvolist)
+			<tr>
+				<td>$!{pvo.playid}</td>
+				<td>$!DateUtil.formatTimestamp($!{pvo.playtime})</td>
+				<td>$!{pvo.movieName}</td>
+				<td>$!{pvo.num}</td>
+				<td>$!CurrencyFmt.format($!{pvo.amount})</td>
+				<td>$!{pvo.disnum}</td>
+				<td>$!CurrencyFmt.format($!{pvo.discount})</td>
+				<td>$!CurrencyFmt.format($!{pvo.disrate})%</td>
+				<td>
+					#foreach($sid in $!{pvo.settleid})
+						$!{sid}&nbsp;&nbsp;
+					#end
+				</td>
+			</tr>
+			#end
+		</tbody>
+	</table>
+</div>
+</body>
+</html>

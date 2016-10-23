@@ -1,0 +1,7 @@
+create or replace view view_drama_settleprice as
+with dsview as (
+select t.recordid, t.dramaid, t.suppliercode, t.settlebase, t.settlecycle, t.addtime, s.recordid as settleid, s.discount, s.distype
+from supplier_settle t left outer join settle_config s on t.settleid = s.recordid
+)
+select ds.recordid, ds.dramaid, ds.suppliercode, ds.settlebase, ds.settlecycle, ds.addtime, ds.settleid, ds.discount, ds.distype, p.theatreprice, p.recordid as threcordid
+from dsview ds left outer join theatre_item_price p on ds.recordid = p.dramasettleid;

@@ -1,0 +1,17 @@
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 31, 2013 2:18:24 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.VendorCinemaRelation" table="vendor_cinema_relation" schema="gsp">
+    	<id name="recordId" type="java.lang.Long" column="record_id">
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_channel_settle_config</param>
+			</generator>
+        </id>
+        <property name="cinemaRecordId" column="cinema_recordid" type="java.lang.String"/>
+        <property name="vendorRecordId" column="vendor_recordid" type="java.lang.Long"/>
+        <property name="createTime" column="create_time" type="timestamp"/>
+    </class>
+</hibernate-mapping>

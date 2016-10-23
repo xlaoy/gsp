@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<div class="mod_hd tabs_gary" id="settleStatusId">
+	<a href="${basePath}platform/settlement/queryconfirmedSettleBill.xhtml" #if($VmUtils.eq($!nvg,'queryconfirmedSettleBill')) class="select" #end>已提交结算单</a>
+	<a href="${basePath}platform/settlement/queryAdjustSettlement.xhtml" #if($VmUtils.eq($!nvg,'queryAdjustSettlement')) class="select" #end>申请调整商家汇总</a>
+	<a href="${basePath}platform/adjust/queryAllAdjustment.xhtml" #if($VmUtils.eq($!nvg,'queryAllAdjustment')) class="select" #end>调整申请汇总</a>
+	<a href="${basePath}platform/settlement/exportSettlementBills.xhtml" #if($VmUtils.eq($!nvg,'exportSettlementBills')) class="select" #end>数据导出</a>
+	<a href="${basePath}platform/reqmoneybill/reqmoneybill.xhtml" #if($VmUtils.eq($!nvg,'reqmoneybill')) class="select" #end>请款单</a>
+</div>

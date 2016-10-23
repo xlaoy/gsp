@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>卖品结算单</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<table border="1">
+		<thead>
+			<tr>
+				<td width="200" height="32" valign="middle">场馆</td>
+				<td width="310" height="32" valign="middle">结算周期</td>
+				<td width="80" valign="middle">结算票数</td>
+				<td width="80" valign="middle">结算金额</td>
+			</tr>
+		</thead>
+		<tbody>
+			#if($sb && $sb.size() > 0)
+			#foreach($s in ${sb})
+			<tr>
+				<td height="26" valign="middle">
+					#set($place=$pm.get($!{s.configId}))
+					$!{place.name}
+				</td>
+				<td height="26" valign="middle">
+					[ $!DateUtil.formatTimestamp($!{s.startTime}) -&nbsp;&nbsp;
+					 $!DateUtil.formatTimestamp($!{s.endTime}) )
+				</td>
+				
+				<td width="80" height="26" valign="middle">
+					$!{s.orderTotalNumber}
+					
+				</td>
+				<td width="80" height="26" valign="middle">
+					$!CurrencyFmt.format($!{s.orderTotalAmount})
+					
+				</td>
+			</tr>
+			#end
+			#else
+			<tr>
+				<td valign="middle" colspan="2">合计</td>
+				<td width="80" height="26" valign="middle">0</td>
+				<td width="80" height="26" valign="middle">0</td>
+			</tr>
+			#end
+		</tbody>
+	</table>
+</body>
+</html>

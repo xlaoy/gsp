@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html style="background: #fff;">
+<head>
+<title>演出</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+<script type="text/javascript" src="${basePath}js/autoComplete.js"></script>
+<style type="text/css">
+.s{background:#f0f0f0;}
+</style>
+</head>
+
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryDramaConfig")
+	#parse('WEB-INF/pages/nvaig/dramadatanvaig.vm')
+	
+	<div class="mode_search">
+		<form action="${basePath}platform/drama/queryDramaConfig.xhtml" method="post" id="configForm">
+				<h2>查询条件</h2><br>
+				<div>
+					配置id：
+					<input type="text" class="text" name="recordid" id="recordid" value="$!{params.recordid}" style="width: 150px;"/>
+					&nbsp;&nbsp;
+					项目版本：
+					<input type="text" class="text" name="dramaversionid" id="dramaversionid" value="$!{params.dramaversionid}" style="width: 150px;"/>
+					&nbsp;&nbsp;
+					项目名称：
+					<input type="hidden" name="dramaid" id="dramaid" value="$!{params.dramaid}"/>
+					<input type="text" class="text" name="dramaname" id="dramaname" value="$!{params.dramaname}" style="width: 250px;" autocomplete="off"/>
+					&nbsp;&nbsp;
+					供应商名称：
+					<input type="hidden" name="suppliercode" id="suppliercode" value="$!{params.suppliercode}"/>
+					<input type="text" class="text" name="suppliername" id="suppliername" value="$!{params.suppliername}" style="width: 250px;" autocomplete="off"/>
+					&nbsp;&nbsp;
+					<br><br>
+					结算方式：
+					<select id="settlebase" name="settlebase" class="text" style="width: 100px;">
+						<option value="">全部</option>
+						<option value="ORDERTIME"  #if($VmUtils.eq($!{params.settlebase},"ORDERTIME")) selected="selected" #end>下单时间</option>
+						<option value="USETIME"  #if($VmUtils.eq($!{params.settlebase},"USETIME")) selected="selected" #end>放映时间</option>
+					</select>
+					&nbsp;&nbsp;
+					结算周期：
+					<select id="settlecycle" name="settlecycle" class="text" style="width: 100px;">
+						<option value="">全部</option>
+						<option value="TN"  #if($VmUtils.eq($!{params.settlecycle},"TN")) selected="selected" #end>TN</option>
+						<option value="WEEKLY"  #if($VmUtils.eq($!{params.settlecycle},"WEEKLY")) selected="selected" #end>按周</option>
+						<option value="MIDDLE"  #if($VmUtils.eq($!{params.settlecycle},"MIDDLE")) selected="selected" #end>按半月</option>
+						<option value="MONTHLY"  #if($VmUtils.eq($!{params.settlecycle},"MONTHLY")) selected="selected" #end>按月</option>
+						<option value="PROGRAM"  #if($VmUtils.eq($!{params.settlecycle},"PROGRAM")) selected="selected" #end>按项目</option>
+					</select>
+					&nbsp;&nbsp;
+					扣率类型：
+					<select id="distype" name="distype" class="text" style="width: 100px;">
+						<option value="">全部</option>
+						<option value="percent"  #if($VmUtils.eq($!{params.distype},"percent")) selected="selected" #end>百分比</option>
+						<option value="uprice"  #if($VmUtils.eq($!{params.distype},"uprice")) selected="selected" #end>阶价</option>
+					</select>
+					&nbsp;&nbsp;
+					结算状态：
+					<select id="status" name="status" class="text" style="width: 100px;">
+						<option value="">全部</option>
+						<option value="WAITFINISH"  #if($VmUtils.eq($!{params.status},"WAITFINISH")) selected="selected" #end>待完成</option>
+						<option value="WAITAPPROVAL"  #if($VmUtils.eq($!{params.status},"WAITAPPROVAL")) selected="selected" #end>待审核</option>
+						<option value="HASAPPROVAL" #if($VmUtils.eq($!{params.status},"HASAPPROVAL")) selected="selected" #end>已审核</option>
+						<option value="SETTLEING" #if($VmUtils.eq($!{params.status},"SETTLEING")) selected="selected" #end>结算中</option>
+						<option value="FINISH" #if($VmUtils.eq($!{params.status},"FINISH")) selected="selected" #end>已结算</option>
+						<option value="DISCARD" #if($VmUtils.eq($!{params.status},"DISCARD")) selected="selected" #end>已废弃</option>
+					</select>
+					&nbsp;&nbsp;
+					<a href="javascript:$('configForm').submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="javascript:passeMoreDramConfig();" class="button minBt whiteBt"><span>批量审批</span></a>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="javascript:showconfigMark();" class="button minBt whiteBt"><span>手动同步配置</span></a>
+				</div>
+		</form>
+	</div>
+	
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th style="width:5%;"><input type="checkbox" onclick="selectAll();"/>配置id</th>
+					<th style="width:6%;">项目版本</th>
+					<th>项目名称</th>
+					<th style="width:15%;">供应商名称</th>
+					<th style="width:6%;">代售类型</th>
+					<th style="width:6%;">项目组织</th>
+					<th style="width:9%;">开始时间</th>
+					<th style="width:9%;">结束时间</th>
+					<th style="width:6%;">结算方式</th>
+					<th style="width:6%;">扣率类型</th>
+					<th style="width:6%;">结算周期</th>
+					<th style="width:6%;">结算状态</th>
+					<th style="width:7%;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($config in ${configList})
+				<tr>
+					<td>
+						#if($VmUtils.eq($!{config.status},"WAITAPPROVAL"))
+						<input type="checkbox" name="recordid" value="$!{config.recordid}"/>
+						#end
+						$!{config.recordid}
+					</td>
+					<td>
+						<a href="javascript:loadplayitem('$!{config.dramaversionid}');">$!{config.dramaversionid}</a>
+					</td>
+					<td>$!{dramamap.get($!{config.dramaid}).dramaname}【$!{config.dramaid}】</td>
+					<td>$!{suppliermap.get($!{config.suppliercode}).name}【$!{config.suppliercode}】</td>
+					<td>
+						#if($VmUtils.eq($!{dramamap.get($!{config.dramaid}).pretype},"M"))
+							非代售
+						#elseif($VmUtils.eq($!{dramamap.get($!{config.dramaid}).pretype},"E"))
+							代售
+						#end
+					</td>
+					<td>
+						#if($VmUtils.eq($!{dramamap.get($!{config.dramaid}).origin},"GW"))
+							格瓦拉
+						#elseif($VmUtils.eq($!{dramamap.get($!{config.dramaid}).origin},"WG"))
+							微格娱乐
+						#else
+							$!{dramamap.get($!{config.dramaid}).origin}
+						#end
+					</td>
+					<td>$!DateUtil.formatTimestamp($!{config.starttime})</td>
+					<td>$!DateUtil.formatTimestamp($!{config.endtime})</td>
+					<td>
+						#if($VmUtils.eq($!{config.settlebase},"ORDERTIME"))
+							下单时间
+						#elseif($VmUtils.eq($!{config.settlebase},"USETIME"))
+							放映时间
+						#end
+					</td>
+					<td>
+						#if($VmUtils.eq($!{config.distype},"percent"))
+							百分比
+						#elseif($VmUtils.eq($!{config.distype},"uprice"))
+							阶价
+						#end
+					</td>
+					<td>
+						#if($VmUtils.eq($!{config.settlecycle},"TN"))
+							T+N
+						#elseif($VmUtils.eq($!{config.settlecycle},"WEEKLY"))
+							按周
+						#elseif($VmUtils.eq($!{config.settlecycle},"MIDDLE"))
+							按半月
+						#elseif($VmUtils.eq($!{config.settlecycle},"MONTHLY"))
+							按月
+						#elseif($VmUtils.eq($!{config.settlecycle},"PROGRAM"))
+							按项目
+						#elseif($VmUtils.eq($!{config.settlecycle},"SETTLE"))
+							已结
+						#end	
+					</td>
+					<td>
+						#if($VmUtils.eq($!{config.status},"WAITFINISH"))
+							待完成
+						#elseif($VmUtils.eq($!{config.status},"WAITAPPROVAL"))
+							待审核
+						#elseif($VmUtils.eq($!{config.status},"HASAPPROVAL"))
+							已审核
+						#elseif($VmUtils.eq($!{config.status},"SETTLEING"))
+							结算中
+						#elseif($VmUtils.eq($!{config.status},"FINISH"))
+							已结算
+						#elseif($VmUtils.eq($!{config.status},"DISCARD"))
+							已废弃
+						#end
+					</td>
+					<td>
+						#if(!$VmUtils.eq($!{config.status},"WAITFINISH") && !$VmUtils.eq($!{config.status},"DISCARD"))
+							<a href="javascript:loadpricerate('$!{config.recordid}');">查看价格扣率</a><br>
+						#end
+						#if(!$VmUtils.eq($!{config.status},"FINISH") && !$VmUtils.eq($!{config.status},"DISCARD"))
+							<a href="javascript:updateDramConfig('$!{config.recordid}');">刷新配置</a>
+						#end
+						#if($VmUtils.eq($!{config.status},"WAITFINISH") || $VmUtils.eq($!{config.status},"WAITAPPROVAL"))
+							<br><a href="javascript:discardDramConfig('$!{config.recordid}');">废弃</a>
+						#end
+						#if($VmUtils.eq($!{config.status},"WAITAPPROVAL"))
+							<br><a href="javascript:passeOneDramConfig('$!{config.recordid}');">通过审核</a>
+						#elseif($VmUtils.eq($!{config.status},"SETTLEING") || $VmUtils.eq($!{config.status},"HASAPPROVAL"))
+							<br><a href="javascript:createDramaBill('$!{config.recordid}');">生成结算单</a>
+							<br><a href="${basePath}/platform/drama/queryDramaSettleBill.xhtml?configid=$!{config.recordid}">查看结算单</a>
+						#elseif($VmUtils.eq($!{config.status},"FINISH"))
+							<a href="${basePath}/platform/drama/queryDramaSettleBill.xhtml?configid=$!{config.recordid}">查看结算单</a>
+						#end
+					</td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="13">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
+
+<div id="pricerateMark" style="display:none; height: 400px;overflow-y:auto;"></div>
+<div id="getconfigMark" style="display:none; height: 100px;overflow-y:auto;">
+	<p style="height: 50px; line-height: 50px;">
+		<span style="margin-left: 30px;">项目id：</span>
+		<input type="text" class="text" id="mdramaid"/>
+	</p>
+	<p style="height: 50px; line-height: 50px;">
+		<span  style="margin-left: 60px; margin-right: 30px; cursor: pointer;">
+			<a href="javascript:getConfigByDrama();" class="button minBt whiteBt">同&nbsp;&nbsp;步</a>
+		</span>
+		<a href="javascript:disposegetconfigMark();" class="button minBt whiteBt">取&nbsp;&nbsp;消</a>	
+	</p>
+</div>
+<div id="playitemMark" style="display:none; height: 300px;overflow-y:auto;"></div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+});
+//演出项目数据下来查询
+new mSift('dramasel').Create({
+	"url": "${basePath}platform/drama/queryDramaData.xhtml",
+	"prama": function() {
+		var pdata = {
+				"dramaname": document.getElementById('dramaname').value,
+				"maxrow": 10
+			};
+		return pdata;
+	},
+	"codeObj": document.getElementById('dramaid'),
+	"nameObj": document.getElementById('dramaname'),
+	"returnCode": function(date) {
+		return date.recordid;
+	},
+	"returnName":function(date) {
+		return date.dramaname;
+	}
+});
+
+//供应商下来查询
+new mSift('suppliersel').Create({
+	"url": "${basePath}platform/drama/queryBaseData.xhtml",
+	"prama": function() {
+		var pdata = {
+				"name": document.getElementById('suppliername').value,
+				"type": "supplier",
+				"maxrow": 10
+			};
+		return pdata;
+	},
+	"codeObj": document.getElementById('suppliercode'),
+	"nameObj": document.getElementById('suppliername'),
+	"returnCode": function(date) {
+		return date.code;
+	},
+	"returnName":function(date) {
+		return date.name;
+	}
+});
+
+/**
+ * 查看价格扣率
+ */
+function loadpricerate(configid){
+	var url = '${basePath}/platform/drama/queryPriceRate.xhtml';
+	var values = {"configid":configid};
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('pricerateMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','pricerateMark','价格扣率明细' ,600,'pricerateMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+/**
+ * 手动同步配置
+ */
+function updateDramConfig(recordid) {
+	gewa.util.issure('','确认要手动同步该配置吗？同步完之后会对以前的相关数据进行作废处理，但系统仍会保留！','提示',420,'keys',function(calls,id){
+		var url = "${basePath}/platform/drama/updateDramConfig.xhtml";
+		var values = {"recordid":recordid};
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(mid);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){$('configForm').submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+
+/**
+ * 手动生成单据
+ */
+function createDramaBill(recordid) {
+	gewa.util.issure('','确认要出单据吗！','提示',420,'keys',function(calls,id){
+		var url = "${basePath}/platform/drama/createDramaBill.xhtml";
+		var values = {"recordid":recordid};
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(mid);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){$('configForm').submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+
+
+/**
+ * 审批通过配置
+ */
+function passeOneDramConfig(recordid) {
+	gewa.util.issure('','确认要审批通过该配置吗？通过之后系统会按时出结算单并计算数据！','提示',420,'keys',function(calls,id){
+		passeDramConfig(recordid);
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+
+function selectAll(){
+	document.getElements('input[type=checkbox][name=recordid]').each(function(item){
+		item.checked = !item.checked;
+	})
+}
+/**
+ * 批量审批
+ */
+function passeMoreDramConfig(){
+	var recordids = "";
+	var n = 0;
+	document.getElements('input[type=checkbox][name=recordid]').each(function(item){
+		if (item.checked == true){
+			if (!recordids == ""){
+				recordids = recordids + ",";
+			}
+			recordids = recordids + item.value;
+			n++;
+		}
+	});
+	if (recordids == ""){
+		gewaUtil.alert("没有选择任何结算单。");
+		return;
+	}
+	gewa.util.issure('','确认要对' + n +'个配置审批通过吗？通过之后系统会按时出结算单并计算数据！','提示',420,'keys',function(calls,id){
+		passeDramConfig(recordids);
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+
+function passeDramConfig(recordids) {
+	var url = "${basePath}/platform/drama/passeDramConfig.xhtml";
+	var values = {"recordids":recordids};
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask(mid);
+		if(result.success == true){
+			gewaUtil.alert(result.retval, function(){$('configForm').submit();});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	});
+}
+
+/**
+ * 弹出手动同步配置框
+ */
+function showconfigMark() {
+	gewa.util.maskContent('','getconfigMark','',360,'getconfigMark');
+}
+function disposegetconfigMark() {
+	document.getElementById('mdramaid').value = "";
+	gewa.util.container['getconfigMark'].dispose('getconfigMark');
+}
+function getConfigByDrama() {
+	var dramaid = document.getElementById('mdramaid').value;
+	if(dramaid == null || dramaid == "") {
+		return;
+	}
+	var reg = new RegExp("^[0-9]*$");
+	if(!reg.test(dramaid)) {
+		return;
+	}
+	var url = "${basePath}/platform/drama/syncDramConfigByDramaId.xhtml";
+	var values = {"dramaid":dramaid};
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask(mid);
+		if(result.success == true){
+			gewaUtil.alert(result.retval, function(){$('configForm').submit();});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	});
+}
+
+
+/**
+ * 查看场次
+ */
+function loadplayitem(dramaversionid){
+	var url = '${basePath}/platform/drama/queryPlayItem.xhtml';
+	var values = {"dramaversionid":dramaversionid};
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('playitemMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','playitemMark','版本' + dramaversionid + '场次明细' ,500,'playitemMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+/**
+ * 废弃
+ */
+function discardDramConfig(recordid) {
+	gewa.util.issure('','确认要废弃该配置吗！','提示',420,'keys',function(calls,id){
+		var url = "${basePath}/platform/drama/discardDramConfig.xhtml";
+		var values = {"recordid":recordid};
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(mid);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){$('configForm').submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+</script>
+</body>
+</html>

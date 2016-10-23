@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+#if($ads && $ads.size() > 0)
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th class="sortable"><span>调整数量</span><span class="carat"></span></th>
+					<th class="sortable"><span>调整金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>调整申请人</span><span class="carat"></span></th>
+					<th class="sortable"><span>调整原因</span><span class="carat"></span></th>
+					<th class="sortable"><span>调整备注</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+			<tbody>
+			#foreach($ad in ${ads})
+				<tr>
+				<td style="width:60px;"><span>
+						$!{ad.adjustNumber}
+						</span>
+					</td>
+					<td style="width:60px;"><span>
+						$!{ad.amount}
+						</span>
+					</td>
+					
+					<td style="width:60px;"><span>
+						$!{ad.operator}
+						</span>
+					</td>
+					<td style="width:120px;"><span>
+						$VmUtils.displayEnums("AdjustReasonEnums" , $!{ad.reason})
+						</span>
+					</td>
+					<td style="width:60px;"><span>
+						$!{ad.comments}
+						</span>
+					</td>
+				</tr>
+			#end
+			</tbody>
+		</table>
+	</div>
+	#end
+</body>
+</html>

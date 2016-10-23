@@ -1,0 +1,6 @@
+create or replace view view4placeallowance as
+select i.RECORDID, i.ORDERID, i.CARDTYPE, i.AMOUNT, i.tag from specialdiscount_extra se, discount_item i 
+where i.RELATEDID = se.RECORDID
+and se.allowancetype = 'place'
+and i.tag = 'partner'
+and i.CARDTYPE = 'M'

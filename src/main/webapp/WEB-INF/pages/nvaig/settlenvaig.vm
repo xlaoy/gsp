@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<div class="mod_hd tabs_gary">
+	<a href="${basePath}platform/settlement/settlementbills.xhtml"  #if($VmUtils.eq($!nvg,'settlementbills')) class="select" #end>结算单</a>
+	<a href="${basePath}platform/baochang/queryBaoChang.xhtml" #if($VmUtils.eq($!nvg,'queryBaoChang')) class="select" #end>影院包场列表</a>
+</div>

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.drama.DramaSettleBill" table="drama_settlebill" schema="gsp">
+    
+       <id name="recordid" type="long">
+            <column name="recordid"  />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_drama_bill</param>
+			</generator>
+       </id>
+       
+       <property name="dramaid"		column="dramaid"	type="long" />
+       <property name="suppliercode"		column="suppliercode"	type="string" />
+       <property name="starttime"		column="starttime"	type="timestamp" />
+       <property name="endtime"		column="endtime"	type="timestamp" />
+       <property name="ticketnum"		column="ticketnum"	type="long" />
+       <property name="ticketamount"		column="ticketamount"	type="double" />
+       <property name="refundnum"		column="refundnum"	type="long" />
+       <property name="refundamount"		column="refundamount"	type="double" />
+       <property name="settleamount"		column="settleamount"	type="double" />
+       <property name="madisamount"		column="madisamount"	type="double" />
+       <property name="mbddisamount"		column="mbddisamount"	type="double" />
+       <property name="butieamount"		column="butieamount"	type="double" />
+       <property name="syspayamount"		column="syspayamount"	type="double" />
+       <property name="payamount"		column="payamount"	type="double" />
+       <property name="adjustnum"		column="adjustnum"	type="long" />
+       <property name="adjustamount"		column="adjustamount"	type="double" />
+       <property name="adjustdesc"		column="adjustdesc"	type="string" />
+       <property name="status"		column="status"	type="string" />
+       <property name="reqmoney"		column="reqmoney"	type="string" />
+       <property name="configid"		column="configid"	type="long" />
+       <property name="lastbill"		column="lastbill"	type="string" />
+       <property name="gspupdatetime"		column="gspupdatetime"	type="timestamp" />
+				        
+    </class>
+</hibernate-mapping>

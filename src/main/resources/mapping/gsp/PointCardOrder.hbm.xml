@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.PointCardOrder" table="pointcard_order" schema="gsp">
+    
+       <id name="recordid" type="long">
+            <column name="recordid"  />
+			<generator class="assigned" />
+       </id>
+       
+       <property name="partnerid"		column="partnerid"	type="long" />
+       <property name="outtradeno"		column="outtradeno"	type="string" />
+       <property name="tradeno"		column="tradeno"	type="string" />
+       <property name="status"		column="status"	type="string" />
+       <property name="relatedid"		column="relatedid"	type="long" />
+       <property name="cardno"		column="cardno"	type="string" />
+       <property name="orderamount"		column="orderamount"	type="double" />
+       <property name="outamount"		column="outamount"	type="double" />
+       <property name="carduseamount"		column="carduseamount"	type="double" />
+       <property name="ordertime"		column="ordertime"	type="timestamp" />
+       <property name="updatetime"		column="updatetime"	type="timestamp" />
+       <property name="cardtype"		column="cardtype"	type="string" />
+       <property name="ordertype"		column="ordertype"	type="string" />
+       <property name="cinemaid"		column="cinemaid"	type="long" />
+       <property name="cinemaname"		column="cinemaname"	type="string" />
+       <property name="playtime"		column="playtime"	type="timestamp" />
+       <property name="ticketnum"		column="ticketnum"	type="integer" />
+       <property name="otherinfo"		column="otherinfo"	type="string" />
+    </class>
+</hibernate-mapping>

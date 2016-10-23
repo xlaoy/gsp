@@ -1,0 +1,91 @@
+<style type="text/css">
+body{width:auto !important;min-width:100%;}
+.Mv_nav{height:50px;line-height:50px;background:#eb6120;position:relative;z-index:2;padding:0 30px;}
+.usP{background:url(${staticPath}css/buss/sjLo.png) no-repeat 0 0;}
+.Mv_nav .Mv_nav_left{color:#fff;height:100%;}
+.Mv_nav_left .jsLogo{float:left;display:block;width:87px;height:36px;background-position:0 0;margin-right:15px;border-right:1px solid #fff;margin-top:7px;}
+.Mv_nav_left h1.usP{color:#fff;line-height:36px;padding-right:35px;background-position:97px -50px;*background-position:128px -50px;cursor:pointer;font-weight:normal;margin-top:6px;}
+.Mv_nav_left .allNav li{float:left;margin-right:10px;}
+.Mv_nav_left .allNav li a{color:#fff;padding:0 15px;display:block;font-size:16px;}
+.Mv_nav_left .allNav li.select a, .Mv_nav .allNav li a:hover {color:#fff;background:url(${staticPath}css/buss/san_03.png) no-repeat center bottom;}
+.Mv_nav_left .selNav{position:absolute;width:160px;background:#fff;z-index:10;padding:10px 0;left:236px;top:45px;box-shadow:0 0 2px 2px #e1e1e1;}
+.Mv_nav_left .selNav li{width:100%;margin:0;}
+.Mv_nav_left .selNav li a{display:block;color:#333333;font-size:14px;padding:0 0 0 15px;height:40px;line-height:40px;}
+.Mv_nav_left .selNav li a:hover{color:#e9682d;background:#e1e1e1;}
+.Mv_nav_left .selNav li.select a{background:#e9682d;color:#fff;}
+
+.bodyBox{padding-bottom:50px;z-index:1;min-height:600px;}
+.bodyBox form{position:relative;z-index:10;}
+.Mv_nav_right{font-size:16px;}
+.Mv_nav_right a{color:#fff;}
+.Mv_nav_right a:hover{text-decoration:underline;color:#fff;}
+.chosOp{margin-bottom:35px;}
+.chosOp li{margin:0 15px 10px 0;float:left;}
+.chosOp li .t_Icon{padding:6px !important;background-position: right -155px;}
+.chosOp li select{height:27px;padding: 4px;}
+.export{float:right;display:block;width:34px;height:31px;background-position:0 -102px;}
+.minBt{background-position:0 -243px;}
+.minBt{height:24px; line-height:24px; line-height:26px; overflow:hidden; padding-left:14px;}
+.minBt span,.minBt input{height:24px; line-height:24px; line-height:26px; overflow:hidden; padding-right:14px; float:left; font-size:12px;background-position:right -266px;}
+.minBt:hover{background-position:0 -290px;}
+.minBt:hover span,.minBt:hover input{background-position:right -313px;}
+
+/*定制下拉框*/
+.ui_simulate_20{position:relative; z-index:10px; }
+.ui_simulate_20 .simulate_select_20{
+	position:relative; z-index:10px; height:26px; line-height:26px; padding:0 30px 0 8px; border:1px solid #c3c3c3; overflow:hidden;
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+   -webkit-border-radius: 2px;
+	background: -webkit-gradient(linear, 0 0, 0 100%, from(#fcfbfb), to(#f2f0f1));
+	background: -moz-linear-gradient(top, #fcfbfb, #f2f0f1);
+	filter:progid:DXImageTransform.Microsoft.gradient(startcolorstr=#fcfbfb,endcolorstr=#f2f0f1,gradientType=0);
+	width:110px;
+}
+.ui_simulate_20 .simulate_select_20 .select_arrow_20{position:absolute; top:0; right:0; width:22px; height:27px; border-left:1px solid #c3c3c3; background: url(${staticPath}/css/global/selectBar_arrow.png) no-repeat center center;}
+.ui_simulate_20 .simulate_options_20{display:none; position:absolute; top:27px; left:0; width:98%; border:1px solid #c3c3c3;background-color:#ffffff;}
+.ui_simulate_20 .simulate_options_20 li{height:26px; margin:2px 0; line-height:26px; color:#333; display:block;overflow:hidden; width:100%;}
+.ui_simulate_20 .simulate_options_20 li a{padding:0 6px; display:block; color:#333; text-decoration:none;cursor:pointer;}
+.ui_simulate_20 .simulate_options_20 li a:hover{background-color:#f2f2f2; color:#c30;}
+
+/*公用*/
+.ui_warning {color:#666;padding:10px;line-height:25px;font:14px/22px;background-color#FEFBEC;border-color:#F2D0AA;}
+.ui_warning span{width:160px;display:inline-block;}
+.ui_warning em {display:inline-block;text-align:right;width:85px;}
+.ui_warning b,.ui_warning strong{font-size:18px; color:#eb6120;font-family:arial;}
+.ui_warning strong{color:#333;}
+.seek {padding:0;}
+.isTable{border-collapse:collapse;}
+.isTable th, .isTable td{font-weight:normal;border:1px solid #c1c1c1;text-align:center !important;font-size:12px;padding:4px 0;}
+.isTable td{line-height:22px;}
+.isTable a{color:#EB6120;margin-right:10px;display:inline-block;}
+.inbl{display:inline-block;white-space:nowrap;}
+
+.isSearch td{padding-bottom:10px;}
+.bill_panel{height:100%;position:relative;z-index:9;}
+.bill_tool{clear: both;width:100%;height:33px;overflow:hidden;margin-bottom:10px;}
+.bill_tool #page{margin:5px 0;}
+.bill_toolExe{background:#f2f2f2;border:1px solid #C1C1C1;padding-left:8px;height:28px;line-height:28px;position: relative;}
+.bill_toolExe .exeBt{position: absolute;padding:0 15px;height:30px;line-height: 30px;font-size:14px;font-weight:bold;background:#CC3300;color:#fff;right:-1px;top:-1px;display:inline-block;cursor: pointer;}
+#placeName{position: relative;}
+.autocompleter-choices,.classW{position:absolute;margin:0px 0 0 0px;border-spacing:inherit;border-collapse:separate;padding:0;list-style:none;
+	border:1px solid #9F9F9F;border-top:0;background-color:#fff;text-align:left;font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+	z-index:100;background: #FFF;
+}
+.autocompleter-choices li,.classW li{position:relative;margin:0;padding:0;text-indent:7px;display:block;float:none !important;cursor:pointer;
+	font-weight:normal;white-space:nowrap;font-size:12px;line-height:25px;overflow: hidden;height:25px;width:100%;clear: both;
+}
+.autocompleter-choices li.autocompleter-selected,.classW li.autocompleter-selected{background-color:#FF7B03;color:#fff;}
+.autocompleter-choices li.autocompleter-selected a,.classW li.autocompleter-selected a{color:#fff;}
+.autocompleter-choices span.autocompleter-queried,.classW span.autocompleter-queried{display:inline;float:none;font-weight:bold;margin:0;padding:0;}
+.autocompleter-choices li.autocompleter-selected span.autocompleter-queried,.classW li.autocompleter-selected span.autocompleter-queried{color:#9FCFFF;}
+.t_Icon{width:130px !important;}
+.s{background:#f0f0f0;}
+.nitice_info{margin:10px 0;}
+.nitice_info b{font-size:14px;color:#333;}
+
+.ac_uploadBox{margin-bottom:10px;font-size:14px;}
+.ac_uploadBox input{opacity:0;filter:alpha(opacity=0);-moz-opacity:0;-khtml-opacity: 0;height:30px;width:80px;position:relative;z-index:10;}
+.ac_uploadBox a.button{position:relative;left:-82px;z-index:1;}
+.ac_uploadBox .texttips{display:block;margin-bottom:7px;}
+</style>

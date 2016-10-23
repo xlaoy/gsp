@@ -1,0 +1,232 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<div id="invoiceAddMark" style="display:none; height: 500px;overflow-y:auto;"></div>
+
+<script type="text/javascript">
+
+function addinvioceopt() {
+	var settleid = $('settleid').value;
+	if(settleid == null || settleid == "") {
+		gewaUtil.alert("结算单号不能为空！");
+		return;
+	}
+	showInvoiceAdd(settleid);
+}
+
+//
+function batchSubmit(){
+	var settleids = "";
+	document.getElements('input[type=checkbox][name=fpsettleIds]').each(function(item){
+		if (item.checked == true){
+			if (!settleids == ""){
+				settleids = settleids + ",";
+			}
+			settleids = settleids + item.value;
+		}
+	});
+	if (settleids == ""){
+		gewaUtil.alert("请选择结算单！");
+		return;
+	}
+	showInvoiceAdd(settleids);
+}
+
+//弹出发票提交
+function showInvoiceAdd(tmpsettleids){
+	
+	/* var settleids = "";
+	document.getElements('input[type=checkbox][name=fpsettleIds]').each(function(item){
+		if (item.checked == true){
+			if (!settleids == ""){
+				settleids = settleids + ",";
+			}
+			settleids = settleids + item.value;
+		}
+	});
+	if (settleids == null || settleids == ""){
+		settleids = tmpsettleids;
+	} */
+	
+	var url = "${basePath}merchant/invoice/showInvoiceAdd.xhtml";
+	var values = {"settleids":tmpsettleids}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('invoiceAddMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','invoiceAddMark','发票提交信息填写' ,800,'invoiceAddMark','','','','','',function(){});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+function cancelInvoiceAddMark(){
+	document.forms[0].submit();
+	gewa.util.container['invoiceAddMark'].dispose('invoiceAddMark');
+}
+
+
+//
+function showInvoice(invoicecode, opt) {
+	var url = "${basePath}merchant/invoice/showInvoice.xhtml";
+	var values = {"invoicecode":invoicecode, "opt":opt}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('invoiceAddMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','invoiceAddMark','发票提交信息填写' ,800,'invoiceAddMark','','','','','',function(){});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+//删除发票
+function delInvoice(invoicecode) {
+	gewa.util.issure('','确认要删除发票' + invoicecode + '吗？','提示',420,'keys',function(calls,id){
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		var url = "${basePath}merchant/invoice/delInvoice.xhtml";
+		var values = {"invoicecode":invoicecode};
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(mid);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){
+					$('invoiceform').submit();
+				});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+
+//保存发票信息
+function addInvoice() {
+	
+	var invoicetype = $("inv_invoicetype").value;
+	var taxrate = $("inv_taxrate").value;
+	var vendername = $("inv_vendername").value;
+	var invoicecode = $("inv_invoicecode").value;
+	var invoicedate = $("inv_invoicedate").value;
+	var taxamount = $("inv_taxamount").value;
+	var invoiceamount = $("inv_invoiceamount").value;
+	var excludetaxamount = $("inv_excludetaxamount").value;
+	var content = $("inv_content").value;
+	var settleids = $("inv_settleids").value;
+	var opt = $("inv_opt").value;
+	var regcode = /^[0-9]*$/;
+	var reg = /^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/;
+	
+	if(vendername == null || vendername == "") {
+		gewaUtil.alert("销货单位名称不能为空！");
+		return;
+	}
+	if(invoicecode == null || invoicecode == "") {
+		gewaUtil.alert("发票号码不能为空！");
+		return;
+	}
+	if(!regcode.test(invoicecode)) {
+		gewaUtil.alert("发票号码只能为数字！");
+		return;
+	}
+	if(invoicedate == null || invoicedate == "") {
+		gewaUtil.alert("开票日期不能为空！");
+		return;
+	}
+	
+	if(invoiceamount == null || invoiceamount == "") {
+		gewaUtil.alert("发票金额不能为空！");
+		return;
+	}
+	if(!reg.test(invoiceamount)) {
+		gewaUtil.alert("发票金额格式不正确！");
+		return;
+	}
+	var gwkpamount = $("inv_gwkpamount").value;
+	if(parseFloat(invoiceamount) > parseFloat(gwkpamount)) {
+		gewaUtil.alert("发票金额不能大于格瓦拉开票总金额！");
+		return;
+	}
+	
+	if(taxamount == null || taxamount == "") {
+		gewaUtil.alert("税额不能为空！");
+		return;
+	}
+	if(!reg.test(taxamount)) {
+		gewaUtil.alert("税额格式不正确！");
+		return;
+	}
+	if(excludetaxamount == null || excludetaxamount == "") {
+		gewaUtil.alert("不含税金额不能为空！");
+		return;
+	}
+	if(!reg.test(excludetaxamount)) {
+		gewaUtil.alert("不含税金额格式不正确！");
+		return;
+	}
+	
+	var tmp1 = parseFloat(invoiceamount) - 1;
+	var tmp2 = parseFloat(invoiceamount) + 1;
+	var tmp3 = parseFloat(taxamount) + parseFloat(excludetaxamount)
+	if(tmp3 < tmp1) {
+		gewaUtil.alert("税额跟不含税金额之和相对发票金额偏小！");
+		return;
+	}
+	if(tmp3 > tmp2) {
+		gewaUtil.alert("税额跟不含税金额之和对发票金额偏大！");
+		return;
+	}
+	
+	var tmp4 = parseFloat(taxamount) - 1;
+	var tmp5 = parseFloat(taxamount) + 1;
+	var tmp6 = parseFloat(excludetaxamount) * parseFloat(taxrate) / 100;
+	if(tmp6 < tmp4) {
+		gewaUtil.alert("不含税金额*税率相对税额偏小！");
+		return;
+	}
+	if(tmp6 > tmp5) {
+		gewaUtil.alert("不含税金额*税率相对税额偏大！");
+		return;
+	}
+	
+	if(settleids == null || settleids == "") {
+		gewaUtil.alert("关联结算单不能为空！");
+		return;
+	}
+	if(content == null || content == "") {
+		gewaUtil.alert("发票备注不能为空！");
+		return;
+	}
+	
+	var url = "${basePath}merchant/invoice/saveInvoice.xhtml";
+	var values = {
+			"invoicetype":invoicetype, 
+			"taxrate":taxrate, 
+			"vendername":vendername, 
+			"invoicecode":invoicecode , 
+			"invoicedate": invoicedate, 
+			"taxamount":taxamount,
+			"invoiceamount":invoiceamount,
+			"excludetaxamount":excludetaxamount,
+			"submitcontent":content,
+			"settleids":settleids,
+			"opt":opt
+		};
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask(mid);
+		if(result.success == true){
+			gewaUtil.alert(result.retval, function() {
+				if($('invoiceform')) {
+					$('invoiceform').submit();
+				} else {
+					var strs = settleids.split(",");
+					location = "${basePath}merchant/invoice/queryInvoice.xhtml?settleid=" + strs[0];
+				}
+			});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	}); 
+}
+</script>
+

@@ -1,0 +1,2 @@
+create or replace view view_drama as
+select t.recordid, t.dramaname,t.pretype, t.updatetime, t.adddate, t.releasedate, t.enddate  from drama t;

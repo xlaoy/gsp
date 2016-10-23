@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>审核管理</title>
+</head>
+<body id="_body">
+<div class="inner">
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th class="sortable"><span>请款流水号</span><span class="carat"></span></th>
+					<th class="sortable"><span>供应商/场馆</span><span class="carat"></span></th>
+					<th class="sortable"><span>账套编号</span><span class="carat"></span></th>
+					<th class="sortable"><span>影票金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>影票周期</span><span class="carat"></span></th>
+					<th class="sortable"><span>卖品金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>卖品周期</span><span class="carat"></span></th>
+					<th class="sortable"><span>通道费金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>通道费周期</span><span class="carat"></span></th>
+					<th class="sortable"><span>请款总金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>关联结算单</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				#if($reqBills && $reqBills.size() > 0)
+				#set($ticket='TICKET')
+				#set($goods='GOODS')
+				#set($channel='CHANNEL')
+				#foreach($rb in ${reqBills})
+					<tr>
+						<td style="vnd.ms-excel.numberformat:@">
+							$!rb.recordId
+						</td>
+						<td style="vnd.ms-excel.numberformat:@">
+							$!rb.vendorName
+						</td>
+						<td style="vnd.ms-excel.numberformat:@">
+							$!rb.vendorCode
+						</td>
+						<td style="vnd.ms-excel.numberformat:@">
+							$!rb.ticketAmount
+						</td>
+						<td style="vnd.ms-excel.numberformat:@">
+							#set($ts=$!DateUtil.format($startMap.get("$!{rb.recordId}$ticket"),"yyyy-MM-dd HH:ss:mm"))
+							#set($te=$!DateUtil.format($endMap.get("$!{rb.recordId}$ticket"),"yyyy-MM-dd HH:ss:mm"))
+							$!ts - $!te
+						</td>
+						<td>
+							$!rb.goodsAmount
+						</td>
+						<td style="vnd.ms-excel.numberformat:@">
+							#set($gs=$!DateUtil.format($startMap.get("$!{rb.recordId}$goods"),"yyyy-MM-dd HH:ss:mm"))
+							#set($ge=$!DateUtil.format($endMap.get("$!{rb.recordId}$goods"),"yyyy-MM-dd HH:ss:mm"))
+							$!gs - $!ge
+						</td>
+						<td style="vnd.ms-excel.numberformat:@">
+							$!rb.channelAmount
+						</td>
+						<td style="vnd.ms-excel.numberformat:@">
+							#set($cs=$!DateUtil.format($startMap.get("$!{rb.recordId}$channel"),"yyyy-MM-dd HH:ss:mm"))
+							#set($ce=$!DateUtil.format($endMap.get("$!{rb.recordId}$channel"),"yyyy-MM-dd HH:ss:mm"))
+							$!cs - $!ce
+						</td>
+						<td style="vnd.ms-excel.numberformat:@">
+							$!rb.totalAmount
+						</td>
+						<td style="vnd.ms-excel.numberformat:@">
+							$!rb.relateSettleId
+						</td>
+					</tr>
+				#end
+				#end
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

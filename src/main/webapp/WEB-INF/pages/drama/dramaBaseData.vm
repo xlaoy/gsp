@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html style="background: #fff;">
+<head>
+<title>演出</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+<style type="text/css">
+.s{background:#f0f0f0;}
+</style>
+</head>
+
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryDramaBaseData")
+	#parse('WEB-INF/pages/nvaig/dramadatanvaig.vm')
+	
+	<div class="mode_search">
+		<form action="${basePath}platform/drama/queryDramaBaseData.xhtml" method="post" id="dataForm">
+				<h2>查询条件</h2><br>
+				<div>
+					数据类型：
+					<select id="type" name="type" class="text" style="width: 120px;">
+						<option value="place" #if($VmUtils.eq($!{params.type},"place")) selected="selected" #end>场馆</option>
+						<option value="supplier" #if($VmUtils.eq($!{params.type},"supplier")) selected="selected" #end>供应商</option>
+					</select>
+					&nbsp;&nbsp;
+					数据编码：
+					<input type="text" class="text" name="code" id="code" value="$!{params.code}" style="width: 100px;"/>
+					&nbsp;&nbsp;
+					数据名称：
+					<input type="text" class="text" name="name" id="name" value="$!{params.name}"/>
+					&nbsp;&nbsp;
+					<a href="javascript:$('dataForm').submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+				</div>
+		</form>
+	</div>
+	
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th style="width:15%;">数据类型</th>
+					<th style="width:20%;">数据编码</th>
+					<th>数据名称</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($data in ${dataList})
+				<tr>
+					<td>
+						#if($VmUtils.eq($!{data.type},"place"))
+							场馆
+						#elseif($VmUtils.eq($!{data.type},"supplier"))
+							供应商
+						#end
+					</td>
+					<td>$!{data.code}</td>
+					<td>$!{data.name}</td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="3">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+});
+
+</script>
+</body>
+</html>

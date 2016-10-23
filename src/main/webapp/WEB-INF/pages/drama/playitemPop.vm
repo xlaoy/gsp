@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+
+<body id="_body">
+<div class="inner">
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th style="width:16%;">序号</th>
+					<th style="width:23%;">场次id</th>
+					<th style="width:23%;">dpid</th>
+					<th style="width:40%;">演出时间</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($play in ${playlist})
+					<tr>
+						<td>$!{foreach.count}</td>
+						<td>$!{play.recordid}</td>
+						<td>$!{play.dpid}</td>
+						<td>$!DateUtil.formatTimestamp($!{play.playtime})</td>
+					</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+</div>
+
+</body>
+</html>

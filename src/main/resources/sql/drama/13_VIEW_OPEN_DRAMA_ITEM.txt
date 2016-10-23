@@ -1,0 +1,2 @@
+CREATE OR REPLACE VIEW VIEW_OPEN_DRAMA_ITEM AS
+select recordid,dpid,dramaid,theatreid,citycode,roomid,roomname,playtime,endtime,period,price,costprice,gewaprice,salecycle,updatetime  from open_drama_item

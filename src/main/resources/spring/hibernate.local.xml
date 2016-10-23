@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-4.0.xsd ">
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<!-- testing-->
+		<property name="driverClassName" value="org.postgresql.Driver" />
+		<property name="url" value="jdbc:postgresql://101.251.110.236/gsp" />
+		<property name="username" value="gsp" />
+		<property name="password" value="gspgspgspgsp" />
+	</bean>
+	<bean id="shDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@192.168.3.222:1521:dbtest1" />
+		<property name="username" value="webdata"/>
+		<property name="password" value="webdata2"/>
+	</bean>
+	
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<bean id="shJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="shDataSource"/>
+	</bean>
+	
+	<!-- Hibernate SessionFactory -->
+	<bean id="sessionFactory" class="com.gewara.support.GewaSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mappingDirectoryLocations">
+			<list>
+				<value>classpath:mapping</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+				<prop key="hibernate.default_schema">gsp</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.cache.use_second_level_cache">false</prop>
+			</props>
+			
+		</property>
+	</bean>
+	<bean id="shSessionFactory" class="com.gewara.support.GewaSessionFactoryBean">
+		<property name="dataSource" ref="shDataSource" />
+		<property name="mappingDirectoryLocations">
+			<list>
+				<value>classpath:mapping</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">com.gewara.support.GewaOracleDialect</prop>
+				<prop key="hibernate.default_schema">WEBDATA</prop>
+				<prop key="hibernate.cache.use_second_level_cache">false</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="shHibernateTemplate" class="org.springframework.orm.hibernate5.HibernateTemplate">
+		<property name="sessionFactory" ref="shSessionFactory"/>
+	</bean>
+	
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate5.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="rollbackOnCommitFailure" value="true"/>
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<bean id="baseDao" class="com.gewara.dao.impl.BaseDaoHibernate">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+	</bean>
+	<bean id="daoService" depends-on="baseDao" class="com.gewara.service.impl.DaoServiceImpl" />
+</beans>

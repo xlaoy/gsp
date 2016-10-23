@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>影院结算平台</title>
+<script type="">
+</script>
+<style>
+.simulate_select_20 input{display:block;float:left;}
+</style>
+#parse('WEB-INF/pages/common/common.vm')
+#parse('WEB-INF/pages/common/edaStyle.vm')
+</head>
+#set($isAutoRecon=true)
+<body>
+#parse('WEB-INF/pages/common/merchantMenu_eda.vm')
+<div style="margin:10px 120px;">
+	<div style="margin:20px 0;font-size:20px;">
+		结算单$!settlebillId对账异常订单结果
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<a href="javascript:window.history.back();" class="button minBt whiteBt"><span>返回</span></a>
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<a href="${absPath}${basePath}merchant/autoreconcile/queryExceptionResult.xhtml?settlebillId=$!settlebillId&isXls=download" class="button minBt whiteBt"><span>导出EXCEL</span></a>
+	</div>
+	<table class="isTable" style="width:100%;">
+		<thead id="tableY">
+			<tr>
+				<th>序号</th>
+				<th>对账码</th>
+				<th>票数</th>
+				<th>M订单号</th>
+				<th>M单价</th>
+				<th>M结算金额</th>
+				<th>GW订单号</th>
+				<th>GW单价</th>
+				<th>GW结算金额</th>
+				<th>结算差额(GW-M)</th>
+			</tr>
+		</thead>
+		<tbody id="tableB">
+			#foreach($result in $!resultlist)
+			<tr>
+				<td>$!{foreach.count}</td>
+				<td>$!{result.recencode}</td>
+				<td>$!{result.num}</td>
+				<td style="background: #E7EDF9">$!{result.mtradeno}</td>
+				<td style="background: #E7EDF9">$!{result.mprice}</td>
+				<td style="background: #E7EDF9">$!{result.mamount}</td>
+				<td style="background: #F3EFE8">$!{result.gtradeno}</td>
+				<td style="background: #F3EFE8">$!{result.gprice}</td>
+				<td style="background: #F3EFE8">$!{result.gamount}</td>
+				<td>$!{result.xiangcha}</td>
+			</tr>
+			#end
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="10">
+				#parse('WEB-INF/include/pageUtil.vm')
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+</div>
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	document.getElements('tbody tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	$$('.tips').amTips();
+	getScrollWidth();
+});
+window.addEvents({
+	'resize':function(){
+		getScrollWidth();
+	},
+	'scroll':function(){
+		var navH = $('tableY').getPosition().y;
+		var scroH = this.getScroll().y;
+		if(scroH > navH){
+			$('tableY').setStyles({
+				'position':'fixed',
+				'top':'0px',
+				'margin-left':'-1px'
+			});
+			getScrollWidtha();
+		}else{
+			$('tableY').setStyles({
+				'position':'static'
+			});
+		};
+	}
+});
+
+function getScrollWidth(){
+	var otb_d= $('tableB').getElements('tr')[0];
+	var oth_d = $('tableY').getElements('tr')[0];
+	$('tableY').setStyle('width',$('tableB').getDimensions().width);
+	otb_d.getElements('td').each(function(item,index){
+		oth_d.getElements('th')[index].setStyle('width',(item.getDimensions().width-1)+'px');
+	})
+}
+function getScrollWidtha(){
+	var otb_d= $('tableB').getElements('tr')[0];
+	var oth_d = $('tableY').getElements('tr')[0];
+	$('tableB').setStyle('width',$('tableY').getDimensions().width);
+	oth_d.getElements('th').each(function(item,index){
+		otb_d.getElements('td')[index].setStyle('width',(item.getDimensions().width-1)+'px');
+	})
+}
+</script>
+</body>
+</html>

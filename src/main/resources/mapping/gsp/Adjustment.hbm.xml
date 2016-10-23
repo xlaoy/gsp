@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 31, 2013 2:18:24 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.Adjustment" table="adjustment" schema="gsp" optimistic-lock="version">
+   		<id name="recordId" type="long" column="record_id">
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_adjustment</param>
+			</generator>
+		</id>
+        <version name="version" type="integer">
+            <column name="version" />
+        </version>
+        <property name="tag" type="string">
+            <column name="tag" length="10" />
+        </property>
+        <property name="relateId" type="string">
+            <column name="relate_id" length="30" />
+        </property>
+        <property name="amount" type="java.lang.Double">
+            <column name="amount" />
+        </property>
+        <property name="reason" type="string">
+            <column name="reason" length="0" />
+        </property>
+        <property name="comments" type="string">
+            <column name="comments" length="0" />
+        </property>
+        <property name="operator" type="string">
+            <column name="operator" length="25" />
+        </property>
+        <property name="addTime" type="timestamp">
+            <column name="add_time" length="8" />
+        </property>
+         <property name="updateTime" type="timestamp">
+            <column name="update_time" length="8" />
+        </property>
+        <property name="status" type="string">
+            <column name="status" length="10" />
+        </property>
+         <property name="isSettled" type="string">
+            <column name="is_settled" length="10" />
+        </property>
+         <property name="configId" type="string">
+            <column name="config_id" length="10" />
+        </property>
+        <property name="adjustNumber" type="java.lang.Double">
+            <column name="adjust_number" />
+        </property>
+        <property name="settleBillId" type="long">
+            <column name="settle_bill_id" />
+        </property>
+        <property name="isChannelSettled" column="is_channel_settled" type="string"/>
+        <property name="channelSettleBillId" column="channel_settle_bill_id" type="long"/>
+        <property name="attachFilePath" column="attachfile_path" type="string"/>
+    </class>
+</hibernate-mapping>

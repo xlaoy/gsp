@@ -1,0 +1,571 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>影院结算平台</title>
+#parse('WEB-INF/pages/common/common.vm')
+#parse('WEB-INF/pages/common/edaStyle.vm')
+<script type="text/javascript" src="${staticPath}scripts/scrollerbar.js?v=00000"></script>
+</head>
+<body>
+#set($isFinalStatement=true)
+#parse('WEB-INF/pages/common/merchantMenu_eda.vm')
+<div class="bodyBox" style="position:relative;z-index:1;">
+	<div class="mlr30 mt20">
+		<form id="" method="post" action="${basePath}merchant/settlement/settlementbills.xhtml">
+			<div class="clear">
+				<div class="left">
+					<ul class="clear chosOp">
+						<li>
+							<div class="ui_simulate_20">
+								<div class="simulate_select_20">
+									<div class="select_value_20">#if($proviceMap.get($!params.proviceCode)) $proviceMap.get($!params.proviceCode) #else 全部城市 #end</div>
+									<a class="select_arrow_20" href="javascript:void(0);"></a>
+									<input class="simulate_value_20" type="hidden" value="$!params.proviceCode" name="proviceCode" id="proviceCode" />
+								</div>
+								<ul class="simulate_options_20">
+									<li><a href="javascript:void(0);" data-value="" data-config="city">全部城市</a></li>
+									#foreach($key in $proviceMap.keySet() )
+										<li><a href="javascript:void(0);" data-value="$!key" data-config="city">$proviceMap.get($key)</a></li>
+									#end
+								</ul>
+							</div>
+						</li>
+						<li>
+							#*
+							<div id="placeName"></div>
+								<input type="hidden" name="placeId" id="placeId" value="$!{params.placeId}"/>
+								<input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}"/>
+							*#
+							<div class="ui_simulate_20">
+								<div class="simulate_select_20">
+									<div class="select_value_20" id="select_text">#if($VmUtils.isNotBlank($!place.name)) $place.name #else 全部影院 #end</div>
+									<a class="select_arrow_20" href="javascript:void(0);"></a>
+									<input class="simulate_value_20" type="hidden" value="$!{params.placeId}" name="placeId" id="placeId" />
+								</div>
+								<ul class="simulate_options_20" id="simulate_options_ul">
+									<li><a href="javascript:void(0);" data-value="">全部影院</a></li>
+									#foreach($citycode in $optionData.keySet())
+										#foreach($key in $optionData.get($citycode).keySet())
+											<li><a href="javascript:void(0);" data-value="$key" data-city="$citycode">$optionData.get($citycode).get($key)</a></li>
+										#end
+									#end
+								</ul>
+							</div>
+						</li>
+						<li>
+							#*
+							<select name="status" id="status">
+								$!VmUtils.generateCheckBillOptions($!{params.status})
+							</select>
+							*#
+							<div class="ui_simulate_20">
+								<div class="simulate_select_20">
+									#set($statusMap = $VmUtils.ck2Map())
+									<div class="select_value_20">#if($!statusMap.get($!{params.status})) $!statusMap.get($!{params.status})  #else 结算状态 #end</div>
+									<a class="select_arrow_20" href="javascript:void(0);"></a>
+									<input class="simulate_value_20" type="hidden" value="$!{params.status}"  name="status" id="status" />
+								</div>
+								<ul class="simulate_options_20">
+									<li><a href="javascript:void(0);" data-value="">结算状态</a></li>
+									#foreach($status in $statusMap.keySet())
+										<li><a href="javascript:void(0);" data-value="$!status">$statusMap.get($!{status})</a></li>
+									#end
+								</ul>
+							</div>
+						</li>
+						<li>
+							<div class="ui_simulate_20">
+								<div class="simulate_select_20">
+									<div class="select_value_20">#if($!billTypeMap.get($!{params.billType})) $!billTypeMap.get($!{params.billType}) #else 结算单类型 #end</div>
+									<a class="select_arrow_20" href="javascript:void(0);"></a>
+									<input class="simulate_value_20" type="hidden" value="$!{params.billType}"  name="billType" id="billType" />
+								</div>
+								<ul class="simulate_options_20">
+									<li><a href="javascript:void(0);" data-value="">结算单类型</a></li>
+									#foreach($billType in $billTypeMap.keySet())
+										<li><a href="javascript:void(0);" data-value="$billType">$!billTypeMap.get($billType)</a></li>
+									#end
+								</ul>
+							</div>							
+						</li>
+						<li>
+							<input class="text t_Icon mr5" name="start" id="start" 
+									onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" value='$!{params.start}'/>至
+							<input class="text t_Icon mr10" name="end" id="end" value='$!{params.end}'
+								onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" />
+								<input type="hidden" name="isXls" id="isXls" />
+						</li>
+						<li>
+							<a class="button largeBt mr20" href="#" onclick="document.forms[0].submit()"><span style="width:70px;">查询</span></a>
+						</li>
+						<li>
+							<a class="button largeBt mr20" href="#" onclick="merchantConfirmBatch();"><span>批量确认结算</span></a>
+						</li>
+						<li>
+							<a class="button largeBt mr20" href="#" onclick="batchSubmit();"><span>批量发票提交</span></a>
+						</li>
+					</ul>
+				</div>
+				<a class="usP export" href="javascript:downloadxls();" title="导出Excel"></a>
+			</div>
+		</form>
+		<div class="bill_panel">
+			<div class="bill_tool">
+				<div class="right">
+					#parse('WEB-INF/include/pageUtil.vm')
+				</div>
+			</div>
+			<table class="isTable" style="width:100%;">
+				<thead id="tableY">
+					<tr>
+						<th>
+							<label><input type="checkbox" class="mr3" onclick="selectAll();"/>结算</label>
+						</th>
+						<th>
+							<label><input type="checkbox" class="mr3" onclick="selectFPAll();"/>发票</label>
+						</th>
+						<th>单号</th>
+						<th>结算单类型</th>
+						<th>编号</th>
+						<th>场馆</th>
+						<th >结算周期</th>
+						<th class="tips"  title="最终结算影票张数">结算票数</th>
+						<th >结算金额</th>
+						<th class="tips"  title="本期退票票数">退票数量</th>
+						<th>退票金额</th>
+						<th>特价折扣</th>
+						<th>包场预付</th>
+						<th>调整票数</th>
+						<th>调整金额</th>
+						<th>GW开票金额</th>
+						<th>状态</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody id="tableB">
+					#set($allOrder=0)
+					#set($allOrderAmount=0)
+					#set($allRefund=0)
+					#set($allRefundmount=0)
+					#set($allPreviousRefund=0)
+					#set($allPreviousRefundmount=0)
+					#set($allAdjust=0)
+					#set($allAdjustAmount=0)
+					#set($allbillmount=0)
+					#foreach($s in ${sb})
+							#set($place=$pm.get($!{s.configId}))
+							#set($sc=$scm.get($!{s.configId}))
+					<tr>
+					<td >
+						#if($VmUtils.eq("GEWACONFIRMED",$!{s.status}))
+						<input type="checkbox" name="settleIds" class="mr3" value="$!{s.recordId}"/>
+						#end
+					</td>
+					<td >
+						#if($VmUtils.eq("SETTLED",$!{s.status}) || $VmUtils.eq("WAITINGPAY",$!{s.status}))
+						<input type="checkbox" name="fpsettleIds" class="mr3" value="$!{s.recordId}"/>
+						#end
+					</td>
+					<td >
+						<span class="inbl">$!{s.recordId}</span>
+					</td>
+					<td >
+						<span class="inbl">$!billTypeMap.get($!{s.tag})
+							#if($VmUtils.eq($!s.playType,'ZL'))
+								(直连)
+							#elseif($VmUtils.eq($!s.playType,'XN'))
+								(虚拟)
+							#elseif($VmUtils.eq($!s.playType,'GW'))
+								(格瓦票务)
+							#elseif($VmUtils.eq($!s.playType,'BC'))
+								(包场)
+							#end
+						</span>
+					</td>					
+						<td >
+						<span class="inbl">
+							#if($VmUtils.eq($!s.special,'HEPING_INNER') || $VmUtils.eq($!s.special,'WANDA_ACTIVITY'))
+								$!{sc.venderNo}
+							#else
+								$!{sc.payVenderNo}
+							#end
+						</span>
+					</td>
+					<td >
+						$!{place.name}
+						#if($VmUtils.eq($!s.special,'HEPING_INNER'))
+							（和平影都内部）
+						#elseif($VmUtils.eq($!s.special,'HEPING_OUTER'))
+							（和平影都外部）
+						#elseif($VmUtils.eq($!s.special,'WANDA_ACTIVITY'))
+							（万达活动场）
+						#elseif($VmUtils.eq($!s.special,'WANDA_NOT_ACTIVITY'))
+							（万达非活动场）
+						#end
+					</td>
+					<td >
+						$!DateUtil.format($!{s.startTime}, 'yyyy-MM-dd') - <span class="inbl">$!DateUtil.format($!{s.endTime}, 'yyyy-MM-dd')($!DateUtil.format($!{s.startTime}, 'HH:ss'))</span>
+					</td>
+						<td>
+						#set($orderTotal=$!{s.orderTotalNumber})
+						#set($allOrder=$allOrder + $orderTotal)
+						$!{s.orderTotalNumber}
+					</td>
+					<td>
+						#set($orderTotalAmount=$!{s.orderTotalAmount})
+						#set($allOrderAmount=$allOrderAmount + $orderTotalAmount)
+						$!CurrencyFmt.format($!{s.orderTotalAmount})
+					</td>
+					<td >
+						#set($currefundTotal=$!{s.refundTotalNumber})
+						#set($allRefund=$allRefund + $currefundTotal)
+						$!{s.refundTotalNumber}
+					</td>
+					<td >
+						#set($currefundTotalAmount=$!{s.refundTotalAmount})
+						#set($allRefundmount=$allRefundmount + $currefundTotalAmount)
+						$!CurrencyFmt.format($!{s.refundTotalAmount})
+					</td>
+					<td>
+							$!CurrencyFmt.format($!extendBillMap.get($!{s.recordId}).placeallowance)
+						</td>
+						<td>
+							$!CurrencyFmt.format($!extendBillMap.get($!{s.recordId}).bcPrePay)
+						</td>
+						<td>
+							#set($curadjustTotalNumber=$!{s.adjustTotalNumber})
+							#set($allAdjust=$allAdjust + $curadjustTotalNumber)
+							$!{s.adjustTotalNumber}
+						</td>
+						<td>
+							#set($curadjustTotalAmount=$!{s.adjustTotalAmount})
+							#set($allAdjustAmount=$allAdjustAmount + $curadjustTotalAmount)
+							<a href="javascript:loadAdjustList('$!{s.recordId}','$!s.configId');">$!CurrencyFmt.format($!{s.adjustTotalAmount})</a>
+						</td>
+						<td>
+							#if($extendBillMap.get($!{s.recordId}))
+								#set($curallbillmount=$extendBillMap.get($!{s.recordId}).billingamount)
+							#else
+								#set($curallbillmount=0)
+							#end
+							#set($allbillmount=$allbillmount + $curallbillmount)
+							$!CurrencyFmt.format($!extendBillMap.get($!{s.recordId}).billingamount)
+						</td>
+						<td>
+							#if($VmUtils.eq($s.tag,'TICKET'))
+								$!{VmUtils.displayEnums("CheckBillStatusEnums",$!{s.status})}
+							#else
+								$!{noTicketStatusMap.get($!s.status)}
+							#end
+						</td>
+						<td>
+							#if($VmUtils.eq($s.playType,'BC'))
+								<a href="${basePath}merchant/settlement/baochangList.xhtml?recordId=$!{s.recordId}">包场明细</a>
+								#if($VmUtils.eq("GEWACONFIRMED",$!{s.status}))
+									<a href="javascript:showAdjust('$!{s.recordId}','$!{s.configId}')">申请调整 </a>
+									<a href="javascript:merchantConfirmSingle('$!{s.recordId}')">确认结算</a>
+								#end
+								#if($VmUtils.eq("SETTLED",$!{s.status}) || $VmUtils.eq("WAITINGPAY",$!{s.status}))
+									<a href="${basePath}merchant/settlement/printSettledetails.xhtml?recordId=$!{s.recordId}" target="_blank">打印存档</a>
+								#end
+							#elseif($VmUtils.eq($s.tag,'TICKET'))
+								#if($VmUtils.eq("TN", $!sc.settleCycle))
+									<a href="${basePath}merchant/settlement/settlementDetails.xhtml?recordId=$!{s.recordId}&placeId=$!{s.configId}">场次明细</a>
+								#else
+									<a href="${basePath}merchant/settlement/settlementDetails.xhtml?recordId=$!{s.recordId}&placeId=$!{s.configId}">日账单明细</a>
+								#end
+								<a href="${basePath}merchant/gewaorder/querySettleOrderDetails.xhtml?settleBillId=$!{s.recordId}&placeId=$!{s.configId}">订单明细</a><br/>
+								#if($VmUtils.eq("GEWACONFIRMED",$!{s.status}))
+									<a href="javascript:showAdjust('$!{s.recordId}','$!{s.configId}')">申请调整 </a>
+									<a href="javascript:merchantConfirmSingle('$!{s.recordId}')">确认结算</a>
+									<a href="${basePath}merchant/autoreconcile/getSettlementBillByRecordId.xhtml?settlementId=$!s.recordId">自动对账</a>
+								#end
+								#if($VmUtils.eq("SETTLED",$!{s.status}) || $VmUtils.eq("WAITINGPAY",$!{s.status}))
+									<a href="${basePath}merchant/settlement/printSettledetails.xhtml?recordId=$!{s.recordId}" target="_blank">打印存档</a>
+								#end
+							#else
+								#if($VmUtils.eq("GEWACONFIRMED",$!{s.status}))
+									<a href="javascript:showApply('$!{s.recordId}','$!{s.configId}')">申请结算</a>
+								#end
+							#end
+							#if($VmUtils.eq($!{invmap.get($!{s.recordId})},'N'))
+								#if($VmUtils.eq("SETTLED",$!{s.status}) || $VmUtils.eq("WAITINGPAY",$!{s.status}))
+								<br><a href="javascript:showInvoiceAdd('$!{s.recordId}')">发票提交</a>
+								#end
+							#elseif($VmUtils.eq($!{invmap.get($!{s.recordId})},'Y'))
+								<br><a href="${basePath}merchant/invoice/queryInvoice.xhtml?settleid=$!{s.recordId}">发票明细</a>
+							#end
+						</td>
+					</tr>
+					#end
+					<tr>
+						<td  colspan="2">合计</td><td colspan="5"></td>
+						<td>$!allOrder</td>
+						<td>$!CurrencyFmt.format($allOrderAmount)</td>
+						<td>$!allRefund</td>
+						<td>$!CurrencyFmt.format($allRefundmount)</td>
+						<td><!-- $!CurrencyFmt.format() --></td>
+						<td>$!allAdjust</td>
+						<td>$!CurrencyFmt.format($allAdjustAmount)</td>
+						<td>$!CurrencyFmt.format($allbillmount)</td>
+						<td colspan="2"></td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="bill_tool mt10" style="text-align: right;">
+				<a class="button largeBt mr20" href="#" onclick="merchantConfirmBatch();"><span>批量确认结算</span></a>
+				<a class="button largeBt mr20" href="#" onclick="batchSubmit();"><span>批量发票提交</span></a>
+			</div>
+			<div class="nitice_info">
+				<b>什么是结算单？</b>
+				<p>1、	结算单，是结算的基本单位，一个结算周期对应一个结算单，即按照与影院约定的结算周期生成的订单汇总数据。</p>
+			</div>
+			<div class="nitice_info">
+				<b>结算状态包含哪些？</b>
+				<p>a) 等待确认，是指到达结算时间点后（一般为结算期结束后的第三天），格瓦拉结算模块提供的需要影院方审核并确认的结算单状态。</p>
+				<p>b) 已确认，是影院确认结算后的状态。</p>
+				<p>c) 申请调整，是影院确认时发现数据有问题并提交给格瓦拉结算人员处理的状态。</p>
+				<p>d)	已结算，是影院与格瓦拉双方都完成结算确认，并已经产生收款单的状态。</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<iframe id="submitIframe" name="submitIframe" style="display: none;"></iframe>
+<div id="commMark" style="display:none;">
+	<form method="post" target="submitIframe" style="margin: 0px;padding: 0px;" action="${basePath}merchant/settlement/saveAdjust.xhtml" enctype="multipart/form-data" id="uploadForm" accept-charset="UTF-8">
+		<div class="ac_uploadBox">
+			<span class="texttips">请上传一份具有参考依据的Excel报表数据</span>
+			<a href="">上传Excel数据：</a>
+			<input type="file" name="file" id="file" onkeyup="this.value='';" />
+			<a class="button largeBt" href="javascript:void(0)"><span>上传文件</span></a>
+		</div>
+		<div style="font-size:14px;color:#EB6120;">申请描述</div>
+		<textarea rows="3" cols="45" name="comments" id="comments" style="border: 0px;border: 1px solid #ccc;outline: none;"></textarea>
+		<input type="hidden" name="recordId" id ="recordId"/> 
+		<input type="hidden" name="aplaceId" id ="aplaceId"/> 
+	</form>
+</div>
+
+<div id="applyMark" style="display:none;">
+	<form method="post" target="submitIframe" style="margin: 0px;padding: 0px;" action="${basePath}merchant/settlement/saveApply.xhtml" enctype="multipart/form-data" id="applyForm" accept-charset="UTF-8">
+		<div  style="border: 0px;outline: none;">
+			<span>申请结算数量：<input type="text" class="text" name="applyNumber" autocomplete="off" style="width:150px;"/></span>
+		</div>
+		<div  style="border: 0px;outline: none;margin-top:10px;">
+			<span>申请结算金额：<input type="text" class="text" name="applyAmount" autocomplete="off" style="width:150px;"/></span>
+		</div>
+		<input type="hidden" name="recordId1" id ="recordId1"/> 
+		<input type="hidden" name="aplaceId1" id ="aplaceId1"/> 
+	</form>
+</div>
+
+<div id="wrapper" style="display:none; height: 350px;overflow:hidden;position: relative;"></div>
+
+<input type="hidden" id="skiptax" value="$!{skiptax}"/>
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	//autoCountHeight();
+	/***********/
+	var skiptax = $("skiptax").value;
+	if("N" == skiptax) {
+		var tipstr = "尊敬的用户您好，于5月1日起全国实行营改增，5月的票款开始提供增值税专用发票。为了更好的了解贵公司的开票情况，请积极填写相关发票信息，感谢您的配合！";
+		gewa.util.issure('',tipstr,'格瓦拉提示你',420,'iskyes',function(){
+			location="${basePath}merchant/invoice/queryInvoiceConfig.xhtml"
+		},'立即配置',function(){
+			var url = "${basePath}merchant/invoice/skiptax.xhtml";
+			var values = {"skiptax":"Y"}
+			GewaraUtil.sendRequest(url, values, function(result){}); 
+		},'','下次再配');
+	}
+	/***********/
+	document.getElements('tbody tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	$$('.tips').amTips();
+	getScrollWidth();
+});
+window.addEvents({
+	'resize':function(){
+		getScrollWidth();
+	},
+	'scroll':function(){
+		var navH = $('tableY').getPosition().y;
+		var scroH = this.getScroll().y;
+		if(scroH > navH){
+			$('tableY').setStyles({
+				'position':'fixed',
+				'top':'0px',
+				'margin-left':'-1px'
+			});
+			getScrollWidtha();
+		}else{
+			$('tableY').setStyles({
+				'position':'static'
+			});
+		};
+	}
+});
+
+
+function getScrollWidth(){
+	var otb_d= $('tableB').getElements('tr')[0];
+	var oth_d = $('tableY').getElements('tr')[0];
+	$('tableY').setStyle('width',$('tableB').getDimensions().width);
+	otb_d.getElements('td').each(function(item,index){
+		oth_d.getElements('th')[index].setStyle('width',(item.getDimensions().width-1)+'px');
+	})
+}
+function getScrollWidtha(){
+	var otb_d= $('tableB').getElements('tr')[0];
+	var oth_d = $('tableY').getElements('tr')[0];
+	$('tableB').setStyle('width',$('tableY').getDimensions().width);
+	oth_d.getElements('th').each(function(item,index){
+		otb_d.getElements('td')[index].setStyle('width',(item.getDimensions().width-1)+'px');
+	})
+}
+
+function merchantConfirmSingle(recordId){
+	merchantConfirm(recordId);
+}
+function merchantConfirmBatch(){
+	var recordIds = "";
+	document.getElements('input[type=checkbox][name=settleIds]').each(function(item){
+		if (item.checked == true){
+			if (!recordIds == ""){
+				recordIds = recordIds + ",";
+			}
+			recordIds = recordIds + item.value;
+		}
+	});
+	if (recordIds == ""){
+		gewaUtil.alert("没有选择任何结算单。");
+		return;
+	}
+	merchantConfirm(recordIds);
+}
+function merchantConfirm(recordIds){
+	gewa.util.issure('','确认结算？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+		var url = "${basePath}merchant/settlement/confirmSettleBill.xhtml";
+		var values = {"recordIds":recordIds};
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask();
+			if(result.success == true){
+				gotofpsubmit(recordIds);
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+
+function gotofpsubmit(recordIds) {
+	gewa.util.issure('',"确认成功！现在您需要对已确认的结算单进行发票提交！",'格瓦拉提示你',420,'iskyes',function(){
+		gewa.util.container['iskyes'].dispose('iskyes');
+		var id = recordIds.split(",")[0];
+		showInvoiceAdd(id);
+	},'立即提交发票',function(){
+		document.forms[0].submit();
+	},'','下次再提交');
+}
+
+function selectAll(){
+	document.getElements('input[type=checkbox][name=settleIds]').each(function(item){
+		item.checked = !item.checked;
+	})
+}
+function selectFPAll(){
+	document.getElements('input[type=checkbox][name=fpsettleIds]').each(function(item){
+		item.checked = !item.checked;
+	})
+}
+var cancelCommentMarks = function(){
+	gewa.util.container['commMark'].dispose('commMark');
+}
+
+function showAdjust(recordId, placeId){
+	$("recordId").value = recordId;
+	$("aplaceId").value = placeId;
+	gewa.util.issure("","commMark","调整申请",430,"commMark",function(){
+		var comments = $("comments").value;
+		if(comments == '' || comments.trim() == ''){
+			gewa.util.alert("请填写备注!");
+			return;
+		}
+		document.getElementById("uploadForm").submit();
+	});
+}
+
+
+function showApply(recordId, placeId){
+	$("recordId1").value = recordId;
+	$("aplaceId1").value = placeId;
+	gewa.util.issure("","applyMark","申请结算",320,"applyMark",function(){
+		document.getElementById("applyForm").submit();
+		gewa.util.container['applyMark'].dispose('applyMark');
+	});
+}
+
+var cancelApplyMarks = function(){
+	gewa.util.container['applyMark'].dispose('applyMark');
+}
+
+var downloadxls=function(){
+	if(document.forms[0]){
+		$("isXls").value="downloadxls";
+		document.forms[0].submit();
+		$("isXls").value="";
+	}else{
+		var a=document.location.href;
+		a=a+"&isXls=download";
+		document.location.href=a;
+	}
+};
+
+function autoCountHeight(flag){
+	var id = parent.document.getElementById('submitIframe');
+	if(id){
+		id.style.height = window.innerHeight+'px';
+	}
+	if(flag)return;
+	document.addEvent('resize',function(){
+		autoCountHeight(true);
+	});
+}
+
+function showServerceMsg(msg){
+	gewaUtil.alert(msg.msg,function(){
+		if(msg.success && gewa.util.container['commMark']){
+			gewa.util.container['commMark'].dispose('commMark');
+			refreshPage();
+		}
+	})
+}
+function loadAdjustList(recordId,configId){
+	var url = "${basePath}merchant/adjust/loadAdjustList.xhtml";
+	var values = {"settleId":recordId,'configId':configId}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('wrapper', url, values, function(s){
+		if(s.success && s.html != ''){
+			$('wrapper').innerHTML = s.html;
+			gewa.util.maskContent('','wrapper','调整列表',800,'wrapper','','','','','',function(){
+				new ScrollerBar("wrapper",{wrapped:"wrapped"});
+			});
+		}
+		GewaraUtil.unmask(mid);
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+</script>
+
+#parse('WEB-INF/pages/invoice/merchInvoiceAdd.js.vm')
+
+</body>
+</html>

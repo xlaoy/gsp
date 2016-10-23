@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+
+<style type="text/css">
+#invul {list-style: none; line-height: 40px; font-size: 15px;}
+#invul .title {text-align: right; width: 80px;  float: left;}
+#invul .conent {float: left; width: 370px;}
+</style>
+
+<ul id="invul">
+  <li class="title">发票号：</li>
+  <li class="conent">
+  	$!{invoice.invoicecode}
+  	<input type="hidden"  id="pinvoicecode" value="$!{invoice.invoicecode}" />
+  </li>
+  
+  #if($VmUtils.eq($!opt,"ADMINPROCESS"))
+  	<li class="title">状态：</li>
+  	#if($VmUtils.eq($!invoice.invoicetype,"PTFP"))
+  	<li class="conent">
+  		<select id="pstatus" class="text" style="width: 110px;">
+			<option value="INVOSTAPASS" #if($VmUtils.eq($!invoice.status,"INVOSTAPASS")) selected="selected" #end>审核通过</option>
+			<option value="INVOSTAUNPASS" #if($VmUtils.eq($!invoice.status,"INVOSTAUNPASS")) selected="selected" #end>审核不通过</option>
+		</select>
+	</li>
+  	#elseif($VmUtils.eq($!invoice.invoicetype,"ZYFP"))
+  	<li class="conent">
+  		<select id="pstatus" class="text" style="width: 110px;" onchange="choseinvstatus();">
+			<option value="INVOSTAPASS" #if($VmUtils.eq($!invoice.status,"INVOSTAPASS")) selected="selected" #end>审核通过</option>
+			<option value="INVOSTAUNPASS" #if($VmUtils.eq($!invoice.status,"INVOSTAUNPASS")) selected="selected" #end>审核不通过</option>
+			<option value="INVOSTAAUTH" #if($VmUtils.eq($!invoice.status,"INVOSTAAUTH")) selected="selected" #end>认证成功</option>
+			<option value="INVOSTAUNAUTH" #if($VmUtils.eq($!invoice.status,"INVOSTAUNAUTH")) selected="selected" #end>认证失败</option>
+			<option value="INVOSTADIKOU" #if($VmUtils.eq($!invoice.status,"INVOSTADIKOU")) selected="selected" #end>抵扣成功</option>
+			<option value="INVOSTAUNDIKOU" #if($VmUtils.eq($!invoice.status,"INVOSTAUNDIKOU")) selected="selected" #end>抵扣失败</option>
+		</select>
+	</li>
+  	#end
+  	<li #if($VmUtils.eq($!invoice.status,"INVOSTADIKOU")) style="display: block;" #else style="display: none;" #end id="pmonth">
+  		<ul>
+		  	<li class="title">抵扣月份：</li>
+		  	<li class="conent">
+		  		<input onclick="WdatePicker({dateFmt:'yyyy-MM'})" class="Wdate" onFocus="WdatePicker({dateFmt:'yyyy-MM'})" id="pdikoumonth" value="$!invoice.dikoumonth"/>
+			</li>
+		</ul>
+	</li>
+  #end
+  
+  #if($VmUtils.eq($!opt,"MODIFY"))
+	  <li class="title">发票类型：</li>
+	  <li class="conent">
+	  	<select id="pinvoicetype"  style="width: 200px;" class="text" #if($VmUtils.eq($!invadmin,"Y")) onchange="choseinvtype();" #end>
+			<option value="ZYFP" #if($VmUtils.eq($!invoice.invoicetype,"ZYFP")) selected="selected" #end>增值税专用发票</option>
+			<option value="PTFP" #if($VmUtils.eq($!invoice.invoicetype,"PTFP")) selected="selected" #end>增值税普通发票</option>
+		</select>
+	  </li>
+	  
+	  #if($VmUtils.eq($!invadmin,"Y"))
+	  <li #if($VmUtils.eq($!invoice.invoicetype,"PTFP")) style="display: none;" #end id="pamount">
+		  <ul>
+			  <li class="title">税额：</li>
+			  <li class="conent">
+			  	$!CurrencyFmt.format($!{invoice.taxamount})
+			  	<input type="hidden"  id="ptaxamount" value="$!{invoice.taxamount}" />
+			  </li>
+			  <li class="title">抵扣金额：</li>
+			  <li class="conent">
+			  	<input type="text" class="text" id="pdeductibleamount" value="$!{invoice.deductibleamount}" />
+			  </li>
+		  </ul>
+	  <li>
+	  #end
+  #end
+  
+  <li class="title">发票备注：</li>
+  <li class="conent">
+  	<textarea style="width: 350px; height: 150px;" id="psubmitcontent">$!{invoice.submitcontent}</textarea>
+  	<span style="color: #EF5454; font-size: 13px; line-height: 15px;">请在发票原来的备注内容上添加信息，不要删除已有的备注！</span>
+  </li>
+  <li style="text-align: right; width: 100%;  float: left;">
+  	<input type="hidden"  id="popt" value="$!opt" />
+  	<input type="hidden"  id="pnextstatus" value="$!nextstatus" />
+  	<a href="javascript:updateInvoice();" class="button bigBt redBt"><span>提交</span></a>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<a href="javascript:cancelInvoiceMark();" class="button bigBt redBt"><span>取消</span></a>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </li>
+</ul>

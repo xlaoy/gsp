@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>调整汇总</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+	<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="${staticPath}scripts/iscroll.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/core.js?v=0000000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+	<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+	<style type="text/css">
+		html{background:#fff;}
+		.s{background:#f0f0f0;}
+	</style>
+	
+</head>
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryAllAdjustment")
+	#parse('WEB-INF/pages/nvaig/gathernvaig.vm')
+	<div class="mode_search">
+		<form action="${basePath}platform/adjust/queryAllAdjustment.xhtml" method="post">
+				<h2>查询条件</h2>
+				<dl class="mode_search_title">
+					<dt>场馆：</dt>
+						<dd>
+							<input type="hidden" name="placeId" id="placeId" value="$!{params.placeId}"/>
+							<input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}"/>
+						</dd>
+				</dl>
+				<dl class="mode_search_title">
+					<dt>状态：</dt>
+						<dd>
+							<select name='status' id='status'>
+								<option value="" selected="selected">全部</option>
+								<option value="NEW" #if("NEW" eq $!{params.status}) selected="selected" #end>新建</option>
+								<option value="APPROVED" #if("APPROVED" eq $!{params.status}) selected="selected" #end >通过</option>
+								<option value="REJECTED" #if("REJECTED" eq $!{params.status}) selected="selected" #end >废弃</option>
+							</select>
+						</dd>
+				</dl>
+				<dl class="mode_search_title">
+					<dt>调整原因：</dt>
+						<dd>
+							<select id="queryreason" name="queryreason">
+								<option value="" selected="selected">全部</option>
+								$VmUtils.adjustReasionOptions($!{params.queryreason})
+							</select>
+						</dd>
+				</dl>
+				<div class="mode_search_title">
+					<a href="javascript:document.forms[0].submit()" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+					<a href="javascript:showAdjustPop()" class="button minBt whiteBt"><span>新增调整</span></a>
+				</div>
+		</form>
+	</div>
+	
+	
+	#if($ads && $ads.size() > 0)
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th class="sortable" style="width:5%;"><span>编号</span><span class="carat"></span></th>
+					<th class="sortable" style="width:8%;"><span>结算单号</span><span class="carat"></span></th>
+					<th class="sortable" style="width:8%;"><span>结算单类型</span><span class="carat"></span></th>
+					<th class="sortable" style="width:10%;"><span>周期</span><span class="carat"></span></th>
+					<th class="sortable" style="width:10%;"><span>影院</span><span class="carat"></span></th>
+					<th class="sortable" style="width:5%;"><span>调整数量</span><span class="carat"></span></th>
+					<th class="sortable" style="width:5%;"><span>调整金额</span><span class="carat"></span></th>
+					<th class="sortable" style="width:8%;"><span>调整申请人</span><span class="carat"></span></th>
+					<th class="sortable" style="width:10%;"><span>调整原因</span><span class="carat"></span></th>
+					<th class="sortable" style="width:8%;"><span>调整备注</span><span class="carat"></span></th>
+					<th class="sortable" style="width:8%;"><span>状态</span><span class="carat"></span></th>
+					<th class="sortable" style="width:8%;"><span>操作</span></th>
+					<th class="sortable" style="width:10%;"><span>附件</span></th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($ad in ${ads})
+				#set($id=$ad.relateId)
+				#set($sb=$sbm.get($VmUtils.stringToLong($id)))
+				#set($p=$pm.get($ad.configId))
+				<tr>
+					<td><span>
+						$!{foreach.count}
+						</span>
+					</td>
+					<td><span>
+						$!{sb.recordId}
+						</span>
+					</td>
+					<td><span>
+						$!billTypeMap.get($sb.tag)
+						</span>
+					</td>					
+					<td><span>
+						[ $!DateUtil.formatTimestamp($!{sb.startTime}) -&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+						 $!DateUtil.formatTimestamp($!{sb.endTime}) )
+						</span>
+					</td>
+					<td><span>
+						$!{p.name}
+						</span>
+					</td>
+					<td><span>
+						$!{ad.adjustNumber}
+						</span>
+					</td>
+					<td><span>
+						$!{ad.amount}
+						</span>
+					</td>
+					
+					<td><span>
+						$!{ad.operator}
+						</span>
+					</td>
+					<td><span>
+						$VmUtils.displayEnums("AdjustReasonEnums" , $!{ad.reason})
+						</span>
+					</td>
+					<td><div title="$!{ad.comments}" style="width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+						$!{ad.comments}
+						</div>
+					</td>
+					<td><span>
+						#if("NEW" eq $!{ad.status})
+							新建
+						#end
+						#if("APPROVED" eq $!{ad.status})
+							通过
+						#end
+						#if("REJECTED" eq $!{ad.status})
+							废弃
+						#end
+						</span>
+					</td>
+					<td><span>
+						#if("NEW" eq $!{ad.status})
+							<a href="javascript:modifyAdjust('$!{ad.recordId}')">修改</a>
+						#end
+						</span>
+					</td>
+					<td>
+						#if(${ad.attachFilePath} && ${ad.attachFilePath}!="")
+						<span><a href="$!{ad.attachFilePath}">下载</a></span>
+						#end
+					</td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="13">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	#else
+	<div class="ui_warning">查询条件范围内，没有数据。</div>
+	#end
+</div>
+<div id="commMark" style="display:none;">
+</div>
+</body>
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	#if($ads && $ads.size() > 0)
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	#end
+	$$('.tips').amTips();
+	completer = new Autocompleter.Local($("placeFirstLetter"), parent.pdata, {
+		'delay': 100,
+		'maxChoices': 10,
+		'minLength':0,
+		'requestid':'placeId',
+		'filter': function() {
+			var vl = this.queryValue;
+			var values = vl.trim().split(/ +/);
+			return this.tokens.filter(function(token){
+				var result = values.every(function(v){
+					var reg = new RegExp(v.escapeRegExp(),'i');
+					return reg.test(token.pinyin) || reg.test(token.name);
+				});
+				return result;
+			});
+		},
+		'injectChoice': function(choice){
+			parent.myGenChoice(this,choice);
+		}
+	});
+})
+var cancelCommentMarks = function(){
+	gewa.util.container['commMark'].dispose('commMark');
+}
+function showAdjustPop(){
+	var url = '${basePath}platform/adjust/loadAdjust.xhtml';
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('commMark', url, null, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','commMark','调整明细',350,'commMark','','','','','',function(){
+		});
+		this(arguments[0]);
+		completer = new Autocompleter.Local($("placeFirstLetter1"), parent.pdata, {
+			'delay': 100,
+			'maxChoices': 10,
+			'minLength':0,
+			'requestid':'placeId1',
+			'filter': function() {
+				var vl = this.queryValue;
+				var values = vl.trim().split(/ +/);
+				return this.tokens.filter(function(token){
+					var result = values.every(function(v){
+						var reg = new RegExp(v.escapeRegExp(),'i');
+						return reg.test(token.pinyin) || reg.test(token.name);
+					});
+					return result;
+				});
+			},
+			'injectChoice': function(choice){
+				parent.myGenChoice(this,choice);
+			}
+		});
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+function modifyAdjust(recordId){
+	var url = '${basePath}platform/adjust/loadAdjust.xhtml';
+	var values = {"recordId":recordId}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('commMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','commMark','调整明细',350,'commMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+var cancelAdjustMarks = function(){
+	gewa.util.container['commMark'].dispose('commMark');
+}
+function saveAdjust(){
+	var recordId = $('recordId').value;
+	var number = $('number').value;
+	var amount = $('amount').value;
+	var comments = $('comments').value;
+	var reason = $('reason').value;
+	var filePath = $('filePath').value;
+	if (number == '' || amount == '' || comments == '' || reason ==''){
+		gewaUtil.alert("请输入完整的调整信息.");
+		return;
+	}
+	
+	var url = "${basePath}platform/adjust/updateAdjust.xhtml";
+	var values = {"recordId" : recordId, "adjustNumber":number, "amount":amount , "reason": reason, "comments":comments,"filePath":filePath}
+	
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask();
+		if(result.success == true){
+			gewaUtil.alert("成功！", function(){cancelAdjustMarks(); window.location.replace(location.href);});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	}); 
+}
+function addAdjust(){
+	var tag = "PLACE";
+	var relateId = $('placeId1').value;
+	var number = $('number').value;
+	var amount = $('amount').value;
+	var comments = $('comments').value;
+	var reason = $('reason').value;
+	var filePath = $('filePath').value;
+	if (relateId == '' || number == '' || amount == '' || comments == '' || reason ==''){
+		gewaUtil.alert("请输入完整的调整信息.");
+		return;
+	}
+	
+	var url = "${basePath}platform/adjust/saveAdjustment.xhtml";
+	var values = {"tag":tag, "relateId":relateId, "adjustNumber":number, "amount":amount , "reason": reason, "comments":comments,"filePath":filePath}
+	
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask();
+		if(result.success == true){
+			gewaUtil.alert("成功！", function(){cancelAdjustMarks(); window.location.replace(location.href);});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	}); 
+}
+
+function uploadSucced(msg){
+	if(msg == ''){
+		document.getElementById("uploadMsg").innerHTML=msg;
+	}else{
+		document.getElementById("uploadMsg").innerHTML="上传成功";
+	}
+	document.getElementById("uploadMsg").style.display='block';
+	document.getElementById("filePath").value = msg;
+}
+</script>
+</html>

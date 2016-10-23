@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 31, 2013 2:18:24 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.SettleConfigUpd" table="settle_config_upd" schema="gsp">
+		  <id name="recordId" type="string">
+		          <column name="record_id" />
+		          <generator class="assigned"/>
+	       </id>
+           <property name="tag" type="string">
+               <column name="place_type" length="10" />
+           </property>
+           <property name="relateId" type="long">
+               <column name="place_id" />
+           </property>
+           <property name="settleCycle" type="string">
+               <column name="settle_cycle" length="10" />
+           </property>
+           <property name="settleValue" type="java.lang.Integer">
+               <column name="settle_value" />
+           </property>
+           <property name="offsetValue" type="java.lang.Integer">
+               <column name="offset_value" />
+           </property>
+           <property name="settleBase" type="string">
+               <column name="settle_base" length="0" />
+           </property>
+           <property name="settleTime" type="string">
+               <column name="settle_time" length="8" />
+           </property>
+           <property name="firstSettle" type="timestamp">
+               <column name="first_settle" length="8" />
+           </property>
+           <property name="status" type="string">
+               <column name="status" length="10" />
+           </property>
+           <property name="zhangtaoNo" type="string">
+               <column name="zhangtao_no" length="10" />
+           </property>
+           <property name="venderNo" type="string">
+               <column name="vender_no" />
+           </property>
+           <property name="venderName" type="string">
+               <column name="vender_name" />
+           </property>
+           <property name="isGoodsSettle" type="string">
+           	   <column name="is_goods_settle"/>
+           </property>
+           <property name="applyUser" type="string">
+               <column name="apply_user" />
+           </property>
+           <property name="approveUser" type="string">
+               <column name="approve_user" />
+           </property>
+           <property name="openType" type="string">
+               <column name="open_type" length="10" />
+           </property>
+           <property name="operateType" column="operate_type" type="string"/>
+           <property name="playType" type="string" column="play_type"/>
+           <property name="payVenderNo" type="string" column="pay_vender_no"/>
+           <property name="payVenderName" type="string" column="pay_vender_name"/>
+    </class>
+</hibernate-mapping>

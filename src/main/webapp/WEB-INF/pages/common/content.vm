@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>用户登录</title>
+	#parse('WEB-INF/pages/common/static.vm') 
+</head>
+<section class="layout_content shadow_l" config="body">
+<div class="inner">
+	<div class="mod_hd">
+		<h2>结算申请</h2>
+	</div>
+	<ul class="percent_33 clear mt10">
+		<li>
+			<div class="mode_warp">
+				<i class="isline l_line"></i><i class="isline ll_line"></i>
+				caosir1233i23<br /> <i>商家类型：</i>电影院<br /> <i>商户名：</i>上海和平影都<br /> <span
+					class="isCheck">已认证</span> <span class="isTel">136******035</span>
+			</div>
+		</li>
+		<li>
+			<div class="mode_warp">
+				不可结算金额：<br /> <b class="isMoney">322323.00</b>元
+			</div>
+		</li>
+		<li>
+			<div class="mode_warp">
+				可结算金额：<br /> <b class="isMoney">322323.00</b>元 <a href=""
+					class="button bigWhiteBt bigBt"><span>结算</span></a>
+			</div>
+		</li>
+	</ul>
+	
+	<div class="tableGear clear">
+		<h2>
+			查询条件：<span>[2012-07-01 06:00:00至2012-07-05 06:00:00]</span>
+		</h2>
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th class="sortable"><span>序号</span><span class="carat"></span></th>
+					<th class="sortable"><span>订单号</span><span class="carat"></span></th>
+					<th class="sortable"><span>下单时间</span><span class="carat"></span></th>
+					<th class="sortable"><span>结算金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>调整金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>实际金额</span><span class="carat"></span></th>
+					<th class="sortable"><span>订单明细</span><span class="carat"></span></th>
+					<th class="sortable"><span>结算状态</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($x in[1..5])
+				<tr>
+					<td><span>$x</span></td>
+					<td><span>32323232332$x</span></td>
+					<td><span>07-01 08:25</span></td>
+					<td><span>30</span></td>
+					<td><b>-20</b></td>
+					<td><span>10</span></td>
+					<td><span>场次：9986215 电影名：画皮II <br />影厅：4号厅 票数：1张
+							上映时间：07-01 08：45
+					</span></td>
+					<td><span>等待审核</span></td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="8">数量：<b>19</b>（张） 结算金额：<b>570</b>（元）
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+		<div id="page">
+			<a href="">上一页</a> <a href="">1</a> <a href="" class="on">2</a> <a
+				href="">3</a> <a href="">下一页</a>
+		</div>
+	</div>
+</div>
+</section>

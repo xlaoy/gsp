@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.AutoreconExceptionResult" table="autorecon_result" schema="gsp">
+    
+       <id name="recordid" type="long">
+            <column name="recordid"  />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator">
+			    <param name="optimizer">none</param>
+			    <param name="increment_size">1</param>
+			    <param name="sequence_name">seq_newautorecen</param>
+			</generator>
+       </id>
+       
+       <property name="settleid"		column="settleid"	type="long" />
+       <property name="recencode"		column="recencode"	type="string" />
+       <property name="num"		column="num"	type="integer" />
+       
+       <property name="mtradeno"		column="mtradeno"	type="string" />
+       <property name="mprice"		column="mprice"	type="double" />
+       <property name="mamount"		column="mamount"	type="double" />
+       
+       <property name="gtradeno"		column="gtradeno"	type="string" />
+       <property name="oprice"		column="oprice"	type="double" />
+       <property name="oamount"		column="oamount"	type="double" />
+       <property name="yprice"		column="yprice"	type="double" />
+       <property name="yamount"		column="yamount"	type="double" />
+       <property name="gprice"		column="gprice"	type="double" />
+       <property name="gamount"		column="gamount"	type="double" />
+				        
+    </class>
+</hibernate-mapping>

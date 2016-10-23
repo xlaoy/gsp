@@ -1,0 +1,258 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>影院结算平台</title>
+#parse('WEB-INF/pages/common/common.vm')
+#parse('WEB-INF/pages/common/edaStyle.vm')
+<script type="text/javascript" src="${staticPath}scripts/scrollerbar.js?v=00000"></script>
+</head>
+<body>
+#set($isOrderDetail=true)
+#parse('WEB-INF/pages/common/merchantMenu_eda.vm')
+<div class="bodyBox" style="position:relative;z-index:1;">
+	<div class="mlr30 mt20">
+		<form id="" method="post" action="${basePath}merchant/gewaorder/queryGewarOrder.xhtml">
+			<div class="clear">
+			<div class="left">
+				<ul class="clear chosOp">
+					<li>
+						#*
+						<div id="placeName"></div>
+							<input type="hidden" name="placeId" id="placeId" value="$!{params.placeId}"/>
+							<input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}"/>
+						*#
+						<div class="ui_simulate_20">
+							<div class="simulate_select_20">
+								<div class="select_value_20">#if($VmUtils.isNotBlank($!place.name)) $place.name #else 全部 #end</div>
+								<a class="select_arrow_20" href="javascript:void(0);"></a>
+								<input class="simulate_value_20" type="hidden" value="$!{params.placeId}" name="placeId" id="placeId"/>
+							</div>
+							
+							<ul class="simulate_options_20" id="simulate_options_ul">
+								<li><a href="javascript:void(0);" data-value="">全部</a></li>
+								#foreach($citycode in $optionData.keySet())
+									#foreach($key in $optionData.get($citycode).keySet())
+										<li><a href="javascript:void(0);" data-value="$key">$optionData.get($citycode).get($key)</a></li>
+									#end
+								#end
+							</ul>
+						</div>
+					</li>
+					<li>
+						#*
+						<select name="status" id="status" >
+							<option value="">#if("paid_success" eq $!{params.status}) 成功 #elseif("paid_return" eq $!{params.status}) 退款 #else 全部 #end</option>
+							<option value="paid_success" #if("paid_success" eq $!{params.status}) selected="selected" #end>成功</option>
+							<option value="paid_return" #if("paid_return" eq $!{params.status}) selected="selected" #end>退款</option>
+						</select>
+						*#
+						<div class="ui_simulate_20">
+							<div class="simulate_select_20">
+								<div class="select_value_20">#if("paid_success" eq $!{params.status}) 成功 #elseif("paid_return" eq $!{params.status}) 退款 #else 全部 #end</div>
+								<a class="select_arrow_20" href="javascript:void(0);"></a>
+								<input class="simulate_value_20" type="hidden" value="$!{params.status}" name="status"  id="status"/>
+							</div>
+							<ul class="simulate_options_20">
+								<li><a href="javascript:void(0);" data-value="">全部</a></li>
+								<li><a href="javascript:void(0);" data-value="paid_success">成功</a></li>
+								<li><a href="javascript:void(0);" data-value="paid_return">退款</a></li>
+							</ul>
+						</div>
+					</li>
+					<li>
+						<input class="text t_Icon mr5" name="start" id="start" value='$!{params.start}' 
+									onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" />至
+						<input class="text t_Icon mr10" name="end" id="end" value='$!{params.end}' 
+							onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" />
+					</li>
+					<li>
+						订单号码：
+						<input type="text" class="text" name="tradeNo" id="tradeNo" value="$!{params.tradeNo}" style="padding:7px;"/>
+					</li>
+					<li>
+						<input type="hidden" name="isXls" id="isXls"/>
+						<a class="button largeBt mr20" href="#" onclick="document.forms[0].submit()"><span style="width:70px;">查询</span></a>
+					</li>
+				</ul>
+			</div>
+			<a class="usP export" href="javascript:downloadxls();" title="导出Excel"></a>
+			</div>
+		</form>
+		<div class="bill_panel">
+			<div class="bill_tool">
+				<div class="right">
+					#parse('WEB-INF/include/pageUtil.vm')
+				</div>
+				<div class="left">
+					#parse("WEB-INF/pages/common/goback.vm")
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a class="button bigBt mr20" href="javascript:flagOrderkp();" ><span style="width:70px;">标记已开票</span></a>
+				</div>
+			</div>
+			<table class="isTable" width="100%">
+						<thead>
+							<tr>
+								<th width="60px;"><input type="checkbox" class="mr3" onclick="selectAll();"/>全选</th>
+								<th>编号</th>
+								<th>订单号</th>
+								<th>下单日期</th>
+								<th>场次</th>
+								<th>影厅</th>
+								<th>影片</th>
+								<th>商品数量</th>
+								<!-- <th>结算金额</th> -->
+								<th class="tips"  title="已开票的为红色，未开票的为绿色">影院开票金额</th>
+								<th>订单详细</th>
+								<th>对账码</th>
+							</tr>
+						</thead>
+						<tbody>
+						#foreach($o in ${orders})
+						<tr>
+							<td >
+								#if($VmUtils.eq("N",$!{o.isAdjusted}))
+								<input type="checkbox" name="tradenos" class="mr3" value="$!{o.tradeno}"/>
+								#end
+							</td>
+							<td>
+							$!{foreach.count}
+						
+							</td>
+							<td>
+								$!{o.tradeno}
+								
+							</td>
+							
+							<td >
+								 $!DateUtil.formatTimestamp($!{o.dealTime}) 
+								
+							</td>
+							#set($otherInfo=$!{VmUtils.readJsonToMap(${o.otherInfo})})
+							<td >
+								$!{otherInfo.remove("场次")}
+							</td>
+							<td>
+								$!{otherInfo.remove("影厅")}
+							</td>
+							<td>
+								$!{otherInfo.remove("影片")}
+							</td>
+							
+							<td >
+								$!{o.quantity}
+								
+							</td>
+							<!-- <td >
+								$!CurrencyFmt.format($!{o.totalCost})
+								
+							</td> -->
+							<td >
+								#if($VmUtils.eq("N",$!{o.isAdjusted}))
+								<span style="color: green;">$!CurrencyFmt.format($!{o.alipaid})</span>
+								#else
+								<span style="color: red;">$!CurrencyFmt.format($!{o.alipaid})</span>
+								#end
+							</td>
+							<td>
+								$VmUtils.replaceAll($!{otherInfo.remove("影票")}, "\d+元", "")
+							</td>
+							<td>
+								$!{o.outerId}
+							</td>
+						</tr>
+						#end
+						<tr>
+							<td colspan="7">合计</td>
+							<td>$!{totalquantity}</td>
+							<td>$!CurrencyFmt.format($!{totalcost})</td>
+							<td></td>
+							<td colspan="2"></td>
+						</tr>
+				</tbody>
+			</table>
+			#if(!$!orders)
+			<div class="bill_tool mt10">
+				<div class="bill_toolExe">
+					请选择您要查询详细订单数据的影院。
+				</div>
+			</div>
+			#end
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	//isCreateOption();
+	document.getElements('tbody tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	autoCountHeight();
+});
+var downloadxls=function(){
+	if(document.forms[0]){
+		$("isXls").value="downloadxls";
+		document.forms[0].submit();
+		$("isXls").value="";
+	}else{
+		var a=document.location.href;
+		a=a+"&isXls=download";
+		document.location.href=a;
+	}
+};
+function autoCountHeight(flag){
+	var id = parent.document.getElementById('coverForm');
+	if(id){
+		id.style.height = window.innerHeight+'px';
+	}
+	if(flag)return;
+	document.addEvent('resize',function(){
+		autoCountHeight(true);
+	});
+}
+
+function selectAll(){
+	document.getElements('input[type=checkbox][name=tradenos]').each(function(item){
+		item.checked = !item.checked;
+	})
+}
+
+function flagOrderkp() {
+	var tradeNos = "";
+	document.getElements('input[type=checkbox][name=tradenos]').each(function(item){
+		if (item.checked == true){
+			if (!tradeNos == ""){
+				tradeNos = tradeNos + ",";
+			}
+			tradeNos = tradeNos + item.value;
+		}
+	});
+	if (tradeNos == ""){
+		gewaUtil.alert("没有选择任何订单!");
+		return;
+	}
+	
+	gewa.util.issure('','确认要标记订单开票么？', '提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+		var url = "${basePath}merchant/gewaorder/flagOrderkp.xhtml";
+		var values = {"tradeNos":tradeNos};
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(mid);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){document.forms[0].submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+</script>
+
+</body>
+</html>

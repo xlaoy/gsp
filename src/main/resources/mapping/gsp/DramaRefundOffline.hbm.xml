@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.drama.DramaRefundOffline" table="drama_refundonline" schema="gsp">
+    
+       <id name="tradeno" type="string">
+            <column name="tradeno"  />
+            <generator class="assigned" />
+       </id>
+       
+       <property name="dramaid"		column="dramaid"	type="long" />
+       <property name="ordertime"		column="ordertime"	type="timestamp" />
+       <property name="refundtime"		column="refundtime"	type="timestamp" />
+       <property name="gspupdatetime"		column="gspupdatetime"	type="timestamp" />
+		
+    </class>
+</hibernate-mapping>

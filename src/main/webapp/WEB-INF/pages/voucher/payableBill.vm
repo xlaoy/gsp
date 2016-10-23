@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ufinterface sender="890" receiver="u8" roottag="oughtpay" docid="478832423" 
+				proc="add" codeexchanged="N" exportneedexch="N" paginate="0" display="应付单" 
+				family="应付管理" dynamicdate="11/27/2011" maxdataitems="20000" timestamp="0x00000000004451A2" 
+				lastquerydate="2014-03-27 10:55:15">
+<oughtpay>
+<header>
+	<id>$!{pb.id}</id>
+	<vouchertype>$!{pb.vouchertype}</vouchertype>
+	<code>$!{pb.code}</code>
+	<customercode>$!{pb.customercode}</customercode> 
+	<relatevouchercode>$!{pb.relatevouchercode}</relatevouchercode>
+	<date>$!{pb.date}</date>
+	<cust_vendor_code>$!{pb.cust_vendor_code}</cust_vendor_code>
+	<deptcode>$!{pb.deptcode}</deptcode>
+	<personcode>$!{pb.personcode}</personcode>
+	<item_classcode>$!{pb.item_classcode}</item_classcode>
+	<item_code>$!{pb.item_code}</item_code>
+	<digest>$!{pb.digest}</digest>
+	<subjectcode>$!{pb.subjectcode}</subjectcode>
+	<currency_name>$!{pb.currency_name}</currency_name>
+	<currency_rate>$!{pb.currency_rate}</currency_rate>
+	<bdebitcredit>$!{pb.bdebitcredit}</bdebitcredit>
+	<natamount>$!{pb.natamount}</natamount>
+	<amount>$!{pb.amount}</amount>
+	<paycondition_code>$!{pb.paycondition_code}</paycondition_code>
+	<operator>$!{pb.operator}</operator>
+	<flag>$!{pb.flag}</flag>
+	<quantity>$!{pb.quantity}</quantity>
+	<define1>$!{pb.define1}</define1>
+	<startflag>$!{pb.startflag}</startflag>
+</header>
+<body>
+	#foreach ($en in $pb.entities)
+	<entry>
+		<headid>$!{en.headid}</headid>
+		<customercode>$!{en.customercode}</customercode> 
+		<cust_vendor_code>$!{en.cust_vendor_code}</cust_vendor_code>
+		<deptcode>$!{en.deptcode}</deptcode>
+		<personcode>$!{en.personcode}</personcode>
+		<item_classcode>$!{en.item_classcode}</item_classcode>
+		<item_code>$!{en.item_code}</item_code>
+		<digest>$!{en.digest}</digest>
+		<subjectcode>$!{en.subjectcode}</subjectcode>
+		<currency_name>$!{en.currency_name}</currency_name>
+		<currency_rate>$!{en.currency_rate}</currency_rate>
+		<bdebitcredit>$!{en.bdebitcredit}</bdebitcredit>
+		<natamount>$!{en.natamount}</natamount>
+		<amount>$!{en.amount}</amount>
+		<define22>$!{en.define1}</define22>
+		<define23/>
+	</entry>
+	#end
+</body>
+</oughtpay>
+</ufinterface>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+	
+	<table>
+		<tr>
+			<td>项目类型：</td>
+			<td>
+				#if($VmUtils.eq($!{drama.origin},"GW"))
+					格瓦拉
+				#elseif($VmUtils.eq($!{drama.origin},"WG"))
+					微格娱乐
+				#else
+					$!{drama.origin}
+				#end
+				&nbsp;
+				#if($VmUtils.eq($!{drama.pretype},"M"))
+					非代售
+				#elseif($VmUtils.eq($!{drama.pretype},"E"))
+					代售
+				#end
+			</td>
+		</tr>
+		<tr>
+			<td>结算方式：</td>
+			<td>
+				#if($VmUtils.eq($!{dconfig.settlecycle},"TN"))
+					T+N
+				#elseif($VmUtils.eq($!{dconfig.settlecycle},"WEEKLY"))
+					按周
+				#elseif($VmUtils.eq($!{dconfig.settlecycle},"MIDDLE"))
+					按半月
+				#elseif($VmUtils.eq($!{dconfig.settlecycle},"MONTHLY"))
+					按月
+				#elseif($VmUtils.eq($!{dconfig.settlecycle},"PROGRAM"))
+					按项目
+				#elseif($VmUtils.eq($!{dconfig.settlecycle},"SETTLE"))
+					已结
+				#end	
+			</td>
+		</tr>
+		<tr>
+			<td>结算依据：</td>
+			<td>
+				#if($VmUtils.eq($!{dconfig.settlebase},"ORDERTIME"))
+					下单时间
+				#elseif($VmUtils.eq($!{dconfig.settlebase},"USETIME"))
+					放映时间
+				#end
+			</td>
+		</tr>
+	</table>
+	<br>
+	<table border="1">
+		<thead>
+			<tr>
+				<th>单号</th>
+				<th>项目名称</th>
+				<th>供应商</th>
+				<th>结算周期</th>
+				<th>剧院名称</th>
+				<th>单价</th>
+				<th>扣率</th>
+				<th>是否套票</th>
+				<th>出票数量</th>
+				<th>票面金额</th>
+				<th>退票数量</th>
+				<th>退票金额</th>
+				<th>结算金额</th>
+				<th>商户兑换券</th>
+				<th>应付金额</th>
+			</tr>
+		</thead>
+		<tbody>
+			#set($allpayamount=0)
+			#foreach($pricebill in ${pricebillList})
+			<tr>
+				<td>$!{pricebill.recordid}</td>
+				<td>$!{drama.dramaname}</td>
+				<td>$!{supplier.name}</td>
+				<td>[ $!DateUtil.formatTimestamp($!{settlebill.starttime}) - $!DateUtil.formatTimestamp($!{settlebill.endtime}) )</td>
+				<td>$!{placemap.get($!{pricebill.placeid.toString()}).name}</td>
+				<td>$!CurrencyFmt.format($!{pricebill.price})</td>
+				<td>$!{pricebill.rate}</td>
+				<td>
+					#if($VmUtils.eq($!{pricebill.disticket},"Y"))
+						是
+					#elseif($VmUtils.eq($!{pricebill.disticket},"N"))
+						否
+					#end
+				</td>
+				<td>
+					#if($VmUtils.eq($!{pricebill.disticket},"Y"))
+						$!{pricebill.ticketnum} 张 / $!{pricebill.taopiaonum} 套
+					#elseif($VmUtils.eq($!{pricebill.disticket},"N"))
+						$!{pricebill.ticketnum} 张
+					#end
+				</td>
+				<td>$!CurrencyFmt.format($!{pricebill.ticketamount})</td>
+				<td>$!{pricebill.refundnum}</td>
+				<td>$!CurrencyFmt.format($!{pricebill.refundamount})</td>
+				<td>$!CurrencyFmt.format($!{pricebill.settleamount})</td>
+				<td>$!CurrencyFmt.format($!{pricebill.madisamount})</td>
+				<td>$!CurrencyFmt.format($!{pricebill.payamount})</td>
+			</tr>
+			#set($allpayamount= $allpayamount + $!{pricebill.payamount})
+			#end
+			<tr style="color: #075F0A;">
+				<td colspan="8" style="text-align: center;">小计：</td>
+				<td>$!{settlebill.ticketnum}</td>
+				<td>$!CurrencyFmt.format($!{settlebill.ticketamount})</td>
+				<td>$!{settlebill.refundnum}</td>
+				<td>$!CurrencyFmt.format($!{settlebill.refundamount})</td>
+				<td>$!CurrencyFmt.format($!{settlebill.settleamount})</td>
+				<td>$!CurrencyFmt.format($!{settlebill.madisamount})</td>
+				<td>$!CurrencyFmt.format($!{allpayamount})</td>
+			</tr>
+			<tr style="color: #075F0A;">
+				<td colspan="8" style="text-align: center;">调整：</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>$!CurrencyFmt.format($!{settlebill.adjustamount})</td>
+			</tr>
+			<tr style="color: #075F0A;">
+				<td colspan="8" style="text-align: center;">抵值金额：</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>$!CurrencyFmt.format($!{settlebill.mbddisamount})</td>
+			</tr>
+			<tr style="color: #075F0A;">
+				<td colspan="8" style="text-align: center;">场馆补贴：</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>$!CurrencyFmt.format($!{settlebill.butieamount})</td>
+			</tr>
+			<tr style="color: #075F0A;">
+				<td colspan="8" style="text-align: center;"><h2>合计：</h2></td>
+				<td><h2>$!{settlebill.ticketnum}</h2></td>
+				<td><h2>$!CurrencyFmt.format($!{settlebill.ticketamount})</h2></td>
+				<td><h2>$!{settlebill.refundnum}</h2></td>
+				<td><h2>$!CurrencyFmt.format($!{settlebill.refundamount})</h2></td>
+				<td><h2>$!CurrencyFmt.format($!{settlebill.settleamount})</h2></td>
+				<td><h2>$!CurrencyFmt.format($!{settlebill.madisamount})</h2></td>
+				<td><h2>$!CurrencyFmt.format($!{settlebill.payamount})</h2></td>
+			</tr>
+		</tbody>
+	</table>
+	
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+
+<body id="_body">
+<div class="inner">
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th style="width:20%;">统计日期</th>
+					<th style="width:10%;">出票数量</th>
+					<th style="width:10%;">出票金额</th>
+					<th style="width:10%;">退票数量</th>
+					<th style="width:10%;">退票金额</th>
+					<th style="width:10%;">结算票数</th>
+					<th style="width:10%;">结算金额</th>
+					<th style="width:10%;">开票金额</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($ck in ${ckList})
+					<tr>
+						<td>[ $!DateUtil.formatTimestamp($!{ck.start}) - <br/>&nbsp;&nbsp;$!DateUtil.formatTimestamp($!{ck.end}) )</td>
+						<td>$VmUtils.getTotal($ck.succTicketNumber)</td>
+						<td>$!CurrencyFmt.format($ck.succTicketAmount)</td>
+						<td>$VmUtils.getTotal($ck.refundTotalNumber)</td>
+						<td>$!CurrencyFmt.format($ck.refundTotalAmount)</td>
+						<td>$VmUtils.getTotal($ck.orderTotalNumber)</td>
+						<td>$!CurrencyFmt.format($ck.orderTotalAmount)</td>
+						<td>$!CurrencyFmt.format($ck.billingamount)</td>
+						<td>
+							<a href="javascript:exportWPdayBillOrder('$!{ck.start}', '$!{ck.end}');">出票订单</a>
+							<br/>
+							<a href="javascript:exportWPdayBillRefund('$!{ck.start}', '$!{ck.end}');">退票订单</a>
+						</td>
+					</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+</div>
+
+</body>
+</html>

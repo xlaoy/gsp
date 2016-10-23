@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<style>
+#detailtable{font-size: 15px;}
+#detailtable tr{height: 37px; line-height: 37px;}
+</style>
+<form style="margin: 0px;padding: 0px;" id="invoicedetailForm" accept-charset="UTF-8">
+	<table id="detailtable">
+		<tr>
+			<td colspan="4"><span style="color: #EC7001; margin-left: 20px;">
+			已选$!{settlnum}个结算单，结算总金额为：$!CurrencyFmt.format($!{tatalcost})，格瓦拉开票总金额为：$!CurrencyFmt.format($!{gwkpamount})
+			<input type="hidden" id ="inv_gwkpamount" value="$!{gwkpamount}"/>
+			</span></td>
+		</tr>
+		<tr>
+			<td width="120px;" align="right" valign="top">关联结算单：</td>
+			<td colspan="3">
+				<div style="color: #00A8FF; width: 500px;">$!{settleids}</div>
+				<input type="hidden" id ="inv_settleids" value="$!{settleids}"/>
+			</td>
+		</tr>
+		<tr>
+			<td width="120px;" align="right" valign="top">发票类型：</td>
+			<td width="300px;">
+				<!-- <select id="inv_invoicetype"  style="width: 150px;">
+					<option value="ZYFP" #if($VmUtils.eq($!invc.invoicetype,"ZYFP")) selected="selected" #end>增值税专用发票</option>
+					<option value="PTFP" #if($VmUtils.eq($!invc.invoicetype,"PTFP")) selected="selected" #end>增值税普通发票</option>
+				</select> -->
+				增值税专用发票
+				<input type="hidden" id ="inv_invoicetype" value="ZYFP"/>
+			</td>
+			<td width="120px;" align="right" valign="top">税率：</td>
+			<td>
+				<select id="inv_taxrate"  style="width: 150px;" >
+					<option value="0" #if($!invc.taxrate == 0) selected="selected" #end>0%</option>
+					<option value="3" #if($!invc.taxrate == 3) selected="selected" #end>3%</option>
+					<option value="6" #if($!invc.taxrate == 6) selected="selected" #end>6%</option>
+					<option value="17" #if($!invc.taxrate == 17) selected="selected" #end>17%</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td width="120px;" align="right" valign="top">销货单位名称：</td>
+			<td colspan="3" >
+				<input type="text" class="text" id="inv_vendername" value="$!invc.vendername" style="width: 500px;"/>
+			</td>
+		</tr>
+		<tr>
+			<td width="120px;" align="right" valign="top">发票号码：</td>
+			<td>
+				#if($VmUtils.eq($!opt,'MODIFY'))
+					$!invc.invoicecode
+					<input type="hidden"  id="inv_invoicecode" value="$!invc.invoicecode" />
+				#else
+					<input type="text" class="text" id="inv_invoicecode" value="$!invc.invoicecode" style="width: 150px;" />
+				#end
+			</td>
+			<td width="120px;" align="right" valign="top">开票日期：</td>
+			<td>
+				<input id="inv_invoicedate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" value='$VmUtils.format($!{invc.invoicedate})' style="width: 150px;"/>
+			</td>
+		</tr>
+		<tr>
+			<td width="120px;" align="right" valign="top">发票金额：</td>
+			<td colspan="3">
+				<input type="text" class="text" id="inv_invoiceamount" value="$!invc.invoiceamount" style="width: 150px;" onkeyup="calcuamount();"/>
+			</td>
+		</tr>
+		<tr>
+			<td width="120px;" align="right" valign="top">税额：</td>
+			<td>
+				<input type="text" class="text" id="inv_taxamount" value="$!invc.taxamount" style="width: 150px;"/>
+			</td>
+			<td width="120px;" align="right" valign="top">不含税金额：</td>
+			<td colspan="3">
+				<input type="text" class="text" id="inv_excludetaxamount" value="$!invc.excludetaxamount" style="width: 150px;"/>
+			</td>
+		</tr>
+		<tr>
+			<td width="120px;" align="right" valign="top">发票备注：</td>
+			<td colspan="3">
+				<textarea id="inv_content" style="width: 500px; height: 80px;">$!invc.submitcontent</textarea>
+				<br>请备注发票对应票款说明，如：7月票款
+			</td>
+		</tr>
+		<tr>
+			<td width="120px;" align="right" valign="top"><span style="color: red; line-height: 25px;">注意：</span></td>
+			<td colspan="3">
+				<span style="color: red; line-height: 25px;">系统暂支持开专票，若需开普票，请联系GW相关人员。若需要开多张发票，请先进行保存，然后在进行发票复制或者添加操作！</span>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4" align="right">
+				<input type="hidden" id ="inv_opt" value="$!{opt}"/>
+				<a class="button largeBt mr20" href="javascript:void();" onclick="addInvoice();"><span style="width:70px;">保存</span></a>
+				<a class="button largeBt mr20" href="javascript:void();" onclick="cancelInvoiceAddMark();"><span style="width:70px;">取消</span></a>
+			</td>
+		</tr>
+	</table>
+</form>

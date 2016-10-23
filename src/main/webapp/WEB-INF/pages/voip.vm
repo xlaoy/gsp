@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>电话语音验证码！</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="es" />
+	<link rel="stylesheet" type="text/css" href="http://img5.gewara.com/css/sportClient.css?v=$VmUtils.jsVersion" />
+	<script type="text/javascript" src="http://img5.gewara.com/scripts/mootools.js?v=$VmUtils.jsVersion"></script>
+	<script type="text/javascript" src="http://img5.gewara.com/scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+	<style type="text/css">
+		.htmlText{width:800px;margin:20px auto;padding:20px;background:#fff;font-size:14px;font-family: '宋体';}
+		.htmlText h1{display: block;text-align: center;font-size:20px;}
+		.htmlText h2{display: inline-block;width:auto;border-bottom:3px solid #FF6600;font-size:16px;line-height: 26px;margin:20px 0 15px;}
+		.htmlText .listText{padding-left:40px;}
+		.htmlText .listText a{line-height: 26px;}
+		.htmlText .listText a:hover{text-decoration: underline;color: #FF6600}
+		.htmlText .textP{line-height: 22px;margin-bottom:30px;}
+		.htmlText .textP b{font-size:16px;color:#FF6600}
+	</style>
+</head>
+	<body>
+	<h2 id="employ">电话语音验证码！</h2>
+	<div class="textP listText">
+		<p><b>由于是在服务商申请的测试账号， 呼出电话有限制， 仅能通过服务商后台手动设置5个号码（正式用户无限制）</b></p>
+		<p><b style="color:red">如需要测试， 请发手机号码 到QQ 2206139  以便能添加到服务商后台</b></p>
+		<p></p>
+		<p></p>
+		<br></br>
+		<form action="${basePath}call.xhtml" method="post">
+			<div>手机号码：<input name="phone" value="18616852595"></input></div>
+			<div><input type="submit" value="手机语音获取验证码"></input></div>
+		</form>
+	</div>
+	</body>
+</html>

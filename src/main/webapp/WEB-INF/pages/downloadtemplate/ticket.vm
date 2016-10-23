@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>包场列表</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body id="_body">
+	<div>
+		<table border="1">
+			<thead>
+				<tr>
+					<th>结算单单号</th>
+					<th>影院名称</th>
+					<th>万达场次</th>
+					<th>系统场次</th>
+					<th>供应商名称</th>
+					<th>供应商编码</th>
+					<th>开始时间</th>
+					<th>结束时间</th>
+					<th>结算票数</th>
+					<th>结算金额</th>
+					<th>开票金额</th>
+					<th>不开票金额</th>
+					<th>税率</th>
+					<th>不含税金额</th>
+					<th>税额</th>
+				</tr>
+			</thead>
+			#if($jitilist && $jitilist.size() > 0)
+			<tbody>
+				#foreach($jiti in ${jitilist})
+				<tr>
+					<td style="vnd.ms-excel.numberformat:@">$!{jiti.recordid}</td>
+					<td style="vnd.ms-excel.numberformat:@">$!{jiti.placename}</td>
+					<td style="vnd.ms-excel.numberformat:@">
+						#if($VmUtils.eq($!{jiti.special},'WANDA_ACTIVITY'))
+							万达活动场
+						#elseif($VmUtils.eq($!{jiti.special},'WANDA_NOT_ACTIVITY'))
+							万达非活动场
+						#end
+					</td>
+					<td style="vnd.ms-excel.numberformat:@">
+						#if($VmUtils.eq($!{jiti.playtype},'ZL'))
+							直连
+						#elseif($VmUtils.eq($!{jiti.playtype},'XN'))
+							虚拟
+						#elseif($VmUtils.eq($!{jiti.playtype},'GW'))
+							格瓦票务
+						#end
+					</td>
+					<td style="vnd.ms-excel.numberformat:@">$!{jiti.vendername}</td>
+					<td style="vnd.ms-excel.numberformat:@">$!{jiti.vendercode}</td>
+					<td style="vnd.ms-excel.numberformat:@">$!DateUtil.formatTimestamp($!{jiti.starttime})</td>
+					<td style="vnd.ms-excel.numberformat:@">$!DateUtil.formatTimestamp($!{jiti.endtime})</td>
+					<td style="vnd.ms-excel.numberformat:@">$!{jiti.num}</td>
+					<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{jiti.amount})</td>
+					<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{jiti.kpamount})</td>
+					<td style="vnd.ms-excel.numberformat:@">
+						#set($bkpamount = $!{jiti.amount} - $!{jiti.kpamount})
+						$!CurrencyFmt.format($!{bkpamount})
+					</td>
+					<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{jiti.taxrate})%</td>
+					<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{jiti.exclutax})</td>
+					<td style="vnd.ms-excel.numberformat:@">$!CurrencyFmt.format($!{jiti.taxamount})</td>
+				#end
+			</tbody>
+			#end
+		</table>
+	</div>
+</body>
+</html>

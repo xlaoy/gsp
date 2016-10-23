@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>订单明细</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<table border="1">
+		<thead>
+			<tr>
+				<td>影院名称</td>
+				<td>tradeno</td>
+				<td>order_type</td>
+				<td>refund_time</td>
+				<td>old_settle</td>
+				<td>new_settle</td>
+				<td>is_settled</td>
+				<td>check_bill_id</td>
+				<td>place_type</td>
+				<td>relate_id</td>
+				<td>play_id</td>
+				<th>use_time</th>
+				<th>refund_category</th>
+				<th>quantity</th>
+				<th>apply_info</th>
+				<th>deal_info</th>
+				<th>settle_bill_id</th>
+				<th>version</th>
+				<th>sync_time</th>
+				<th>special</th>
+				<th>outer_id</th>
+			</tr>
+		</thead>
+		<tbody>
+			#if($mapList && $mapList.size() > 0)
+				#foreach($map in ${mapList})
+				<tr>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("name")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("tradeno")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("order_type")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("refund_time")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("old_settle")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("new_settle")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("is_settled")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("check_bill_id")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("place_type")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("relate_id")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("play_id")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("use_time")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("refund_category")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("quantity")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("apply_info")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("deal_info")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("settle_bill_id")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("version")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("sync_time")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("special")</td>
+					<td style="vnd.ms-excel.numberformat:@">$!map.get("outer_id")</td>
+				#end
+			#end
+		</tbody>
+	</table>
+</body>
+</html>

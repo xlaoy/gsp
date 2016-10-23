@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+	<div>
+		<table border="1">
+			<thead>
+				<tr>
+					<th>发票号码</th>
+					<th>结算单号</th>
+					<th>发票类型</th>
+					<th>开票日期</th>
+					<th>销货单位</th>
+					<th>税率</th>
+					<th>税额</th>
+					<th>发票金额</th>
+					<th>不含税金额</th>
+					#if($VmUtils.eq($!user,"GW")) 
+						<th>抵扣金额</th>
+						<th>抵扣月份</th> 
+						<th>业务供应商编号</th>
+					#end
+					<th>提交日期</th>
+					<th>发票状态</th>
+					<th>发票备注</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($invoice in ${invoicelist})
+					<tr>
+						<td style="vnd.ms-excel.numberformat:@"><span class="inbl">$!{invoice.invoicecode}</span></td>
+						<td style="vnd.ms-excel.numberformat:@">$!{invoice.settleids}</td>
+						
+						#if($VmUtils.eq($!user,"GW")) 
+						
+						#end
+						
+						<td style="vnd.ms-excel.numberformat:@"><span class="inbl">
+							#if($VmUtils.eq($!invoice.invoicetype,"ZYFP"))
+								增值税专用发票
+							#elseif($VmUtils.eq($!invoice.invoicetype,"PTFP"))
+								增值税普通发票
+							#end
+						</span></td>
+						<td style="vnd.ms-excel.numberformat:@"><span class="inbl">$VmUtils.format($!{invoice.invoicedate})</span></td>
+						<td style="vnd.ms-excel.numberformat:@"><span class="inbl">$!{invoice.vendername}</span></td>
+						<td style="vnd.ms-excel.numberformat:@"><span class="inbl">$!{invoice.taxrate}%</span></td>
+						<td style="vnd.ms-excel.numberformat:@"><span class="inbl">$!CurrencyFmt.format($!{invoice.taxamount})</span></td>
+						<td style="vnd.ms-excel.numberformat:@" ><span class="inbl">$!CurrencyFmt.format($!{invoice.invoiceamount})</span></td>
+						<td style="vnd.ms-excel.numberformat:@" ><span class="inbl">$!CurrencyFmt.format($!{invoice.excludetaxamount})</span></td>
+						#if($VmUtils.eq($!user,"GW")) 
+							<td style="vnd.ms-excel.numberformat:@" ><span class="inbl">$!CurrencyFmt.format($!{invoice.deductibleamount})</span></td>
+							<td style="vnd.ms-excel.numberformat:@" ><span class="inbl">$!{invoice.dikoumonth}</span></td>
+							<td  style="vnd.ms-excel.numberformat:@">
+								#set($istlist = $!isrlistmap.get($!{invoice.invoicecode}))
+								#foreach($isr in $!istlist)
+									$!{isr.vendercode},
+								#end
+							</td> 
+						#end
+						<td style="vnd.ms-excel.numberformat:@"><span class="inbl">$!DateUtil.formatTimestamp($!{invoice.addtime})</span></td>
+						<td style="vnd.ms-excel.numberformat:@"><span class="inbl">$!statusMap.get($!invoice.status)</span></td>
+						<td style="vnd.ms-excel.numberformat:@">$!{invoice.submitcontent}</td>
+					</tr>
+					#end
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

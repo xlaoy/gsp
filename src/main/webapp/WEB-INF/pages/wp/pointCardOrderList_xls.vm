@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+
+<table border="1">
+	<thead>
+		<tr>
+			<th>id</th>
+			<th>合作商id</th>
+			<th>影院id</th>
+			<th>影院名称</th>
+			<th>外部订单号</th>
+			<th>内部订单号</th>
+			<th>订单类型</th>
+			<th>订单状态</th>
+			<th>订票数</th>
+			<th>外部下单时间</th>
+			<th>放映时间</th>
+			<th>卡号</th>
+			<th>卡券类型</th>
+			<th>卡支付金额</th>
+			<th>外部支付金额</th>
+			<th>外部订单总金额</th>
+			<th>其他信息</th>
+			<th>退款时间</th>
+			<th>退款金额</th>
+			<th>退款类型</th>
+			<th>退款原因</th>
+		</tr>
+	</thead>
+	<tbody>
+		#foreach($o in ${orderlist})
+		<tr>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.recordid}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.partnerid}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.cinemaid}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.cinemaname}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.outtradeno}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.tradeno}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.ordertype}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.status}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.ticketnum}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.ordertime}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.playtime}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.cardno}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.cardtype}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.carduseamount}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.outamount}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.orderamount}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{o.otherinfo}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{refundmap.get($o.otherinfo).get("refundtime")}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{refundmap.get($o.otherinfo).get("amount")}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{refundmap.get($o.otherinfo).get("refundtype")}</td>
+			<td style="vnd.ms-excel.numberformat:@">$!{refundmap.get($o.otherinfo).get("refundreason")}</td>
+		</tr>
+		#end
+	</tbody>
+</table>
+
+</body>
+</html>

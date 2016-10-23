@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html style="background: #fff;">
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+<script type="text/javascript" src="${basePath}js/autoComplete.js"></script>
+<style type="text/css">
+.s{background:#f0f0f0;}
+</style>
+</head>
+
+<body id="_body">
+<div class="inner" >
+	#set($nvg="queryDramaSettleBill")
+	#parse('WEB-INF/pages/nvaig/dramasettlenvaig.vm')
+	
+	<div class="mode_search">
+		<form action="${basePath}platform/drama/queryDramaSettleBill.xhtml" method="post" id="settlebillForm">
+				<h2>查询条件</h2><br>
+				<div>
+					单号：
+					<input type="text" class="text" name="recordid" id="recordid" value="$!{params.recordid}" style="width: 100px;"/>
+					&nbsp;&nbsp;
+					项目名称：
+					<input type="hidden" name="dramaid" id="dramaid" value="$!{params.dramaid}"/>
+					<input type="text" class="text" name="dramaname" id="dramaname" value="$!{params.dramaname}" style="width: 250px;" autocomplete="off"/>
+					&nbsp;&nbsp;
+					供应商名称：
+					<input type="hidden" name="suppliercode" id="suppliercode" value="$!{params.suppliercode}"/>
+					<input type="text" class="text" name="suppliername" id="suppliername" value="$!{params.suppliername}" style="width: 250px;" autocomplete="off"/>
+					&nbsp;&nbsp;
+					状态：
+					<select id="status" name="status" class="text" style="width: 120px;">
+						<option value="">全部</option>
+						<option value="NEW" #if($VmUtils.eq($!{params.status},"NEW")) selected="selected" #end>等待系统处理</option>
+						<option value="EXCEPTION" #if($VmUtils.eq($!{params.status},"EXCEPTION")) selected="selected" #end>单据异常</option>
+						<option value="FULFILLING" #if($VmUtils.eq($!{params.status},"FULFILLING")) selected="selected" #end>系统处理中</option>
+						<option value="WAITINGPAY" #if($VmUtils.eq($!{params.status},"WAITINGPAY")) selected="selected" #end>等待付款</option>
+						<option value="SETTLED" #if($VmUtils.eq($!{params.status},"SETTLED")) selected="selected" #end>已付款</option>
+						<option value="INVALID" #if($VmUtils.eq($!{params.status},"INVALID")) selected="selected" #end>无效</option>
+					</select>
+					&nbsp;&nbsp;
+					<a href="javascript:$('settlebillForm').submit();" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="javascript:payMoreBill();" class="button minBt whiteBt"><span>批量付款</span></a>
+				</div>
+		</form>
+	</div>
+	
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th style="width:4%;"><input type="checkbox" onclick="selectAll();"/>单号</th>
+					<th style="width:9%;">项目名称</th>
+					<th>供应商名称</th>
+					<th style="width:9%;">结算周期</th>
+					<th style="width:5%;">项目类型</th>
+					<th style="width:5%;">出票数量</th>
+					<th style="width:5%;">销售金额</th>
+					<th style="width:5%;">退票数量</th>
+					<th style="width:5%;">退票金额</th>
+					<th style="width:5%;">结算金额</th>
+					<th style="width:5%;">兑换金额</th>
+					<th style="width:5%;">抵值金额</th>
+					<th style="width:5%;">场馆补贴</th>
+					<th style="width:5%;">调整票数</th>
+					<th style="width:5%;">调整金额</th>
+					<th style="width:5%;">应付金额</th>
+					<th style="width:6%;">状态</th>
+					<th style="width:5%;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($bill in ${billList})
+				<tr>
+					<td>
+						#if($VmUtils.eq($!{bill.status},"WAITINGPAY"))
+						<input type="checkbox" name="recordid" value="$!{bill.recordid}"/>
+						#end
+						$!{bill.recordid}
+					</td>
+					<td>
+						<span style="color: #FA750D">【项目:$!{bill.dramaid}】</span><br>
+						<span style="color: #FA750D">
+							【版本:
+							<a href="${basePath}platform/drama/queryDrama.xhtml?dramaversionid=$!{configmap.get($!{bill.configid}).dramaversionid}">$!{configmap.get($!{bill.configid}).dramaversionid}</a>
+							】
+						</span>
+						<br>$!{dramamap.get($!{bill.dramaid}).dramaname}
+					</td>
+					<td>$!{suppliermap.get($!{bill.suppliercode}).name}</td>
+					<td>[ $!DateUtil.formatTimestamp($!{bill.starttime}) - <br>&nbsp;&nbsp;$!DateUtil.formatTimestamp($!{bill.endtime}) )</td>
+					<td>
+						#if($VmUtils.eq($!{dramamap.get($!{bill.dramaid}).origin},"GW"))
+							格瓦拉
+						#elseif($VmUtils.eq($!{dramamap.get($!{bill.dramaid}).origin},"WG"))
+							微格娱乐
+						#else
+							$!{dramamap.get($!{bill.dramaid}).origin}
+						#end
+						<br>
+						#if($VmUtils.eq($!{dramamap.get($!{bill.dramaid}).pretype},"M"))
+							非代售
+						#elseif($VmUtils.eq($!{dramamap.get($!{bill.dramaid}).pretype},"E"))
+							代售
+						#end
+					</td>
+					<td>$!{bill.ticketnum}</td>
+					<td>$!CurrencyFmt.format($!{bill.ticketamount})</td>
+					<td>$!{bill.refundnum}</td>
+					<td>$!CurrencyFmt.format($!{bill.refundamount})</td>
+					<td>$!CurrencyFmt.format($!{bill.settleamount})</td>
+					<td>$!CurrencyFmt.format($!{bill.madisamount})</td>
+					<td>$!CurrencyFmt.format($!{bill.mbddisamount})</td>
+					<td>$!CurrencyFmt.format($!{bill.butieamount})</td>
+					<td>$!{bill.adjustnum}</td>
+					<td>$!CurrencyFmt.format($!{bill.adjustamount})</td>
+					<td><span  style="color: #075F0A;  font-weight: bold;">$!CurrencyFmt.format($!{bill.payamount})</span></td>
+					<td>
+						#if($VmUtils.eq($!{bill.status},"NEW"))
+							等待系统处理
+						#elseif($VmUtils.eq($!{bill.status},"EXCEPTION"))
+							单据异常
+						#elseif($VmUtils.eq($!{bill.status},"FULFILLING"))
+							系统处理中
+						#elseif($VmUtils.eq($!{bill.status},"WAITINGPAY"))
+							等待付款
+						#elseif($VmUtils.eq($!{bill.status},"SETTLED"))
+							已付款
+						#elseif($VmUtils.eq($!{bill.status},"INVALID"))
+							无效
+						#end
+						<br><a href="${basePath}/platform/drama/queryDramaPriceBill.xhtml?recordid=$!{bill.recordid}">价格对账单</a>
+						<br><a href="${basePath}/platform/drama/queryDramaConfig.xhtml?recordid=$!{bill.configid}">查看配置</a>
+					</td>
+					<td>
+						#if(!$VmUtils.eq($!{bill.status},"FULFILLING") && !$VmUtils.eq($!{bill.status},"SETTLED"))
+							<a href="javascript:reCalculateBill('$!{bill.recordid}');">刷新</a><br>
+						#end
+						#if($VmUtils.eq($!{bill.status},"WAITINGPAY") && $VmUtils.eq($!{dramamap.get($!{bill.dramaid}).origin},"GW"))
+							<!-- <a href="javascript:loadAdjustBill('$!{bill.recordid}');">调整</a> -->
+							<br><a href="javascript:payOneBill('$!{bill.recordid}');">付款</a>
+						#end
+						#if($VmUtils.eq($!{bill.status},"SETTLED") && $VmUtils.eq($!{dramamap.get($!{bill.dramaid}).origin},"GW"))
+							<a href="javascript:rePayBill('$!{bill.recordid}');">重新付款</a>
+						#end
+						#if($VmUtils.eq($!{bill.status},"WAITINGPAY") || $VmUtils.eq($!{bill.status},"SETTLED"))
+							#if($VmUtils.eq(${bill.reqmoney},"N"))
+								<br><a href="javascript:reqmoney('$!{bill.recordid}');">申请请款</a>
+							#elseif($VmUtils.eq(${bill.reqmoney},"Y"))
+								<br><a href="${basePath}/platform/drama/printReqMoenyBill.xhtml?recordid=$!{bill.recordid}" target="_blank">打印请款</a>
+							#end
+						#end
+					</td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="18">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
+
+<div id="adjustMark" style="display:none; height: 350px;overflow-y:auto;"></div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	lockMenu();
+});
+
+function lockMenu(){
+	var menus = parent.document.getElements('#navleftid a');
+	if(menus)menus.filter(function(link){
+		link.removeClass('select');
+		return link.get('href').indexOf(document.location.pathname) >= 0;
+	}).addClass('select');
+}
+
+//演出项目数据下来查询
+new mSift('dramasel').Create({
+	"url": "${basePath}platform/drama/queryDramaData.xhtml",
+	"prama": function() {
+		var pdata = {
+				"dramaname": document.getElementById('dramaname').value,
+				"maxrow": 10
+			};
+		return pdata;
+	},
+	"codeObj": document.getElementById('dramaid'),
+	"nameObj": document.getElementById('dramaname'),
+	"returnCode": function(date) {
+		return date.recordid;
+	},
+	"returnName":function(date) {
+		return date.dramaname;
+	}
+});
+
+//供应商下来查询
+new mSift('suppliersel').Create({
+	"url": "${basePath}platform/drama/queryBaseData.xhtml",
+	"prama": function() {
+		var pdata = {
+				"name": document.getElementById('suppliername').value,
+				"type": "supplier",
+				"maxrow": 10
+			};
+		return pdata;
+	},
+	"codeObj": document.getElementById('suppliercode'),
+	"nameObj": document.getElementById('suppliername'),
+	"returnCode": function(date) {
+		return date.code;
+	},
+	"returnName":function(date) {
+		return date.name;
+	}
+});
+
+/**
+ * 重新计算
+ */
+function reCalculateBill(recordid) {
+	if(recordid == null || recordid == "") {
+		return;
+	}
+	gewa.util.issure('','确认要重新计算吗，重新计算之后，之前的调整数据会失效！','提示',420,'keys',function(calls,id){
+		var url = "${basePath}/platform/drama/reCalculateBill.xhtml";
+		var values = {"recordid":recordid};
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(mid);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){$('settlebillForm').submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+
+
+function selectAll(){
+	document.getElements('input[type=checkbox][name=recordid]').each(function(item){
+		item.checked = !item.checked;
+	})
+}
+/**
+ * 批量付款
+ */
+function payMoreBill() {
+	var recordids = "";
+	var n = 0;
+	document.getElements('input[type=checkbox][name=recordid]').each(function(item){
+		if (item.checked == true){
+			if (!recordids == ""){
+				recordids = recordids + ",";
+			}
+			recordids = recordids + item.value;
+			n++;
+		}
+	});
+	if (recordids == ""){
+		gewaUtil.alert("没有选择任何结算单。");
+		return;
+	}
+	gewa.util.issure('','确认要对' + n +'个结算单付款吗？','提示',420,'keys',function(calls,id){
+		paybill(recordids);
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+ 
+ 
+/**
+ * 付款
+ */
+function payOneBill(recordid) {
+	if(recordid == null || recordid == "") {
+		return;
+	}
+	gewa.util.issure('','确认要重付款吗？','提示',420,'keys',function(calls,id){
+		paybill(recordid);
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+
+function paybill(recordids) {
+	var url = "${basePath}/platform/drama/payBill.xhtml";
+	var values = {"recordids":recordids};
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask(mid);
+		if(result.success == true){
+			gewaUtil.alert(result.retval, function(){$('settlebillForm').submit();});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	});
+}
+
+/**
+ * 重新付款
+ */
+function rePayBill(recordid) {
+	if(recordid == null || recordid == "") {
+		return;
+	}
+	gewa.util.issure('','确认要重新付款吗？','提示',420,'keys',function(calls,id){
+		var url = "${basePath}/platform/drama/rePayBill.xhtml";
+		var values = {"recordid":recordid};
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(mid);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){$('settlebillForm').submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+
+//弹出调整框
+function loadAdjustBill(recordid){
+	var url = '${basePath}/platform/drama/loadSettleBillDetail.xhtml';
+	var values = {"recordid":recordid, "type": "adjust"}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('adjustMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','adjustMark','结算单' + recordid + "调整" ,400,'detailMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+//保存调整
+function saveAdjust(){
+	var recordid = $('drecordid').value;
+	var adjustnum = $('dadjustnum').value;
+	var adjustamount = $('dadjustamount').value;
+	var adjustdesc = $('dadjustdesc').value;
+	if(recordid == null || recordid == "") {
+		return;
+	}
+	if(adjustnum == null || adjustnum == "") {
+		return;
+	}
+	if(adjustamount == null || adjustamount == "") {
+		return;
+	}
+	if(parseInt(adjustnum) == 0 && parseFloat(adjustamount) == 0) {
+		return;
+	}
+	var url = "${basePath}/platform/drama/saveAdjustBill.xhtml";
+	var values = {"recordid":recordid, "adjustnum": adjustnum, "adjustamount": adjustamount, "adjustdesc": adjustdesc};
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask(mid);
+		if(result.success == true){
+			gewaUtil.alert(result.retval, function(){$('settlebillForm').submit();});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	});
+}
+
+/**
+ * 申请请款
+ */
+function reqmoney(recordid) {
+	if(recordid == null || recordid == "") {
+		return;
+	}
+	gewa.util.issure('','确认要申请请款吗？','提示',420,'keys',function(calls,id){
+		var url = "${basePath}/platform/drama/reqMoney.xhtml";
+		var values = {"recordid":recordid};
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(mid);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){$('settlebillForm').submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+</script>
+</body>
+</html>

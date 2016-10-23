@@ -1,0 +1,21 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="ehcache.xsd">
+	<diskStore path="java.io.tmpdir" />
+	<defaultCache timeToIdleSeconds="3600" timeToLiveSeconds="3600"
+		maxElementsInMemory="50000" eternal="false" overflowToDisk="false" >
+	</defaultCache>
+	<cache name="halfDay" timeToIdleSeconds="3600" maxElementsOnDisk="300000"
+		maxElementsInMemory="300000" eternal="false" overflowToDisk="false">
+	</cache>
+	<cache name="loginKey" timeToIdleSeconds="3600" maxElementsOnDisk="300000"
+		maxElementsInMemory="300000" eternal="false" overflowToDisk="false">
+	</cache>
+	<cache name="loginAuth" timeToIdleSeconds="3600" maxElementsOnDisk="300000"
+		maxElementsInMemory="300000" eternal="false" overflowToDisk="false">
+	</cache>
+	<cache name="tenMin" timeToIdleSeconds="3600" maxElementsOnDisk="300000"
+		maxElementsInMemory="300000" eternal="false" overflowToDisk="false">
+	</cache>
+	<cache name="eternal" maxElementsInMemory="50000" maxElementsOnDisk="300000" eternal="true" overflowToDisk="false">
+	</cache>
+</ehcache>

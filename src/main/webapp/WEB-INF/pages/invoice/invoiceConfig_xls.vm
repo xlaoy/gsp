@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+	<div>
+		<table border="1">
+			<thead>
+				<tr>
+					<th>影院</th>
+					<th>业务供应商编码</th>
+					<th>销货单位(付款供应商)</th>
+					<th>发票类型</th>
+					<th>税率</th>
+					<th>税务资质</th>
+					<th>备注</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($invcfg in ${invcfglist})
+				<tr>
+					<td>$!{placemap.get($!invcfg.placeid).name}</td>
+					<td>$!{cfgmap.get($!invcfg.placeid).venderNo}</td>
+					<td>$!{cfgmap.get($!invcfg.placeid).payVenderName}</td>
+					<td>
+						#if($VmUtils.eq($!invcfg.invoicetype,"ZYFP"))
+							增值税专用发票
+						#elseif($VmUtils.eq($!invcfg.invoicetype,"PTFP"))
+							增值税普通发票
+						#end
+					</td>
+					<td>$!invcfg.taxrate %</td>
+					<td>
+						#if($VmUtils.eq($!invcfg.taxcondition,"XGMNSR"))
+							小规模纳税人
+						#elseif($VmUtils.eq($!invcfg.taxcondition,"YBNSR"))
+							一般纳税人
+						#elseif($VmUtils.eq($!invcfg.taxcondition,"JYZS"))
+							一般纳税人（简易征收）
+						#end
+					</td>
+					<td>$!invcfg.content</td>
+				</tr>
+				#end
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

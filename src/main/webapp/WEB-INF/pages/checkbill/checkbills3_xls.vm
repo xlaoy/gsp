@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<body id="_body">
+<div >
+
+		<table border="1">
+			<thead>
+				<tr>
+					<th width="5%" ><span>序号</span><span class="carat"></span></th>
+					<th width="6%" ><span>单号</span><span class="carat"></span></th>
+					<th ><span>影院</span><span class="carat"></span></th>
+					<th width="19%"><span>对账周期</span><span class="carat"></span></th>
+					<th width="6%" ><span>出票数量</span><span class="carat"></span></th>
+					<th width="6%" ><span>出票金额</span><span class="carat"></span></th>
+					<th width="6%" ><span>退票数量</span><span class="carat"></span></th>
+					<th width="6%" ><span>退票金额</span><span class="carat"></span></th>
+					<th width="6%" ><span>结算票数</span><span class="carat"></span></th>
+					<th width="6%"><span>结算金额</span><span class="carat"></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				#set($allOrder=0)
+				#set($allOrderAmount=0)
+				#set($refundTotal=0)
+				#set($refundTotalAmount=0)
+				#set($orderTotal=0)
+				#set($orderTotalAmount=0)
+				
+				#foreach($ck in ${cklist})
+					#set($allOrder=$allOrder + $ck.succTicketNumber)
+					#set($allOrderAmount= $allOrderAmount + $ck.succTicketAmount)
+					#set($refundTotal=$refundTotal + $!{ck.refundTotalNumber})
+					#set($refundTotalAmount=$refundTotalAmount + $!{ck.refundTotalAmount})
+					#set($orderTotal=$orderTotal+$!{ck.orderTotalNumber})
+					#set($orderTotalAmount=$orderTotalAmount + $!{ck.orderTotalAmount})
+					<tr>
+						<td><span>
+							$!{foreach.count}
+							</span>
+						</td>
+						<td><span>
+							$!{ck.recordId}
+							</span>
+						</td>
+						<td><span>
+							#set($placeid = "" + $!{ck.relateId} + ",TICKET")
+							$!{placemap.get($placeid).name}
+							</span>
+						</td>
+						<td><span>
+							[ $!DateUtil.formatTimestamp($!{ck.start}) - $!DateUtil.formatTimestamp($!{ck.end}) )
+							</span>
+						</td>
+						<td><span>
+							$!{ck.succTicketNumber}
+							</span>
+						</td>
+						<td><span>
+							$!{ck.succTicketAmount}
+							</span>
+						</td>
+						<td><span>
+							$!{ck.refundTotalNumber}
+							</span>
+						</td>
+						<td><span>
+							$!CurrencyFmt.format(${ck.refundTotalAmount})
+							</span>
+						</td>
+						<td><span>
+							$!{ck.orderTotalNumber}
+							</span>
+						</td>
+						<td><span>
+							$!CurrencyFmt.format(${ck.orderTotalAmount})
+							</span>
+						</td>
+					</tr>
+				#end
+				
+				<tr>
+					<td colspan="4">小计</td>
+					<td>$!allOrder</td>
+					<td>$!allOrderAmount </td>
+					<td>$!refundTotal</td>
+					<td>$!refundTotalAmount</td>
+					<td>$!orderTotal</td>
+					<td>$!orderTotalAmount</td>
+				</tr>
+				<tr>
+					<td colspan="8">调整</td>
+					<td>$!{settle.adjustTotalNumber}</td>
+					<td>$!{settle.adjustTotalAmount}</td>
+				</tr>
+				<tr>
+					<td colspan="8">合计</td>
+					<td>$!{settle.orderTotalNumber}</td>
+					<td>$!{settle.orderTotalAmount}</td>
+				</tr>
+			</tbody>
+		</table>
+	
+</div>
+</body>
+</html>

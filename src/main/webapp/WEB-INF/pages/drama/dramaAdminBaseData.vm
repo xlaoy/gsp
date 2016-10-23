@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html style="background: #fff;">
+<head>
+<title>演出</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+<script type="text/javascript" src="${staticPath}scripts/mootools.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/gewara-util.js?v=$VmUtils.jsVersion"></script>
+<script type="text/javascript" src="${staticPath}scripts/apps.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/html5.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}dpicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${staticPath}scripts/tableGear.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/Autocompleter.js?v=00000"></script>
+<script type="text/javascript" src="${staticPath}scripts/tips.js"></script>
+<style type="text/css">
+.s{background:#f0f0f0;}
+</style>
+</head>
+
+<body id="_body">
+<div class="inner">
+	#set($nvg="queryDramaBaseData")
+	#parse('WEB-INF/pages/nvaig/dramadatanvaig.vm')
+	
+	<div class="mode_search">
+		<form action="${basePath}platform/drama/queryDramaBaseData.xhtml" method="post" id="dataForm">
+				<h2>查询条件</h2><br>
+				<div>
+					type：
+					<select id="type" name="type" class="text" style="width: 120px;">
+						<option value="place" #if($VmUtils.eq($!{params.type},"place")) selected="selected" #end>place</option>
+						<option value="supplier" #if($VmUtils.eq($!{params.type},"supplier")) selected="selected" #end>supplier</option>
+						<option value="sysdatajob" #if($VmUtils.eq($!{params.type},"sysdatajob")) selected="selected" #end>sysdatajob</option>
+						<option value="repayuser" #if($VmUtils.eq($!{params.type},"repayuser")) selected="selected" #end>repayuser</option>
+						<option value="DRAMAMAIL" #if($VmUtils.eq($!{params.type},"DRAMAMAIL")) selected="selected" #end>DRAMAMAIL</option>
+					</select>
+					&nbsp;&nbsp;
+					code：
+					<input type="text" class="text" name="code" id="code" value="$!{params.code}" style="width: 100px;"/>
+					&nbsp;&nbsp;
+					name：
+					<input type="text" class="text" name="name" id="name" value="$!{params.name}"/>
+					&nbsp;&nbsp;
+					<a href="javascript:$('dataForm').submit();" class="button minBt whiteBt"><span>查&nbsp;&nbsp;询</span></a>
+					&nbsp;&nbsp;
+					<a href="javascript:loadBaseData();" class="button minBt whiteBt"><span>添&nbsp;&nbsp;加</span></a>
+				</div>
+		</form>
+	</div>
+	
+	<div class="tableGear clear">
+		<table class="tableGear" id="tableGear">
+			<thead>
+				<tr>
+					<th style="width:10%;">recoreid</th>
+					<th style="width:10%;">type</th>
+					<th style="width:10%;">code</th>
+					<th>name</th>
+					<th style="width:25%;">special</th>
+					<th style="width:10%;">opt</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($data in ${dataList})
+				<tr>
+					<td>$!{data.recordid}</td>
+					<td>$!{data.type}</td>
+					<td>$!{data.code}</td>
+					<td>$!{data.name}</td>
+					<td>$!{data.special}</td>
+					<td>
+						<a href="javascript:loadBaseData('$!{data.recordid}');">修改</a>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="javascript:delBaseDate('$!{data.recordid}');">删除</a>
+					</td>
+				</tr>
+				#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="6">
+					#parse('WEB-INF/include/pageUtil.vm')
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
+
+<div id="baseDataDeatilMark" style="display:none; height: 250px;overflow-y:auto;"></div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	new TableGear('tableGear');
+	$('tableGear').getElements('tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+});
+
+/**
+ * 弹出基础数据详情
+ */
+function loadBaseData(recordid) {
+	var url = '${basePath}/platform/drama/loadBaseDateDetail.xhtml';
+	var values = {"recordid":recordid}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('baseDataDeatilMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','baseDataDeatilMark', '基础数据详情' ,400,'baseDataDeatilMark','','','','','',function(){});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+
+//关闭基础数据详情
+function closeBaseDataPop() {
+	gewa.util.container['baseDataDeatilMark'].dispose('baseDataDeatilMark');
+}
+
+//保存数据
+function saveBaseData() {
+	var recordid = $('drecordid').value;
+	var type = $('dtype').value;
+	var code = $('dcode').value;
+	var name = $('dname').value;
+	var special = $('dspecial').value;
+	if(code == null || code == "") {
+		return;
+	}
+	if(name == null || name == "") {
+		return;
+	}
+	var url = "${basePath}/platform/drama/saveBaseDate.xhtml";
+	var values = {"recordid":recordid, "type":type, "code":code, "name": name, "special": special};
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	GewaraUtil.sendRequest(url, values, function(result){
+		GewaraUtil.unmask(mid);
+		if(result.success == true){
+			gewaUtil.alert(result.retval, function(){$('dataForm').submit();});
+		}else{
+			gewaUtil.alert(result.msg);
+		}
+	});
+}
+
+//删除数据
+function delBaseDate(recordid) {
+	if(recordid == null || recordid == "") {
+		return;
+	}
+	gewa.util.issure('','确认要删除吗？','提示',420,'keys',function(calls,id){
+		var url = "${basePath}/platform/drama/delBaseDate.xhtml";
+		var values = {"recordid":recordid};
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(mid);
+			if(result.success == true){
+				gewaUtil.alert(result.retval, function(){$('dataForm').submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+</script>
+</body>
+</html>

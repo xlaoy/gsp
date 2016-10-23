@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 31, 2013 2:18:24 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.Place" table="place" schema="gsp">
+       <id name="recordId" type="string">
+            <column name="record_id"  />
+            <generator class="assigned" />
+        </id>
+        <property name="relateId" type="long">
+            <column name="place_id" />
+        </property>
+        <property name="tag" type="string">
+            <column name="place_type" length="10" />
+        </property>
+        <property name="cityCode" type="string">
+            <column name="city_code" length="10" />
+        </property>
+        <property name="name" type="string">
+            <column name="name" length="30" />
+        </property>
+        <property name="updateTime" type="timestamp">
+            <column name="update_time" />
+        </property>
+        <property name="belongTo" type="long">
+            <column name="belong_to" />
+        </property>
+        <property name="isConfig" type="string">
+            <column name="is_config" length="10" />
+        </property>
+        <property name="openType" type="string">
+            <column name="open_type" length="10" />
+        </property>
+        <property name="firstSpell" type="string">
+            <column name="first_spell" length="10" />
+        </property>
+        <property name="brandName" type="string">
+            <column name="brand_name" length="10" />
+        </property>
+        <property name="pcid" type="string">
+            <column name="pcid" />
+        </property>
+        <property name="owner" type="string">
+            <column name="owner" />
+        </property>
+        <property name="theatres" type="string">
+            <column name="theatres" />
+        </property>
+    </class>
+</hibernate-mapping>

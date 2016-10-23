@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	<!-- 发送模板 -->
+	<bean id="kafkaProducerTemplate" class="com.gewara.kafka.producer.KafkaProducerTemplate">
+		<property name="brokers" value="${kafka.brokers}" />
+		<property name="validTopics">
+			<list>
+				<value>changeLogQueue</value>
+				<value>logEntryQueue</value>
+				<value>sysWarnQueue</value>
+				<value>apiLogQueue</value>
+				<value>sysLogQueue</value>
+				<value>otherLogQueue</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="monitorService" class="com.gewara.untrans.monitor.impl.KafkaMonitorServiceImpl">
+		<property name="kafkaProducerTemplate" ref="kafkaProducerTemplate" />
+	</bean>
+</beans>

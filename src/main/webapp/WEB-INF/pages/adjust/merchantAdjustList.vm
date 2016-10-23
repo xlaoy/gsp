@@ -1,0 +1,18 @@
+#if($ads && $ads.size() > 0)
+<table class="isTable" width="100%" id="wrapped">
+	<thead>
+		<tr>
+			<th><label>调整数量</label></th>
+			<th> 调整金额</th>
+			<th> 调整原因</th>
+		</tr>
+	</thead>
+	#foreach($ad in ${ads})
+		<tr>
+			<td>$!{ad.adjustNumber}</td>
+			<td>$!{ad.amount}</td>
+			<td>$VmUtils.displayEnums("AdjustReasonEnums" , $!{ad.reason})</td>
+		</tr>
+	#end
+</table>
+#end

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping>
+    <class name="com.gewara.model.gsp.Invoice" table="invoice" schema="gsp">
+    
+       <id name="invoicecode" type="string">
+            <column name="invoicecode"  />
+            <generator class="assigned" />
+       </id>
+       
+       <property name="invoicetype"		column="invoicetype"	type="string" />
+       <property name="invoicedate"		column="invoicedate"	type="timestamp" />
+       <property name="addtime"		column="addtime"	type="timestamp" />
+       <property name="vendername"		column="vendername"	type="string" />
+       <property name="taxrate"		column="taxrate"	type="double" />
+       <property name="taxamount"		column="taxamount"	type="double" />
+       <property name="invoiceamount"		column="invoiceamount"	type="double" />
+       <property name="status"		column="status"	type="string" />
+       <property name="submitcontent"		column="content"	type="string" />
+       <property name="settleids"		column="settleids"	type="string" />
+       <property name="deductibleamount"		column="deductibleamount"	type="double" />
+       <property name="excludetaxamount"		column="excludetaxamount"	type="double" />
+       <property name="optuser"		column="optuser"	type="string" />
+       <property name="dikoumonth"		column="dikoumonth"	type="string" />
+       <property name="updatetime"		column="updatetime"	type="timestamp" />
+        
+    </class>
+</hibernate-mapping>

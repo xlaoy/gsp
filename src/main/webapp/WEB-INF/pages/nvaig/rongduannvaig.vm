@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<div class="mod_hd tabs_gary" >
+	<a href="${basePath}platform/rongduan/queryRongduanHuizong.xhtml" #if($VmUtils.eq($!nvg,'queryRongduanHuizong')) class="select" #end>防熔断付款</a>
+	<a href="${basePath}platform/rongduan/queryRongdunPayRecord.xhtml" #if($VmUtils.eq($!nvg,'queryRongdunPayRecord')) class="select" #end>预付详情</a>
+	<a href="${basePath}platform/rongduan/queryRongdunBuckleRecord.xhtml" #if($VmUtils.eq($!nvg,'queryRongdunBuckleRecord')) class="select" #end>扣款详情</a>
+</div>

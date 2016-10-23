@@ -1,0 +1,254 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>影院结算平台</title>
+<script type="">
+</script>
+#parse('WEB-INF/pages/common/common.vm')
+#parse('WEB-INF/pages/common/edaStyle.vm')
+<script type="text/javascript" src="${staticPath}scripts/scrollerbar.js?v=00000"></script>
+</head>
+<body>
+#set($isAutoReconcile=true)
+#parse('WEB-INF/pages/common/merchantMenu_eda.vm')
+<div class="bodyBox" style="position:relative;z-index:1;">
+	<div class="mlr30 mt20">
+		<form id="infoform" method="post" action="${basePath}merchant/autoreconcile/queryReconResultByCondition.xhtml">
+			<div class="clear">
+				<div class="left">
+					<ul class="clear chosOp">
+						<li>
+							<div class="ui_simulate_20">
+								<div class="simulate_select_20">
+									<div class="select_value_20">#if($proviceMap.get($!params.proviceCode)) $proviceMap.get($!params.proviceCode) #else 全部城市 #end</div>
+									<a class="select_arrow_20" href="javascript:void(0);"></a>
+									<input class="simulate_value_20" type="hidden" value="$!params.proviceCode" name="proviceCode" id="proviceCode" />
+								</div>
+								<ul class="simulate_options_20">
+									<li><a href="javascript:void(0);" data-value="" data-config="city">全部城市</a></li>
+									#foreach($key in $proviceMap.keySet() )
+										<li><a href="javascript:void(0);" data-value="$!key" data-config="city">$proviceMap.get($key)</a></li>
+									#end
+								</ul>
+							</div>
+						</li>
+						<li>
+							#*
+							<div id="placeName"></div>
+								<input type="hidden" name="placeId" id="placeId" value="$!{params.placeId}"/>
+								<input type="text" class="text" name="placeFirstLetter" id="placeFirstLetter" value="$!{params.placeFirstLetter}"/>
+							*#
+							<div class="ui_simulate_20">
+								<div class="simulate_select_20">
+									<div class="select_value_20" id="select_text">#if($VmUtils.isNotBlank($!place.name)) $place.name #else 全部影院 #end</div>
+									<a class="select_arrow_20" href="javascript:void(0);"></a>
+									<input class="simulate_value_20" type="hidden" value="$!{params.placeId}" name="placeId" id="placeId" />
+								</div>
+								<ul class="simulate_options_20" id="simulate_options_ul">
+									<li><a href="javascript:void(0);" data-value="">全部影院</a></li>
+									#foreach($citycode in $optionData.keySet())
+										#foreach($key in $optionData.get($citycode).keySet())
+											<li><a href="javascript:void(0);" data-value="$key" data-city="$citycode">$optionData.get($citycode).get($key)</a></li>
+										#end
+									#end
+								</ul>
+							</div>
+						</li>
+						<li>
+							#*
+							<select name="status" id="status">
+								$!VmUtils.generateCheckBillOptions($!{params.status})
+							</select>
+							*#
+							<div class="ui_simulate_20">
+								<div class="simulate_select_20">
+									#set($statusMap = $VmUtils.ck2Map())
+									<div class="select_value_20">#if($!statusMap.get($!{params.status})) $!statusMap.get($!{params.status})  #else 结算状态 #end</div>
+									<a class="select_arrow_20" href="javascript:void(0);"></a>
+									<input class="simulate_value_20" type="hidden" value="$!{params.status}"  name="status" id="status" />
+								</div>
+								<ul class="simulate_options_20">
+									<li><a href="javascript:void(0);" data-value="">结算状态</a></li>
+									#foreach($status in $statusMap.keySet())
+										<li><a href="javascript:void(0);" data-value="$!status">$statusMap.get($!{status})</a></li>
+									#end
+								</ul>
+							</div>
+						</li>
+						<li>
+							<input class="text t_Icon mr5" name="start" id="start" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" value='$!{params.start}'/>至
+							<input class="text t_Icon mr10" name="end" id="end" value='$!{params.end}' onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" />
+						</li>
+						<li>
+							<a class="button largeBt mr20" href="#" onclick="document.forms[0].submit()"><span style="width:70px;">查询</span></a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</form>
+		<div class="bill_panel">
+			<div class="bill_tool">
+				<div class="right">
+					#parse('WEB-INF/include/pageUtil.vm')
+				</div>
+			</div>
+			<table class="isTable" style="width:100%;">
+				<thead id="tableY">
+					<tr>
+						<th>结算单号</th>
+						<th>对账文件名称</th>
+						<th>对接系统</th>
+						<th>G出票数量</th>
+						<th>G出票金额</th>
+						<th>M对账票数</th>
+						<th>M对账金额</th>
+						<th>差票（G-M）</th>
+						<th>差额（G-M）</th>
+						<th>状态</th>
+						<th>备注</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody id="tableB">
+					#foreach($info in ${autoReconciledInfos})
+					<tr>
+					<td>
+						<a href="javascript:loadSettleDeatil('$!{info.settlementId}');">$!{info.settlementId}</a>
+					</td>
+					<td >
+						$!{info.fileName}
+					</td>
+					<td>
+						$!{info.openType}
+					</td>
+					<td>
+						$!{info.gewaOrderNumber}
+					</td>
+					<td>
+						$!{info.gewaOrderAmount}
+					</td>
+					<td >
+						$!{info.merchantOrderNumber}
+					</td>
+					<td >
+						$!{info.merchantOrderAmount}
+					</td>
+					<td >
+						#if($VmUtils.eq($!{info.status}, 'FINISH')) 
+							$!{info.chapiao}
+						#end
+					</td>
+					<td >
+						#if($VmUtils.eq($!{info.status}, 'FINISH')) 
+							$!{info.chae}
+						#end
+					</td>
+					<td>
+						$!autoReconStatusMap.get($!{info.status})
+					</td>
+					<td >
+						#if(!$VmUtils.eq($!{info.status}, 'FINISH')) $!{info.remark} #end
+					</td>
+					<td>
+						#if($VmUtils.eq($!{info.status}, 'FINISH')) 
+						<a href="${absPath}${basePath}merchant/autoreconcile/queryExceptionResult.xhtml?settlebillId=$!{info.settlementId}">异常详情</a>
+						#end
+						#if($VmUtils.eq($!{info.status}, 'FAILURE') || $VmUtils.eq($!{info.status}, 'FINISH')) 
+						<a href="javascript:deleteInfo('$!{info.settlementId}');">删除</a>
+						#end
+					</td>
+					</tr>
+					#end
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<div id="detailMark" style="display:none; height: 400px;overflow-y:auto;"></div>
+
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	//autoCountHeight();
+	document.getElements('tbody tr').addEvents({
+		"mouseover":function(){
+			this.addClass('s')
+		},
+		"mouseout":function(){
+			this.removeClass('s')
+		}
+	});
+	$$('.tips').amTips();
+	getScrollWidth();
+});
+window.addEvents({
+	'resize':function(){
+		getScrollWidth();
+	},
+	'scroll':function(){
+		var navH = $('tableY').getPosition().y;
+		var scroH = this.getScroll().y;
+		if(scroH > navH){
+			$('tableY').setStyles({
+				'position':'fixed',
+				'top':'0px',
+				'margin-left':'-1px'
+			});
+			getScrollWidtha();
+		}else{
+			$('tableY').setStyles({
+				'position':'static'
+			});
+		};
+	}
+});
+
+function getScrollWidth(){
+	var otb_d= $('tableB').getElements('tr')[0];
+	var oth_d = $('tableY').getElements('tr')[0];
+	$('tableY').setStyle('width',$('tableB').getDimensions().width);
+	otb_d.getElements('td').each(function(item,index){
+		oth_d.getElements('th')[index].setStyle('width',(item.getDimensions().width-1)+'px');
+	})
+}
+function getScrollWidtha(){
+	var otb_d= $('tableB').getElements('tr')[0];
+	var oth_d = $('tableY').getElements('tr')[0];
+	$('tableB').setStyle('width',$('tableY').getDimensions().width);
+	oth_d.getElements('th').each(function(item,index){
+		otb_d.getElements('td')[index].setStyle('width',(item.getDimensions().width-1)+'px');
+	})
+}
+//查看结算单详情
+function loadSettleDeatil(settleId){
+	var url = '${basePath}merchant/settlement/settleMore.xhtml';
+	var values = {"recordId":settleId}
+	var mid = "T" + Date.now();
+	GewaraUtil.mask('',mid);
+	gewara.util.sendLoad('detailMark', url, values, function(){
+		GewaraUtil.unmask(mid);
+		gewa.util.maskContent('','detailMark','结算单' + settleId ,850,'detailMark','','','','','',function(){
+		});
+		this(arguments[0]);
+	}.bind(arguments[3] && typeof(arguments[3]) == 'function'?arguments[3]:$empty), arguments[4],'POST');
+}
+function deleteInfo(settlebillId) {
+	gewa.util.issure('','确认要删除对账信息吗？','提示',420,'keys',function(calls,id){//keys为动态标识可以自定义,执行函数放在回调函数内
+		var url = "${basePath}merchant/autoreconcile/deleteReconRecord.xhtml";
+		var values = {"settlebillId":settlebillId};
+		var mid = "T" + Date.now();
+		GewaraUtil.mask('',mid);
+		GewaraUtil.sendRequest(url, values, function(result){
+			GewaraUtil.unmask(mid);
+			if(result.success == true){
+				gewaUtil.alert("删除成功！", function(){$("infoform").submit();});
+			}else{
+				gewaUtil.alert(result.msg);
+			}
+		});
+		gewa.util.container['keys'].dispose('keys');
+	});
+}
+</script>
+</body>
+</html>

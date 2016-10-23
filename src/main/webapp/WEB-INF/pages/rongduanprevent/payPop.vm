@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" type="text/css" href="${staticPath}css/html.css?v=$VmUtils.jsVersion" />
+<link rel="stylesheet" type="text/css" href="${staticPath}css/settleaccounts/warp.css?v=$VmUtils.jsVersion" />
+</head>
+<body>
+<div style="margin: 20px;">
+<p>预付金额：<input type="text" class="text" id="amountinp_$!rdp.vendorCode" onkeyup="this.value=this.value.replace(/\D/g,'')"></p><br>
+<p>预付备注：<textarea cols="28" rows="3" id="content_$!rdp.vendorCode"></textarea></p>
+<br>
+<p>
+<a href="javascript:pay('$!rdp.vendorCode', 'Y');" class="button minBt whiteBt">线上付款</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="javascript:pay('$!rdp.vendorCode', 'N');" class="button minBt whiteBt">线下付款</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="javascript:closePayPop();" class="button minBt whiteBt">取消</a>
+</p>
+</div>
+</body>
+</html>

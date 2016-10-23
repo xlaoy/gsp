@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+#if($bc)
+<div class="tableGear clear">
+	<table class="tableGear" id="tableGear">
+		<tr>
+			<td width="100px;">包场id</td>
+			<td width="200px;">$!{bc.recordId}</td>
+			<td width="100px;">场次id</td>
+			<td>$!{bc.playId}</td>
+		</tr>
+		<tr>
+			<td>包场类型</td>
+			<td>
+				【 #if($VmUtils.eq($!bc.playType,'ZL'))
+					直连
+				#elseif($VmUtils.eq($!bc.playType,'XN')) 
+					虚拟
+				#elseif($VmUtils.eq($!bc.playType,'GW')) 
+					格瓦票务
+				#end】
+				【 #if($VmUtils.eq($!bc.bcType,'user'))
+					用户包场
+				#elseif($VmUtils.eq($!bc.bcType,'gewa')) 
+					格瓦包场
+				#end】
+			</td>
+			<td>放映时间</td>
+			<td>
+				$!DateUtil.formatTimestamp($!{bc.playTime})
+			</td>
+		</tr>
+		<tr>
+			<td>影院</td>
+			<td colspan="3">
+				$!place.name
+			</td>
+		</tr>
+		<tr>
+			<td>电影名称</td>
+			<td colspan="3">
+				$!bc.filmName
+			</td>
+		</tr>
+		<tr>
+			<td>影票数量</td>
+			<td>
+				$!bc.bcNum
+			</td>
+			<td>影票成本</td>
+			<td>$!CurrencyFmt.format($!bc.bcAmount)</td>
+		</tr>
+		<tr>
+			<td>卖品数量</td>
+			<td>
+				$!bc.goodsNum
+			</td>
+			<td>卖品成本</td>
+			<td>$!CurrencyFmt.format($!bc.goodsAmount)</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+			</td>
+			<td>总成本</td>
+			<td>
+				$!bc.costAmount【影票成本+卖品成本】
+			</td>
+		</tr>
+		<tr>
+			<td>结算类型</td>
+			<td>
+				#if($VmUtils.eq($!bc.prePay,'Y'))
+					预付
+				#elseif($VmUtils.eq($!bc.prePay,'N'))
+					月结
+				#end
+			</td>
+			<td>预付金额</td>
+			<td>$!CurrencyFmt.format($!{bc.preAmount})</td>
+		</tr>
+		<tr>
+			<td>用户出票数量</td>
+			<td>$!{bc.successNum}</td>
+			<td>用户出票金额</td>
+			<td>$!CurrencyFmt.format($!{bc.userAmount})</td>
+		</tr>
+		<tr>
+			<td>用户退票数量</td>
+			<td>$!{bc.refundNum}</td>
+			<td>用户退票金额</td>
+			<td>$!CurrencyFmt.format($!{bc.refundAmount})</td>
+		</tr>
+		<tr>
+			<td>总订单票数</td>
+			<td>$!{bc.totalNum}</td>
+			<td>总订单金额</td>
+			<td>$!CurrencyFmt.format($!{bc.successAmount})</td>
+		</tr>
+		<tr>
+			<td>用户出票完成率</td>
+			<td>$!CurrencyFmt.format($!{bc.successRate})%</td>
+			<td>状态</td>
+			<td>
+				#if($VmUtils.eq($!bc.status,'NOPAY'))
+					未付款
+				#elseif($VmUtils.eq($!bc.status,'YESPAY'))
+					已付款
+				#elseif($VmUtils.eq($!bc.status,'SELLET'))
+					已结算
+				#elseif($VmUtils.eq($!bc.status,'PASS'))
+					已过期
+				#end
+			</td>
+		</tr>
+		<tr>
+			<td>开票金额</td>
+			<td>$!CurrencyFmt.format($!{bc.kpamount})</td>
+			<td>请款状态</td>
+			<td>
+				#if($VmUtils.eq($!bc.reqbillStatus,'Y'))
+					已请款
+				#else
+					未请款
+				#end	
+			</td>
+		</tr>
+		<tr>
+			<td>付款时间</td>
+			<td>$!DateUtil.formatTimestamp($!{bc.payTime})</td>
+			<td>付款人</td>
+			<td>$!{bc.optUser}</td>
+		</tr>
+		<tr>
+			<td>关联结算单号</td>
+			<td>$!{bc.settleId}</td>
+			<td>包场补差</td>
+			<td>$!CurrencyFmt.format($!{bc.buchaAmount})</td>
+		</tr>
+	</table>
+</div>
+#else
+<div class="ui_warning">没有数据。</div>
+#end
